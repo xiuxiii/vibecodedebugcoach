@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slop Patrol — Vibe-Code Debugging Trainer</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --bg-code: #0a0e14;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --green-dim: rgba(63, 185, 80, 0.15);
+    --red: #f85149;
+    --red-dim: rgba(248, 81, 73, 0.12);
+    --yellow: #d29922;
+    --err-bg: #2b0d0e;
+    --err-text: #ff8080;
+    --err-border: rgba(248, 81, 73, 0.35);
+    --mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 80px; }
+
+  /* ---------- Header & progress ---------- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px 10px;
+  }
+  .header-inner { max-width: 760px; margin: 0 auto; }
+  .brand {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  }
+  .brand h1 {
+    font-size: 1.05rem; font-weight: 700; letter-spacing: 0.06em;
+    font-family: var(--mono);
+  }
+  .brand h1 .siren { margin-right: 6px; }
+  .brand .module {
+    font-size: 0.78rem; color: var(--text-dim);
+  }
+  .progress-track {
+    margin-top: 10px; height: 8px; border-radius: 4px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #1f6feb, #58a6ff);
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .progress-fill.complete { background: linear-gradient(90deg, #238636, #3fb950); }
+  .milestone {
+    margin-top: 6px; font-size: 0.78rem; color: var(--text-dim);
+    min-height: 1.2em;
+  }
+  .milestone.achieved { color: var(--green); }
+
+  /* ---------- Screens ---------- */
+  .screen { display: none; animation: fadeIn 0.25s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Home ---------- */
+  .home { text-align: center; padding-top: 48px; }
+  .home .big-icon { font-size: 3rem; }
+  .home h2 { margin: 12px 0 8px; font-size: 1.4rem; }
+  .home p { color: var(--text-dim); max-width: 480px; margin: 0 auto 8px; font-size: 0.95rem; }
+  .home .welcome-back {
+    color: var(--text); background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; margin: 20px auto 4px; max-width: 420px;
+    font-size: 0.95rem;
+  }
+
+  /* ---------- Challenge ---------- */
+  .ch-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 20px 0 6px; font-size: 0.8rem; color: var(--text-dim);
+    font-family: var(--mono);
+  }
+  .ch-phase {
+    padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border);
+    font-size: 0.72rem;
+  }
+  .ch-phase.exam { color: var(--yellow); border-color: rgba(210, 153, 34, 0.5); }
+  .ch-title { font-size: 1.15rem; margin-bottom: 14px; }
+
+  /* ---------- Code block ---------- */
+  .code-card {
+    background: var(--bg-code); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; margin-bottom: 12px;
+  }
+  .code-card .filename {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);
+    padding: 6px 12px; border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+  .code-scroll { overflow-x: auto; }
+  .code-lines {
+    font-family: var(--mono); font-size: 0.8rem; line-height: 1.7;
+    padding: 10px 0; min-width: max-content;
+  }
+  .code-line { display: flex; white-space: pre; }
+  .code-line .ln {
+    flex: 0 0 40px; text-align: right; padding-right: 12px;
+    color: #484f58; user-select: none;
+    border: none; background: none; font: inherit;
+  }
+  .code-line .lc { padding-right: 16px; }
+  .code-line.clickable { cursor: pointer; }
+  .code-line.clickable:hover { background: rgba(88, 166, 255, 0.08); }
+  .code-line.clickable .ln {
+    color: var(--accent); cursor: pointer; text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .code-line.picked-right { background: var(--green-dim); }
+  .code-line.picked-right .ln { color: var(--green); text-decoration: none; }
+  .code-line.picked-wrong { background: var(--red-dim); animation: shake 0.3s; }
+  .code-line.picked-wrong .ln { color: var(--red); }
+  .code-line.reveal-right { background: var(--green-dim); }
+
+  /* syntax colors */
+  .tok-kw { color: #ff7b72; }
+  .tok-str { color: #a5d6ff; }
+  .tok-com { color: #6e7681; font-style: italic; }
+  .tok-num { color: #79c0ff; }
+  .tok-fn { color: #d2a8ff; }
+  .tok-tag { color: #7ee787; }
+
+  /* ---------- Console error ---------- */
+  .console-card {
+    background: var(--bg-code); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; margin-bottom: 18px;
+  }
+  .console-tab {
+    font-family: var(--sans); font-size: 0.72rem; color: var(--text-dim);
+    padding: 6px 12px; border-bottom: 1px solid var(--border);
+    background: var(--bg-card); display: flex; gap: 14px;
+  }
+  .console-tab .tab-active {
+    color: var(--text); border-bottom: 2px solid var(--accent);
+    margin-bottom: -7px; padding-bottom: 5px;
+  }
+  .console-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: var(--err-bg); color: var(--err-text);
+    font-family: var(--mono); font-size: 0.76rem; line-height: 1.5;
+    padding: 8px 12px;
+    border-top: 1px solid var(--err-border);
+  }
+  .err-icon {
+    flex: 0 0 14px; height: 14px; margin-top: 2px;
+    border-radius: 50%; background: var(--red);
+    color: #fff; font-size: 10px; line-height: 14px; text-align: center;
+    font-family: var(--sans); font-weight: 700;
+  }
+  .err-msg { flex: 1; word-break: break-word; white-space: pre-wrap; }
+  .err-src { flex: 0 0 auto; color: #8ca0b3; text-decoration: underline; font-size: 0.72rem; }
+
+  /* ---------- Question & options ---------- */
+  .question { font-size: 0.98rem; margin-bottom: 14px; font-weight: 600; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    text-align: left; background: var(--bg-card); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; font-size: 0.9rem; font-family: var(--sans);
+    cursor: pointer; line-height: 1.45;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--accent); }
+  .opt:disabled { cursor: default; opacity: 0.6; }
+  .opt.right { border-color: var(--green); background: var(--green-dim); opacity: 1; }
+  .opt.wrong { border-color: var(--red); background: var(--red-dim); animation: shake 0.3s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); } 75% { transform: translateX(4px); }
+  }
+
+  .try-again-note { margin-top: 10px; font-size: 0.85rem; color: var(--yellow); }
+
+  /* ---------- Feedback / explanation ---------- */
+  .feedback { margin-top: 16px; }
+  .correct-banner {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--green); font-weight: 700; font-size: 0.95rem;
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .explain {
+    margin-top: 10px; background: var(--bg-card);
+    border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 12px 14px; font-size: 0.9rem;
+    color: var(--text);
+  }
+  .explain .explain-label {
+    font-size: 0.7rem; letter-spacing: 0.08em; color: var(--accent);
+    font-family: var(--mono); display: block; margin-bottom: 6px;
+  }
+
+  /* ---------- Exam ---------- */
+  .exam-input {
+    width: 100%; min-height: 110px; resize: vertical;
+    background: var(--bg-card); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; font-size: 0.9rem; font-family: var(--sans);
+  }
+  .exam-input:focus { outline: none; border-color: var(--accent); }
+  .model-answer {
+    margin-top: 14px; background: var(--bg-card);
+    border: 1px solid var(--border); border-left: 3px solid var(--yellow);
+    border-radius: 8px; padding: 12px 14px; font-size: 0.9rem;
+  }
+  .model-answer .ma-label {
+    font-size: 0.7rem; letter-spacing: 0.08em; color: var(--yellow);
+    font-family: var(--mono); display: block; margin-bottom: 6px;
+  }
+  .your-answer {
+    margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);
+    border-left: 3px solid var(--border); padding-left: 10px;
+    white-space: pre-wrap;
+  }
+  .self-grade { margin-top: 14px; }
+  .self-grade p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px; }
+  .grade-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-block; border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text);
+    border-radius: 8px; padding: 10px 20px; font-size: 0.9rem;
+    cursor: pointer; font-family: var(--sans); font-weight: 600;
+    transition: filter 0.15s, transform 0.05s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-green { background: #238636; border-color: #238636; color: #fff; }
+  .btn-green:hover { filter: brightness(1.1); }
+  .btn-ghost:hover { border-color: var(--accent); }
+  .actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ---------- Dots nav ---------- */
+  .dots {
+    display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 4px;
+  }
+  .dot {
+    width: 26px; height: 26px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--bg-card);
+    color: var(--text-dim); font-size: 0.68rem; font-family: var(--mono);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .dot.done { border-color: var(--green); color: var(--green); }
+  .dot.missed { border-color: var(--yellow); color: var(--yellow); }
+  .dot.current { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  .dot.locked { opacity: 0.35; cursor: default; }
+
+  /* ---------- Summary ---------- */
+  .summary { text-align: center; padding-top: 40px; }
+  .summary .big-icon { font-size: 3rem; animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .summary h2 { margin: 12px 0 10px; font-size: 1.35rem; }
+  .summary p { color: var(--text-dim); max-width: 480px; margin: 0 auto 6px; font-size: 0.95rem; }
+  .exam-status {
+    max-width: 420px; margin: 20px auto; text-align: left;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .exam-status .row {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; font-size: 0.88rem;
+  }
+  .exam-status .ok { color: var(--green); }
+  .exam-status .nope { color: var(--yellow); }
+  .reset-zone { margin-top: 36px; }
+  .reset-link {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 0.78rem; text-decoration: underline; cursor: pointer;
+  }
+
+  @media (max-width: 480px) {
+    .code-lines { font-size: 0.72rem; }
+    .console-row { font-size: 0.7rem; }
+    .brand h1 { font-size: 0.95rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <h1><span class="siren">🚨</span>SLOP PATROL</h1>
+      <span class="module">Module 1 · Reading Errors Without Panicking</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="milestone" id="milestoneText"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="screen" id="screen-home"></div>
+  <div class="screen" id="screen-challenge"></div>
+  <div class="screen" id="screen-summary"></div>
+</div>
+
+<script>
+'use strict';
+
+/* =====================================================================
+   CHALLENGE DATA — Module 1: Reading Errors Without Panicking
+   types: 'mc'   = multiple choice, "what does this error mean?"
+          'line' = click the line number that CAUSED the error
+          'exam' = free-text root cause + model answer + honest self-grade
+   ===================================================================== */
+var CHALLENGES = [
+
+  /* ---------------- Phase 1 (1-8): what is the error telling you? ---------------- */
+  {
+    id: 1, type: 'mc',
+    title: 'The property path that never was',
+    filename: 'app.js',
+    code:
+"async function loadProducts() {\n" +
+"  const response = await fetch('/api/products');\n" +
+"  const data = await response.json();\n" +
+"  const items = data.data.items;\n" +
+"  items.forEach(function (p) { renderCard(p); });\n" +
+"}",
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'items')", src: 'app.js:4' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'The API request failed, so no data came back at all',
+      'The items array is empty, so there is nothing to loop over',
+      "data.data doesn't exist — the code is reaching into a property path the response never had",
+      'The JSON in the response was malformed and could not be parsed'
+    ],
+    correct: 2,
+    explanation: "The phrase \"reading 'items'\" means JavaScript tried to grab .items off something that was undefined — and that something is data.data. The request worked and the JSON parsed fine; the code just guessed the wrong shape (the products are probably at data.results or just data). AI assistants invent response shapes all the time — log the actual response and look at what's really there."
+  },
+
+  {
+    id: 2, type: 'mc',
+    title: 'A method the browser has never heard of',
+    filename: 'app.js',
+    code:
+"const button = document.querySelector('#save-btn');\n" +
+"button.addClickListener(function () {\n" +
+"  saveDraft();\n" +
+"});",
+    error: { msg: 'Uncaught TypeError: button.addClickListener is not a function', src: 'app.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "The button doesn't exist in the HTML yet when this code runs",
+      "addClickListener isn't a real method — the browser has literally never heard of it",
+      'The saveDraft function has not been defined at this point',
+      'You cannot attach more than one click handler to the same button'
+    ],
+    correct: 1,
+    explanation: "\"X is not a function\" on a method name usually means that method simply doesn't exist on the object. The button was found just fine — but the AI invented addClickListener, which sounds right but isn't a thing. The real API is addEventListener('click', ...). Plausible-sounding-but-fake method names are one of the most common flavors of AI slop."
+  },
+
+  {
+    id: 3, type: 'mc',
+    title: 'The half-renamed variable',
+    filename: 'profile.js',
+    code:
+"function displayProfile(profileData) {\n" +
+"  const name = profileData.name;\n" +
+"  document.querySelector('#username').textContent = name;\n" +
+"  document.querySelector('#bio').textContent = userData.bio;\n" +
+"}",
+    error: { msg: 'Uncaught ReferenceError: userData is not defined', src: 'profile.js:4' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'userData has no value yet because the API has not responded',
+      'The .bio property is missing from the profile object',
+      'The function was called before it was defined',
+      "No variable named userData exists anywhere in scope — nothing was ever called that"
+    ],
+    correct: 3,
+    explanation: "A ReferenceError means the name itself doesn't exist — which is different from a variable that exists but happens to be empty. What happened here: the AI renamed the parameter to profileData but forgot to update one leftover spot that still says userData. Half-finished renames are classic slop from partial edits — search the file for the old name and you'll find the stragglers."
+  },
+
+  {
+    id: 4, type: 'mc',
+    title: 'Unexpected token \'<\'',
+    filename: 'settings.js',
+    code:
+"fetch('/api/user/settings')\n" +
+"  .then(function (res) { return res.json(); })\n" +
+"  .then(function (settings) {\n" +
+"    applyTheme(settings.theme);\n" +
+"  });",
+    error: { msg: "Uncaught (in promise) SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON", src: 'settings.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "The server sent back an HTML page (probably a 404 or error page), not JSON",
+      "There is a stray < typo somewhere in this JavaScript file",
+      'The JSON response has a syntax error that the backend needs to fix',
+      'res.json() was called before the response finished arriving'
+    ],
+    correct: 0,
+    explanation: "That \"<!DOCTYPE\" in the error is the giveaway: the browser tried to parse a webpage as if it were JSON. Servers answer requests for missing URLs with an HTML error page, and this code trustingly fed that page into res.json(). The URL is probably wrong or the endpoint doesn't exist — open the Network tab and look at what actually came back."
+  },
+
+  {
+    id: 5, type: 'mc',
+    title: 'Filtering an IOU',
+    filename: 'scores.js',
+    code:
+"async function showTopScores() {\n" +
+"  const scores = fetchScores();\n" +
+"  const top = scores.filter(function (s) { return s.value > 90; });\n" +
+"  renderLeaderboard(top);\n" +
+"}",
+    error: { msg: 'Uncaught (in promise) TypeError: scores.filter is not a function', src: 'scores.js:3' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'The scores array is empty, so there is nothing to filter',
+      'fetchScores returned a single object instead of an array',
+      "scores is a Promise — an IOU for data that hasn't arrived — because the await is missing",
+      'filter cannot be used inside an async function'
+    ],
+    correct: 2,
+    explanation: "Calling an async function without await hands you back a Promise — a \"your data is on the way\" ticket — instead of the data itself. Promises don't have .filter, so the code explodes. When you see \"X.filter/map/forEach is not a function\" right after calling something async, the missing word is almost always await."
+  },
+
+  {
+    id: 6, type: 'mc',
+    title: 'Talking to a page that isn\'t built yet',
+    filename: 'index.html + app.js',
+    code:
+"<!-- index.html -->\n" +
+"<head>\n" +
+"  <script src=\"app.js\"><\/script>\n" +
+"</head>\n" +
+"<body>\n" +
+"  <form id=\"signup-form\"> ... </form>\n" +
+"</body>\n" +
+"\n" +
+"// app.js\n" +
+"const form = document.getElementById('signup-form');\n" +
+"form.addEventListener('submit', handleSignup);",
+    error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')", src: 'app.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "The id 'signup-form' has a typo in it somewhere",
+      "The script runs in <head>, before the form exists on the page — so getElementById found nothing",
+      'handleSignup has not been defined yet when the listener is attached',
+      'addEventListener does not work on form elements, only buttons'
+    ],
+    correct: 1,
+    explanation: "null here means getElementById came back empty-handed. The id matches perfectly — the problem is timing. The script loaded inside <head> and ran immediately, while the browser hadn't yet built the form further down the page. Move the script tag to the end of <body>, or add the defer attribute, and the exact same code works."
+  },
+
+  {
+    id: 7, type: 'mc',
+    title: 'The cart that became "[object Object]"',
+    filename: 'cart.js',
+    code:
+"const cart = { items: [], total: 0 };\n" +
+"localStorage.setItem('cart', cart);\n" +
+"\n" +
+"// ...later, on page load:\n" +
+"const saved = JSON.parse(localStorage.getItem('cart'));\n" +
+"restoreCart(saved);",
+    error: { msg: "Uncaught SyntaxError: Unexpected token 'o', \"[object Obj\"... is not valid JSON", src: 'cart.js:5' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'The cart object was too large to fit in localStorage',
+      'JSON.parse cannot handle objects that contain arrays',
+      "The 'cart' key does not exist in localStorage yet",
+      "localStorage saved the literal text \"[object Object]\" because the object was never turned into JSON first"
+    ],
+    correct: 3,
+    explanation: "localStorage can only store strings. Handed a raw object, it silently converts it to the useless text \"[object Object]\" — and later, JSON.parse chokes on that text (the 'o' in the error is object's own 'o'). Save with localStorage.setItem('cart', JSON.stringify(cart)) and the round-trip works. Silent conversion + loud crash later is a classic pairing."
+  },
+
+  {
+    id: 8, type: 'mc',
+    title: 'The thing that looks like an array',
+    filename: 'gallery.js',
+    code:
+"const cards = document.getElementsByClassName('card');\n" +
+"cards.forEach(function (card) {\n" +
+"  card.classList.add('visible');\n" +
+"});",
+    error: { msg: 'Uncaught TypeError: cards.forEach is not a function', src: 'gallery.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "getElementsByClassName returns a collection that looks like an array but isn't one — it has no forEach",
+      "No elements with class 'card' exist, so cards is undefined",
+      'classList.add cannot be called from inside a loop',
+      'forEach only works on arrays created with square brackets in your own code'
+    ],
+    correct: 0,
+    explanation: "getElementsByClassName returns an HTMLCollection — an \"array-like\" object you can index into, but which is missing real array methods like forEach. (Note: even with zero matching elements you'd get an empty collection, not this error.) Use document.querySelectorAll instead — its result does have forEach — or spread the collection into a real array first."
+  },
+
+  /* ---------------- Phase 2 (9-12): which line CAUSED it? ---------------- */
+  {
+    id: 9, type: 'line',
+    title: 'The crash site vs. the crime scene',
+    filename: 'signup.js',
+    code:
+"// HTML has: <input id=\"email-input\" type=\"email\">\n" +
+"const field = document.getElementById('emailInput');\n" +
+"const btn = document.getElementById('submit-btn');\n" +
+"btn.addEventListener('click', function () {\n" +
+"  const email = field.value.trim();\n" +
+"  sendWelcome(email);\n" +
+"});",
+    error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'value')", src: 'signup.js:5' },
+    question: 'The console says it blew up at line 5 — but which line actually planted the bomb? Tap a line number.',
+    correctLine: 2,
+    explanation: "Line 5 is just where the body was found. The real crime happened on line 2: it asked for the id 'emailInput', but the HTML says 'email-input' — so getElementById quietly returned null, which sat there harmlessly until line 5 touched it. The line in the error message is where things surfaced, not always where they started."
+  },
+
+  {
+    id: 10, type: 'line',
+    title: 'The bill that came to $42.510',
+    filename: 'checkout.js',
+    code:
+"const priceEl = document.querySelector('#price');\n" +
+"const tipInput = document.querySelector('#tip');\n" +
+"const bill = 42.50;\n" +
+"const total = bill + tipInput.value;\n" +
+"priceEl.textContent = '$' + total.toFixed(2);",
+    error: { msg: 'Uncaught TypeError: total.toFixed is not a function', src: 'checkout.js:5' },
+    question: 'The error is thrown at line 5 — which line actually caused it? Tap a line number.',
+    correctLine: 4,
+    explanation: "Every input's .value is text, even when it looks like a number. On line 4, + saw a number and a string and chose gluing over adding: 42.5 + \"10\" became the string \"42.510\". Strings don't have .toFixed, so line 5 detonated. Fix the cause, not the crash site: convert first with Number(tipInput.value)."
+  },
+
+  {
+    id: 11, type: 'line',
+    title: 'Hey, undefined!',
+    filename: 'greet.js',
+    code:
+"async function greetUser() {\n" +
+"  const user = getCurrentUser();\n" +
+"  const banner = document.querySelector('#banner');\n" +
+"  const first = user.name.split(' ')[0];\n" +
+"  banner.textContent = 'Hey, ' + first + '!';\n" +
+"}",
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'split')", src: 'greet.js:4' },
+    question: 'The crash happens at line 4 — which line is actually to blame? Tap a line number.',
+    correctLine: 2,
+    explanation: "Line 2 calls an async function without await, so user is a Promise — an IOU — not an actual user. A Promise has no .name, so user.name is undefined, and line 4 dies trying to .split() it. One missing word on line 2 (await) and everything downstream of it is haunted. This exact shape — missing await up top, crash further down — is everywhere in AI-generated code."
+  },
+
+  {
+    id: 12, type: 'line',
+    title: 'The wrapper property that was never there',
+    filename: 'comments.js',
+    code:
+"async function loadComments() {\n" +
+"  const res = await fetch('/api/comments');\n" +
+"  const data = await res.json();\n" +
+"  const list = data.comments;\n" +
+"  list.forEach(addComment);\n" +
+"}",
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'forEach')", src: 'comments.js:5' },
+    question: 'This API returns a plain array of comments, like [ {...}, {...} ]. The error fires at line 5 — which line caused it? Tap a line number.',
+    correctLine: 4,
+    explanation: "The API hands back the array directly, but line 4 confidently reaches for data.comments — a wrapper property the AI imagined. That gives undefined, which line 5 then tries to loop over. When an error names a property you never see in the actual response, the bug is wherever the code invented that property, not where it crashed."
+  },
+
+  /* ---------------- Phase 3 (13-15): FINAL EXAM ---------------- */
+  {
+    id: 13, type: 'exam',
+    title: 'Final exam 1 of 3',
+    filename: 'weather.js',
+    code:
+"async function loadWeather() {\n" +
+"  const data = await fetch('/api/weather?city=austin');\n" +
+"  const temp = data.current.temp_f;\n" +
+"  document.querySelector('#temp').textContent = temp + '\\u00b0F';\n" +
+"}",
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'temp_f')", src: 'weather.js:3' },
+    question: 'In your own words: what is the ROOT CAUSE of this error? (Not the fix — the why.)',
+    modelAnswer: "fetch doesn't give you the data — it gives you a Response object (status code, headers, and so on). The actual JSON body needs a second step: await data.json(). Since a Response object has no .current property, that comes back undefined, and reading .temp_f off undefined is the crash. The await IS there, which makes this sneaky — the code awaited the envelope but never opened it.",
+    explanation: "If your answer mentioned that fetch returns a Response (not the parsed data) and that the .json() step is missing, you nailed it."
+  },
+
+  {
+    id: 14, type: 'exam',
+    title: 'Final exam 2 of 3',
+    filename: 'todos.js',
+    code:
+"function addTodo(text) {\n" +
+"  const saved = localStorage.getItem('todos');\n" +
+"  const todos = JSON.parse(saved);\n" +
+"  todos.push({ text: text, done: false });\n" +
+"  localStorage.setItem('todos', JSON.stringify(todos));\n" +
+"}",
+    error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'push')", src: 'todos.js:4' },
+    question: 'This works fine on your machine, but crashes for every brand-new visitor. What is the ROOT CAUSE?',
+    modelAnswer: "On a first visit, nothing is saved yet — so localStorage.getItem returns null, JSON.parse(null) comes out as null too, and you can't push onto null. The code silently assumed saved data always exists, which was true on the developer's machine (where old data was lying around) and false for everyone else. The fix is a fallback for the empty case: JSON.parse(saved) || [].",
+    explanation: "If your answer covered the empty first-visit case — getItem returning null and the code assuming data always exists — you got the core of it. \"Works for me, breaks for new users\" is almost always a hidden assumption about existing state."
+  },
+
+  {
+    id: 15, type: 'exam',
+    title: 'Final exam 3 of 3',
+    filename: 'dashboard.js',
+    code:
+"function loadDashboard() {\n" +
+"  let stats;\n" +
+"  fetch('/api/stats')\n" +
+"    .then(function (res) { return res.json(); })\n" +
+"    .then(function (json) { stats = json; });\n" +
+"  renderCards(stats.widgets);\n" +
+"}",
+    error: { msg: "Uncaught TypeError: Cannot read properties of undefined (reading 'widgets')", src: 'dashboard.js:6' },
+    question: 'The fetch URL is correct and the API works. What is the ROOT CAUSE of this crash?',
+    modelAnswer: "This is a timing bug. fetch starts a request and moves on immediately — the .then callbacks only run later, when the response arrives. But line 6 runs right away, while stats is still undefined. The code starts a job and instantly tries to use its result, without waiting. The fix is to only use stats where the waiting happens: move renderCards inside the .then, or rewrite with await so the function genuinely pauses until the data exists.",
+    explanation: "If your answer said the render runs before the fetch finishes — that the code doesn't wait for the async work — you've got the mental model that untangles most vibe-code bugs."
+  }
+];
+
+/* =====================================================================
+   STATE — persisted to localStorage. No streaks, no decay, no guilt.
+   ===================================================================== */
+var STORAGE_KEY = 'slopPatrolProgress';
+
+var state = loadState();
+
+function defaultState() {
+  return {
+    version: 1,
+    started: false,
+    current: 0,            // index of the challenge the user is on
+    done: {},              // id -> true, for answered mc/line challenges
+    examGrades: {},        // id -> 'got' | 'missed'
+    lastSeen: null
+  };
+}
+
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    var parsed = JSON.parse(raw);
+    if (!parsed || parsed.version !== 1) return defaultState();
+    return parsed;
+  } catch (e) {
+    return defaultState();
+  }
+}
+
+function saveState() {
+  state.lastSeen = Date.now();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) { /* private mode etc. — app still works for this session */ }
+}
+
+function isChallengeDone(ch) {
+  if (ch.type === 'exam') return state.examGrades[ch.id] === 'got';
+  return !!state.done[ch.id];
+}
+
+function completedCount() {
+  var n = 0;
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    if (isChallengeDone(CHALLENGES[i])) n++;
+  }
+  return n;
+}
+
+function phaseDone(type) {
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    if (CHALLENGES[i].type === type && !isChallengeDone(CHALLENGES[i])) return false;
+  }
+  return true;
+}
+
+function moduleComplete() {
+  return phaseDone('mc') && phaseDone('line') && phaseDone('exam');
+}
+
+/* Highest challenge index the user has reached (for nav locking) */
+function maxReached() {
+  var idx = 0;
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    var ch = CHALLENGES[i];
+    var attempted = ch.type === 'exam' ? !!state.examGrades[ch.id] : !!state.done[ch.id];
+    if (attempted) idx = i + 1;
+  }
+  return Math.max(idx, state.current);
+}
+
+/* =====================================================================
+   PROGRESS BAR + MILESTONES
+   ===================================================================== */
+function updateProgress() {
+  var pct = Math.round((completedCount() / CHALLENGES.length) * 100);
+  var fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  fill.classList.toggle('complete', moduleComplete());
+
+  var mEl = document.getElementById('milestoneText');
+  var achieved = true;
+  var text;
+  if (moduleComplete()) {
+    text = '✓ You can diagnose root causes cold — Module 1 complete';
+  } else if (phaseDone('mc') && phaseDone('line')) {
+    text = '✓ You can locate which line broke — final exam in progress';
+  } else if (phaseDone('mc')) {
+    text = '✓ You can read a console error — now: find the guilty line';
+  } else {
+    achieved = false;
+    text = 'First skill: reading what the console is actually telling you · ' + pct + '%';
+  }
+  mEl.textContent = text;
+  mEl.classList.toggle('achieved', achieved);
+}
+
+/* =====================================================================
+   RENDER HELPERS
+   ===================================================================== */
+function esc(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* Simple single-pass regex highlighter (input is already HTML-escaped). */
+function highlight(escapedLine) {
+  var re = /(\/\/[^\n]*|&lt;!--[^\n]*)|('(?:[^'\\]|\\.)*'|&quot;(?:(?!&quot;).)*&quot;|"(?:[^"\\]|\\.)*")|(&lt;\/?[a-zA-Z][^\s&]*|\/?&gt;)|\b(const|let|var|function|return|async|await|if|else|for|of|in|new|true|false|null|undefined|this)\b|\b(\d+(?:\.\d+)?)\b|\b([a-zA-Z_$][\w$]*)(?=\()/g;
+  return escapedLine.replace(re, function (m, com, str, tag, kw, num, fn) {
+    if (com) return '<span class="tok-com">' + com + '</span>';
+    if (str) return '<span class="tok-str">' + str + '</span>';
+    if (tag) return '<span class="tok-tag">' + tag + '</span>';
+    if (kw)  return '<span class="tok-kw">' + kw + '</span>';
+    if (num) return '<span class="tok-num">' + num + '</span>';
+    if (fn)  return '<span class="tok-fn">' + fn + '</span>';
+    return m;
+  });
+}
+
+function renderCodeCard(ch, clickableLines) {
+  var lines = ch.code.split('\n');
+  var html = '<div class="code-card">';
+  html += '<div class="filename">' + esc(ch.filename) + '</div>';
+  html += '<div class="code-scroll"><div class="code-lines">';
+  for (var i = 0; i < lines.length; i++) {
+    var n = i + 1;
+    var cls = clickableLines ? 'code-line clickable' : 'code-line';
+    html += '<div class="' + cls + '" data-line="' + n + '">' +
+            '<span class="ln">' + n + '</span>' +
+            '<span class="lc">' + (highlight(esc(lines[i])) || ' ') + '</span>' +
+            '</div>';
+  }
+  html += '</div></div></div>';
+  return html;
+}
+
+function renderConsoleCard(ch) {
+  return '' +
+  '<div class="console-card">' +
+    '<div class="console-tab"><span>Elements</span><span class="tab-active">Console</span><span>Network</span><span>Sources</span></div>' +
+    '<div class="console-row">' +
+      '<span class="err-icon">✕</span>' +
+      '<span class="err-msg">' + esc(ch.error.msg) + '</span>' +
+      '<span class="err-src">' + esc(ch.error.src) + '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderDots(currentIdx) {
+  var reach = maxReached();
+  var html = '<div class="dots">';
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    var ch = CHALLENGES[i];
+    var cls = 'dot';
+    if (isChallengeDone(ch)) cls += ' done';
+    else if (ch.type === 'exam' && state.examGrades[ch.id] === 'missed') cls += ' missed';
+    if (i === currentIdx) cls += ' current';
+    var locked = i > reach;
+    if (locked) cls += ' locked';
+    html += '<button class="' + cls + '" ' + (locked ? 'disabled' : '') +
+            ' data-jump="' + i + '">' + (i + 1) + '</button>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function show(screenId) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* =====================================================================
+   HOME SCREEN
+   ===================================================================== */
+function renderHome() {
+  var el = document.getElementById('screen-home');
+  var html = '<div class="home">';
+  if (moduleComplete()) {
+    renderSummary();
+    show('screen-summary');
+    return;
+  }
+  if (state.started) {
+    html += '<div class="big-icon">👋</div>';
+    html += '<h2>Welcome back</h2>';
+    html += '<div class="welcome-back">You’re on challenge <strong>' +
+            (state.current + 1) + ' of ' + CHALLENGES.length +
+            '</strong>. No streaks, no penalties — just pick up where you left off.</div>';
+    html += '<div class="actions" style="justify-content:center">' +
+            '<button class="btn btn-primary" id="btnContinue">Continue →</button></div>';
+  } else {
+    html += '<div class="big-icon">🚨</div>';
+    html += '<h2>Reading Errors Without Panicking</h2>';
+    html += '<p>15 challenges built from real AI slop: hallucinated methods, invented response shapes, half-renamed variables, missing awaits.</p>';
+    html += '<p>You’ll learn to read the error, find the guilty line, and diagnose root causes cold.</p>';
+    html += '<div class="actions" style="justify-content:center;margin-top:24px">' +
+            '<button class="btn btn-primary" id="btnContinue">Start Module 1 →</button></div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+  document.getElementById('btnContinue').addEventListener('click', function () {
+    state.started = true;
+    saveState();
+    renderChallenge(state.current);
+    show('screen-challenge');
+  });
+  show('screen-home');
+}
+
+/* =====================================================================
+   CHALLENGE SCREEN
+   ===================================================================== */
+function phaseLabel(ch) {
+  if (ch.type === 'mc') return 'READ THE ERROR';
+  if (ch.type === 'line') return 'FIND THE LINE';
+  return 'FINAL EXAM';
+}
+
+function renderChallenge(idx) {
+  var ch = CHALLENGES[idx];
+  state.current = idx;
+  saveState();
+  updateProgress();
+
+  var el = document.getElementById('screen-challenge');
+  var html = renderDots(idx);
+  html += '<div class="ch-meta"><span>challenge ' + (idx + 1) + ' / ' + CHALLENGES.length + '</span>' +
+          '<span class="ch-phase' + (ch.type === 'exam' ? ' exam' : '') + '">' + phaseLabel(ch) + '</span></div>';
+  html += '<div class="ch-title">' + esc(ch.title) + '</div>';
+  html += renderCodeCard(ch, ch.type === 'line' && !state.done[ch.id]);
+  html += renderConsoleCard(ch);
+  html += '<div class="question">' + esc(ch.question) + '</div>';
+  html += '<div id="interaction"></div>';
+  html += '<div id="feedback" class="feedback"></div>';
+  html += '<div id="chActions" class="actions"></div>';
+  el.innerHTML = html;
+
+  var dots = el.querySelectorAll('[data-jump]');
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].addEventListener('click', function () {
+      renderChallenge(parseInt(this.getAttribute('data-jump'), 10));
+    });
+  }
+
+  if (ch.type === 'mc') setupMC(ch, idx);
+  else if (ch.type === 'line') setupLine(ch, idx);
+  else setupExam(ch, idx);
+}
+
+var CHEERS = ['Exactly.', 'Correct — that’s the one.', 'Yep. Nailed it.', 'Right on.', 'Sharp eye.'];
+
+function showExplanation(ch, cheer) {
+  var fb = document.getElementById('feedback');
+  var html = '';
+  if (cheer) {
+    html += '<div class="correct-banner"><span>✅</span><span>' +
+            CHEERS[Math.floor(Math.random() * CHEERS.length)] + '</span></div>';
+  }
+  html += '<div class="explain"><span class="explain-label">WHY THIS HAPPENS</span>' +
+          esc(ch.explanation) + '</div>';
+  fb.innerHTML = html;
+}
+
+function showNextButton(idx) {
+  var act = document.getElementById('chActions');
+  var last = idx === CHALLENGES.length - 1;
+  act.innerHTML = '<button class="btn btn-primary" id="btnNext">' +
+                  (last ? 'Finish →' : 'Next challenge →') + '</button>';
+  document.getElementById('btnNext').addEventListener('click', function () {
+    if (last) {
+      state.current = CHALLENGES.length - 1;
+      saveState();
+      renderSummary();
+      show('screen-summary');
+    } else {
+      renderChallenge(idx + 1);
+    }
+  });
+}
+
+/* ---------- multiple choice ---------- */
+function setupMC(ch, idx) {
+  var box = document.getElementById('interaction');
+  var answered = !!state.done[ch.id];
+  var html = '<div class="options">';
+  for (var i = 0; i < ch.options.length; i++) {
+    var cls = 'opt' + (answered && i === ch.correct ? ' right' : '');
+    html += '<button class="' + cls + '" data-opt="' + i + '" ' +
+            (answered ? 'disabled' : '') + '>' + esc(ch.options[i]) + '</button>';
+  }
+  html += '</div><div class="try-again-note" id="tryNote"></div>';
+  box.innerHTML = html;
+
+  if (answered) {
+    showExplanation(ch, false);
+    showNextButton(idx);
+    return;
+  }
+
+  var opts = box.querySelectorAll('.opt');
+  for (var j = 0; j < opts.length; j++) {
+    opts[j].addEventListener('click', function () {
+      var pick = parseInt(this.getAttribute('data-opt'), 10);
+      if (pick === ch.correct) {
+        state.done[ch.id] = true;
+        saveState();
+        updateProgress();
+        for (var k = 0; k < opts.length; k++) opts[k].disabled = true;
+        this.classList.add('right');
+        this.classList.remove('wrong');
+        document.getElementById('tryNote').textContent = '';
+        showExplanation(ch, true);
+        showNextButton(idx);
+      } else {
+        this.classList.add('wrong');
+        this.disabled = true;
+        document.getElementById('tryNote').textContent =
+          'Not quite — re-read the error message and try again. Wrong guesses cost nothing here.';
+      }
+    });
+  }
+}
+
+/* ---------- click-the-line ---------- */
+function setupLine(ch, idx) {
+  var answered = !!state.done[ch.id];
+  var box = document.getElementById('interaction');
+  box.innerHTML = '<div class="try-again-note" id="tryNote"></div>';
+
+  var lineEls = document.querySelectorAll('#screen-challenge .code-line');
+
+  if (answered) {
+    for (var i = 0; i < lineEls.length; i++) {
+      if (parseInt(lineEls[i].getAttribute('data-line'), 10) === ch.correctLine) {
+        lineEls[i].classList.add('reveal-right');
+      }
+    }
+    showExplanation(ch, false);
+    showNextButton(idx);
+    return;
+  }
+
+  for (var j = 0; j < lineEls.length; j++) {
+    lineEls[j].addEventListener('click', function () {
+      if (state.done[ch.id]) return;
+      var pick = parseInt(this.getAttribute('data-line'), 10);
+      if (pick === ch.correctLine) {
+        state.done[ch.id] = true;
+        saveState();
+        updateProgress();
+        this.classList.remove('picked-wrong');
+        this.classList.add('picked-right');
+        for (var k = 0; k < lineEls.length; k++) {
+          lineEls[k].classList.remove('clickable');
+          if (lineEls[k] !== this) lineEls[k].classList.remove('picked-wrong');
+        }
+        document.getElementById('tryNote').textContent = '';
+        showExplanation(ch, true);
+        showNextButton(idx);
+      } else {
+        this.classList.add('picked-wrong');
+        var self = this;
+        setTimeout(function () { self.classList.remove('picked-wrong'); }, 700);
+        document.getElementById('tryNote').textContent =
+          'Not that one — remember: where it crashed and where it went wrong can be different lines.';
+      }
+    });
+  }
+}
+
+/* ---------- final exam ---------- */
+function setupExam(ch, idx) {
+  var box = document.getElementById('interaction');
+  var grade = state.examGrades[ch.id];
+
+  if (grade) {
+    var html = '<div class="model-answer"><span class="ma-label">MODEL ANSWER</span>' +
+               esc(ch.modelAnswer) + '</div>';
+    html += '<div class="explain" style="margin-top:12px"><span class="explain-label">' +
+            (grade === 'got' ? '✅ YOU GOT THIS ONE' : '🔁 MARKED AS MISSED') +
+            '</span>' + esc(ch.explanation) + '</div>';
+    box.innerHTML = html;
+    var act = document.getElementById('chActions');
+    var last = idx === CHALLENGES.length - 1;
+    act.innerHTML =
+      '<button class="btn btn-ghost" id="btnRetry">Try this one again</button>' +
+      '<button class="btn btn-primary" id="btnNext">' + (last ? 'Finish →' : 'Next →') + '</button>';
+    document.getElementById('btnRetry').addEventListener('click', function () {
+      delete state.examGrades[ch.id];
+      saveState();
+      renderChallenge(idx);
+    });
+    document.getElementById('btnNext').addEventListener('click', function () {
+      if (last) { renderSummary(); show('screen-summary'); }
+      else renderChallenge(idx + 1);
+    });
+    return;
+  }
+
+  box.innerHTML =
+    '<textarea class="exam-input" id="examText" placeholder="Type your explanation of the root cause. A couple of sentences in plain English is perfect."></textarea>' +
+    '<div class="actions"><button class="btn btn-primary" id="btnReveal">Reveal model answer</button></div>' +
+    '<div id="examReveal"></div>';
+
+  document.getElementById('btnReveal').addEventListener('click', function () {
+    var userText = document.getElementById('examText').value.trim();
+    document.getElementById('examText').disabled = true;
+    this.style.display = 'none';
+
+    var html = '<div class="model-answer"><span class="ma-label">MODEL ANSWER</span>' +
+               esc(ch.modelAnswer) + '</div>';
+    if (userText) {
+      html += '<div class="your-answer"><strong>Your answer:</strong>\n' + esc(userText) + '</div>';
+    }
+    html += '<div class="self-grade"><p>Compare honestly — did your answer capture the same root cause? ' +
+            'Grading yourself “missed” just means a free retry later. Nobody’s watching.</p>' +
+            '<div class="grade-btns">' +
+            '<button class="btn btn-green" id="btnGot">✅ I got it</button>' +
+            '<button class="btn btn-ghost" id="btnMissed">🔁 I missed it</button>' +
+            '</div></div>';
+    document.getElementById('examReveal').innerHTML = html;
+
+    document.getElementById('btnGot').addEventListener('click', function () {
+      state.examGrades[ch.id] = 'got';
+      saveState();
+      updateProgress();
+      renderChallenge(idx);
+    });
+    document.getElementById('btnMissed').addEventListener('click', function () {
+      state.examGrades[ch.id] = 'missed';
+      saveState();
+      updateProgress();
+      renderChallenge(idx);
+    });
+  });
+}
+
+/* =====================================================================
+   SUMMARY SCREEN
+   ===================================================================== */
+function renderSummary() {
+  updateProgress();
+  var el = document.getElementById('screen-summary');
+  var exams = CHALLENGES.filter(function (c) { return c.type === 'exam'; });
+  var gotAll = moduleComplete();
+
+  var html = '<div class="summary">';
+  if (gotAll) {
+    html += '<div class="big-icon">🏆</div>';
+    html += '<h2>Module 1 complete</h2>';
+    html += '<p>You read the errors. You found the lines. You diagnosed root causes cold — and graded yourself honestly doing it.</p>';
+    html += '<p>Next time your AI assistant ships you slop, the console is a map, not a threat.</p>';
+  } else {
+    html += '<div class="big-icon">🧭</div>';
+    html += '<h2>Almost there</h2>';
+    html += '<p>Module 1 is complete when all three final-exam challenges are honestly self-graded “I got it”. Retries are free and expected — that’s how the mental model sets.</p>';
+  }
+
+  html += '<div class="exam-status">';
+  for (var i = 0; i < exams.length; i++) {
+    var ex = exams[i];
+    var g = state.examGrades[ex.id];
+    var statusHtml = g === 'got'
+      ? '<span class="ok">✅ got it</span>'
+      : (g === 'missed' ? '<span class="nope">🔁 retry</span>' : '<span class="nope">— not graded</span>');
+    var exIdx = CHALLENGES.indexOf(ex);
+    html += '<div class="row"><span>Exam: ' + esc(ex.filename) + '</span>' + statusHtml +
+            '<button class="btn btn-ghost" style="padding:6px 12px;font-size:0.78rem" data-goto="' + exIdx + '">' +
+            (g === 'got' ? 'Review' : 'Retry') + '</button></div>';
+  }
+  html += '</div>';
+
+  html += '<div class="actions" style="justify-content:center">' +
+          '<button class="btn btn-ghost" id="btnReviewAll">Review all challenges</button></div>';
+  html += '<div class="reset-zone"><button class="reset-link" id="btnReset">Reset all progress and start over</button></div>';
+  html += '</div>';
+  el.innerHTML = html;
+
+  var gotos = el.querySelectorAll('[data-goto]');
+  for (var j = 0; j < gotos.length; j++) {
+    gotos[j].addEventListener('click', function () {
+      var idx = parseInt(this.getAttribute('data-goto'), 10);
+      if (state.examGrades[CHALLENGES[idx].id] === 'missed') {
+        delete state.examGrades[CHALLENGES[idx].id];
+        saveState();
+      }
+      renderChallenge(idx);
+      show('screen-challenge');
+    });
+  }
+  document.getElementById('btnReviewAll').addEventListener('click', function () {
+    renderChallenge(0);
+    show('screen-challenge');
+  });
+  document.getElementById('btnReset').addEventListener('click', function () {
+    if (confirm('Wipe all Slop Patrol progress and start fresh?')) {
+      state = defaultState();
+      saveState();
+      updateProgress();
+      renderHome();
+    }
+  });
+}
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+updateProgress();
+renderHome();
+</script>
+</body>
+</html>
