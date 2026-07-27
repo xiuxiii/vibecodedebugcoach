@@ -103,6 +103,59 @@
   .ch-phase.exam { color: var(--yellow); border-color: rgba(210, 153, 34, 0.5); }
   .ch-title { font-size: 1.15rem; margin-bottom: 14px; }
 
+  /* ---------- Lesson card (coach voice — softer than the drill) ---------- */
+  .lesson-wrap { animation: lessonIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes lessonIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .lesson-card {
+    background: linear-gradient(160deg, rgba(88, 166, 255, 0.06), rgba(163, 113, 247, 0.05));
+    border: 1px solid rgba(139, 148, 158, 0.22);
+    border-radius: 14px;
+    padding: 20px 20px 22px;
+    margin-top: 4px;
+  }
+  .lesson-coach {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #a6b4c2; font-family: var(--mono); margin-bottom: 14px;
+  }
+  .lesson-coach .coach-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(88, 166, 255, 0.14);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; letter-spacing: 0;
+  }
+  .lesson-facts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .lesson-fact { display: flex; gap: 10px; font-size: 0.82rem; align-items: baseline; }
+  .lesson-fact .fact-key {
+    flex: 0 0 76px; color: var(--text-dim); font-family: var(--mono);
+    font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .lesson-fact .fact-val { color: #cdd9e5; }
+  .lesson-text {
+    font-size: 0.95rem; line-height: 1.72; color: #c9d4e0;
+  }
+  .lesson-actions { margin-top: 20px; }
+  .btn-lesson {
+    background: rgba(88, 166, 255, 0.1);
+    border: 1px solid rgba(88, 166, 255, 0.35);
+    color: #9fc9ff; font-weight: 600;
+    border-radius: 10px; padding: 11px 20px; font-size: 0.9rem;
+    cursor: pointer; font-family: var(--sans);
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  }
+  .btn-lesson:hover { background: rgba(88, 166, 255, 0.18); border-color: rgba(88, 166, 255, 0.6); }
+  .btn-lesson:active { transform: scale(0.98); }
+  .lesson-skip-note {
+    margin-top: 12px; font-size: 0.75rem; color: var(--text-dim);
+  }
+  .lesson-recap {
+    background: none; border: none; padding: 0;
+    color: var(--text-dim); font-size: 0.76rem; font-family: var(--sans);
+    text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .lesson-recap:hover { color: var(--accent); }
+
   /* ---------- Code block ---------- */
   .code-card {
     background: var(--bg-code); border: 1px solid var(--border);
@@ -335,6 +388,11 @@ var CHALLENGES = [
   {
     id: 1, type: 'mc',
     title: 'The property path that never was',
+    lesson: {
+      kind: 'TypeError',
+      where: 'Console tab',
+      text: "This is the single most common error you'll hit with AI-written code, and it always shows up in the Console tab in red. The wording sounds scary but it's saying something simple: \"you asked me for something inside a box, and that box isn't there.\" The key trick is to read the name in quotes at the end — that's what you were reaching FOR, which means the thing just before it in your code is the empty one. So when it says reading 'items', the problem isn't items; it's whatever you expected to be holding items."
+    },
     filename: 'app.js',
     code:
 "async function loadProducts() {\n" +
@@ -358,6 +416,11 @@ var CHALLENGES = [
   {
     id: 2, type: 'mc',
     title: 'A method the browser has never heard of',
+    lesson: {
+      kind: 'TypeError — "is not a function"',
+      where: 'Console tab',
+      text: "Here's a different flavor of the same red console error. \"Is not a function\" means you tried to DO something to a thing, and that thing has no idea how to do it. There are two reasons this happens: either you've got the wrong kind of thing, or the action you asked for simply doesn't exist. AI assistants are unusually good at inventing action names that sound completely real — so when the name in the error looks reasonable but the browser insists it isn't a function, take the browser's word for it."
+    },
     filename: 'app.js',
     code:
 "const button = document.querySelector('#save-btn');\n" +
@@ -379,6 +442,11 @@ var CHALLENGES = [
   {
     id: 3, type: 'mc',
     title: 'The half-renamed variable',
+    lesson: {
+      kind: 'ReferenceError',
+      where: 'Console tab',
+      text: "A ReferenceError is a completely different beast from the errors you just saw, and the difference matters. The others meant \"this thing exists but it's empty.\" This one means \"I have never heard this name in my life.\" Nothing was ever labeled with that name anywhere the code can see. Nine times out of ten in AI-generated code, that's because something got renamed in one place and not another — so your fastest move is to search the file for the mystery name and see what it used to be called."
+    },
     filename: 'profile.js',
     code:
 "function displayProfile(profileData) {\n" +
@@ -401,6 +469,11 @@ var CHALLENGES = [
   {
     id: 4, type: 'mc',
     title: 'Unexpected token \'<\'',
+    lesson: {
+      kind: 'SyntaxError while reading a server reply',
+      where: 'Console tab — then go straight to the Network tab',
+      text: "This error appears in the Console, but the Console is the wrong place to solve it. It means your code asked the server for data, expected a neat little data package back, and got handed something else entirely. The browser then choked while trying to unwrap it. The single most useful habit here: open the Network tab, click the request, and look at the Response — you'll see exactly what the server actually sent, which is usually nothing like what the code assumed."
+    },
     filename: 'settings.js',
     code:
 "fetch('/api/user/settings')\n" +
@@ -423,6 +496,11 @@ var CHALLENGES = [
   {
     id: 5, type: 'mc',
     title: 'Filtering an IOU',
+    lesson: {
+      kind: 'TypeError caused by waiting (or not waiting)',
+      where: 'Console tab — often tagged "(in promise)"',
+      text: "Some things in code take time: fetching from a server, reading a file, anything that leaves the page. Instead of freezing everything, the browser hands you a claim ticket and lets your code keep running. You're supposed to redeem that ticket before using the goods — that's what the word await does. If you forget it, you end up holding the ticket and trying to use it as if it were the actual data, and the error you get names an action the ticket can't perform."
+    },
     filename: 'scores.js',
     code:
 "async function showTopScores() {\n" +
@@ -445,6 +523,11 @@ var CHALLENGES = [
   {
     id: 6, type: 'mc',
     title: 'Talking to a page that isn\'t built yet',
+    lesson: {
+      kind: 'TypeError on null',
+      where: 'Console tab — cross-check in the Elements tab',
+      text: "When you go looking for something on the page and it isn't there, the browser doesn't complain — it just quietly hands back \"nothing\" and lets your code carry on. The complaint comes one step later, when you try to use that nothing. So an error mentioning null is really a message about a search that came up empty. Two things cause it: you searched for a name that doesn't match what's in the page, or you searched before the browser had finished building that part of the page."
+    },
     filename: 'index.html + app.js',
     code:
 "<!-- index.html -->\n" +
@@ -473,6 +556,11 @@ var CHALLENGES = [
   {
     id: 7, type: 'mc',
     title: 'The cart that became "[object Object]"',
+    lesson: {
+      kind: 'SyntaxError from saved data',
+      where: 'Console tab — inspect the saved value under Application → Local Storage',
+      text: "Browsers can remember things between visits, but that memory only holds plain text. If you hand it something structured — a shopping cart, a list, a settings object — it doesn't refuse; it flattens it into a useless scrap of text and stores that instead. Nothing goes wrong at that moment, which is what makes this one nasty. The error only appears much later, when you try to unpack what you saved and find gibberish where your data should be."
+    },
     filename: 'cart.js',
     code:
 "const cart = { items: [], total: 0 };\n" +
@@ -496,6 +584,11 @@ var CHALLENGES = [
   {
     id: 8, type: 'mc',
     title: 'The thing that looks like an array',
+    lesson: {
+      kind: 'TypeError — "is not a function"',
+      where: 'Console tab',
+      text: "When you grab a group of elements from the page, what you get back isn't always a proper list — sometimes it's a lookalike that holds the same items but can't do all the same tricks. It counts, and you can pull items out by position, but the convenient \"do this to every item\" shortcut may be missing. The error looks identical to a made-up method name, so you have to ask a second question: is this action fake, or is it real but unavailable on this particular kind of thing? Here, it's real — just not on that."
+    },
     filename: 'gallery.js',
     code:
 "const cards = document.getElementsByClassName('card');\n" +
@@ -518,6 +611,11 @@ var CHALLENGES = [
   {
     id: 9, type: 'line',
     title: 'The crash site vs. the crime scene',
+    lesson: {
+      kind: 'New skill: tracing backwards',
+      where: 'Console tab — the line number on the right',
+      text: "You can read errors now. This next stretch is about a harder question: which line do you actually go fix? Every console error points at a line number, and beginners treat that as the answer — but it's only where the damage surfaced. Bad values travel: a line can quietly produce something empty or wrong, and the crash happens later, wherever that value finally gets used. So read the flagged line, find the thing that was empty, then walk backwards to wherever it came from."
+    },
     filename: 'signup.js',
     code:
 "// HTML has: <input id=\"email-input\" type=\"email\">\n" +
@@ -536,6 +634,11 @@ var CHALLENGES = [
   {
     id: 10, type: 'line',
     title: 'The bill that came to $42.510',
+    lesson: {
+      kind: 'TypeError from a value quietly changing type',
+      where: 'Console tab',
+      text: "Anything a user types into a box arrives as text, even when it's obviously a number — \"10\" is not 10. This matters because the plus sign does two completely different jobs: it adds numbers, and it glues text together. Mix a number with text and it picks gluing, silently, with no complaint. You get a nonsense value that looks almost right, and it doesn't blow up until some later line tries to treat it as a number again."
+    },
     filename: 'checkout.js',
     code:
 "const priceEl = document.querySelector('#price');\n" +
@@ -552,6 +655,11 @@ var CHALLENGES = [
   {
     id: 11, type: 'line',
     title: 'Hey, undefined!',
+    lesson: {
+      kind: 'TypeError from a missing wait',
+      where: 'Console tab — note the "(in promise)" tag',
+      text: "You met the claim-ticket idea back in challenge 5. Now you're tracing it to its source. A forgotten wait doesn't cause trouble on the line where it happens — that line looks perfectly fine and runs without complaint. Instead it hands a ticket to everything downstream, and the crash lands on whichever line first tries to use the data for real. When you see \"(in promise)\" on an error, start scanning upward for a call that should have been waited on."
+    },
     filename: 'greet.js',
     code:
 "async function greetUser() {\n" +
@@ -569,6 +677,11 @@ var CHALLENGES = [
   {
     id: 12, type: 'line',
     title: 'The wrapper property that was never there',
+    lesson: {
+      kind: 'TypeError from an imagined data shape',
+      where: 'Console tab — confirm the real shape in the Network tab',
+      text: "Different servers wrap their answers differently: some hand you the list directly, others tuck it inside a labeled box first. An AI assistant can't know which one yours does, so it guesses — confidently, and often wrong. The tell is an error naming a label you've never actually seen in the real response. When that happens, the guilty line isn't where it crashed; it's wherever the code first reached for that imagined label."
+    },
     filename: 'comments.js',
     code:
 "async function loadComments() {\n" +
@@ -587,6 +700,11 @@ var CHALLENGES = [
   {
     id: 13, type: 'exam',
     title: 'Final exam 1 of 3',
+    lesson: {
+      kind: 'Final exam — no options to pick from',
+      where: 'Console tab',
+      text: "Last stretch, and the training wheels come off: no choices, you just explain what went wrong in your own words. That's the real skill — being able to say why out loud is what separates \"I pasted a fix\" from \"I understood it.\" This one involves asking a server for something, and there's a step people miss constantly. Getting a reply and reading a reply are two separate actions; a sealed envelope is not a letter."
+    },
     filename: 'weather.js',
     code:
 "async function loadWeather() {\n" +
@@ -603,6 +721,11 @@ var CHALLENGES = [
   {
     id: 14, type: 'exam',
     title: 'Final exam 2 of 3',
+    lesson: {
+      kind: 'Final exam — the "works on my machine" class of bug',
+      where: "Console tab — but only on someone else's computer",
+      text: "This one's a category worth knowing, because it's invisible to the person who wrote it. Code that reads saved data works perfectly for you — you've used the app, so there's data sitting there. A brand-new visitor arrives with nothing saved, hits the same line, and it falls apart. Whenever something breaks only for new users, ask what the code assumes already exists."
+    },
     filename: 'todos.js',
     code:
 "function addTodo(text) {\n" +
@@ -620,6 +743,11 @@ var CHALLENGES = [
   {
     id: 15, type: 'exam',
     title: 'Final exam 3 of 3',
+    lesson: {
+      kind: 'Final exam — timing',
+      where: 'Console tab',
+      text: "The last one is the boss fight of this module: nothing here is misspelled, misnamed, or invented, and the server works fine. The bug is purely about when things happen. Slow work gets started and set aside, and your code sails right past it to the next line without pausing. Read this one in order of time, not in order of lines on the screen — ask what has actually finished by the moment each line runs."
+    },
     filename: 'dashboard.js',
     code:
 "function loadDashboard() {\n" +
@@ -650,6 +778,7 @@ function defaultState() {
     current: 0,            // index of the challenge the user is on
     done: {},              // id -> true, for answered mc/line challenges
     examGrades: {},        // id -> 'got' | 'missed'
+    attempted: {},         // id -> true once the lesson card has been dismissed
     lastSeen: null
   };
 }
@@ -660,6 +789,8 @@ function loadState() {
     if (!raw) return defaultState();
     var parsed = JSON.parse(raw);
     if (!parsed || parsed.version !== 1) return defaultState();
+    // Saved before lesson cards existed: keep the progress, just add the field.
+    if (!parsed.attempted) parsed.attempted = {};
     return parsed;
   } catch (e) {
     return defaultState();
@@ -671,6 +802,12 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) { /* private mode etc. — app still works for this session */ }
+}
+
+/* Has the user already been through this challenge once? Progress saved before
+   lesson cards existed has no `attempted` marks, so treat any answer as one. */
+function hasAttempted(ch) {
+  return !!(state.attempted[ch.id] || state.done[ch.id] || state.examGrades[ch.id]);
 }
 
 function isChallengeDone(ch) {
@@ -856,9 +993,66 @@ function phaseLabel(ch) {
   return 'FINAL EXAM';
 }
 
+/* Entry point: coach talks first, unless this challenge has been seen before. */
 function renderChallenge(idx) {
   var ch = CHALLENGES[idx];
+  if (ch.lesson && !hasAttempted(ch)) renderLesson(idx);
+  else renderDrill(idx);
+}
+
+/* ---------- the lesson card, before the drill ---------- */
+function renderLesson(idx) {
+  var ch = CHALLENGES[idx];
   state.current = idx;
+  saveState();
+  updateProgress();
+
+  var seenBefore = hasAttempted(ch);
+  var el = document.getElementById('screen-challenge');
+  var html = renderDots(idx);
+  html += '<div class="ch-meta"><span>challenge ' + (idx + 1) + ' / ' + CHALLENGES.length + '</span>' +
+          '<span class="ch-phase' + (ch.type === 'exam' ? ' exam' : '') + '">' + phaseLabel(ch) + '</span></div>';
+  html += '<div class="lesson-wrap"><div class="lesson-card">';
+  html += '<div class="lesson-coach"><span class="coach-dot">🧑‍🏫</span><span>Before the drill</span></div>';
+  html += '<div class="lesson-facts">' +
+            '<div class="lesson-fact"><span class="fact-key">Error type</span>' +
+              '<span class="fact-val">' + esc(ch.lesson.kind) + '</span></div>' +
+            '<div class="lesson-fact"><span class="fact-key">Look in</span>' +
+              '<span class="fact-val">' + esc(ch.lesson.where) + '</span></div>' +
+          '</div>';
+  html += '<div class="lesson-text">' + esc(ch.lesson.text) + '</div>';
+  html += '<div class="lesson-actions"><button class="btn-lesson" id="btnGotIt">' +
+          'Got it, show me the challenge →</button>';
+  html += '<div class="lesson-skip-note">' + (seenBefore
+            ? 'You’ve seen this one before — the card won’t interrupt you again.'
+            : 'You’ll only see this card once. Retries jump straight to the challenge.') +
+          '</div></div>';
+  html += '</div></div>';
+  el.innerHTML = html;
+
+  wireDots(el);
+  document.getElementById('btnGotIt').addEventListener('click', function () {
+    state.attempted[ch.id] = true;
+    saveState();
+    renderDrill(idx);
+    window.scrollTo(0, 0);
+  });
+  show('screen-challenge');
+}
+
+function wireDots(el) {
+  var dots = el.querySelectorAll('[data-jump]');
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].addEventListener('click', function () {
+      renderChallenge(parseInt(this.getAttribute('data-jump'), 10));
+    });
+  }
+}
+
+function renderDrill(idx) {
+  var ch = CHALLENGES[idx];
+  state.current = idx;
+  state.attempted[ch.id] = true;
   saveState();
   updateProgress();
 
@@ -866,6 +1060,7 @@ function renderChallenge(idx) {
   var html = renderDots(idx);
   html += '<div class="ch-meta"><span>challenge ' + (idx + 1) + ' / ' + CHALLENGES.length + '</span>' +
           '<span class="ch-phase' + (ch.type === 'exam' ? ' exam' : '') + '">' + phaseLabel(ch) + '</span></div>';
+  if (ch.lesson) html += '<button class="lesson-recap" id="btnRecap">↩ Re-read the lesson card</button>';
   html += '<div class="ch-title">' + esc(ch.title) + '</div>';
   html += renderCodeCard(ch, ch.type === 'line' && !state.done[ch.id]);
   html += renderConsoleCard(ch);
@@ -875,12 +1070,9 @@ function renderChallenge(idx) {
   html += '<div id="chActions" class="actions"></div>';
   el.innerHTML = html;
 
-  var dots = el.querySelectorAll('[data-jump]');
-  for (var i = 0; i < dots.length; i++) {
-    dots[i].addEventListener('click', function () {
-      renderChallenge(parseInt(this.getAttribute('data-jump'), 10));
-    });
-  }
+  wireDots(el);
+  var recap = document.getElementById('btnRecap');
+  if (recap) recap.addEventListener('click', function () { renderLesson(idx); });
 
   if (ch.type === 'mc') setupMC(ch, idx);
   else if (ch.type === 'line') setupLine(ch, idx);
