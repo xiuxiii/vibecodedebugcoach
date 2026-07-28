@@ -530,11 +530,11 @@ var CHALLENGES = [
 "  items.forEach(function (p) { renderCard(p); });\n" +
 "}",
     lineExplanations: [
-      'Defines a function called loadProducts and marks it async, which means it is allowed to pause and wait for slow work to finish.',
-      'Asks the server for the products and waits right here until a reply comes back. The reply gets stored as response.',
-      'Unpacks that reply into usable data, waiting for the unpacking to finish too.',
-      'Reaches into data for a piece called data, then for items inside that, and stores whatever it finds.',
-      'Goes through items one at a time and draws a card on the page for each one.',
+      'Defines a function called "loadProducts" and marks it "async", which means it is allowed to pause and wait for slow work to finish.',
+      'Asks the server for the products and waits right here until a reply comes back. The reply gets stored in a variable called "response".',
+      'Unpacks that reply into usable data and waits for the unpacking to finish too. The result is stored as "data".',
+      'Reaches into "data" for a piece called "data", then for "items" inside that, and stores whatever it finds.',
+      'Goes through "items" one at a time and draws a card on the page for each one.',
       'Closes the function. Nothing runs here — it just marks the end.'
     ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'items')", src: 'app.js:4' },
@@ -564,9 +564,9 @@ var CHALLENGES = [
 "  saveDraft();\n" +
 "});",
     lineExplanations: [
-      'Searches the page for the element whose id is save-btn and stores it as button.',
-      'Tries to attach a click handler to that button using a method named addClickListener.',
-      'The instruction meant to run on every click: call saveDraft.',
+      'Searches the page for the element whose id is "save-btn" and stores it in a variable called "button".',
+      'Attaches a click handler to that button using a method named "addClickListener".',
+      'The instruction meant to run on every click: call "saveDraft".',
       'Closes the handler and the call that was opened two lines above.'
     ],
     error: { msg: 'Uncaught TypeError: button.addClickListener is not a function', src: 'app.js:2' },
@@ -597,10 +597,10 @@ var CHALLENGES = [
 "  document.querySelector('#bio').textContent = userData.bio;\n" +
 "}",
     lineExplanations: [
-      'Defines a function that expects to be handed one thing, which it will refer to as profileData.',
-      'Pulls the name out of profileData and stores it as name.',
-      'Finds the element with the id username and sets the text you see in it to that name.',
-      'Finds the element with the id bio and sets its text to the bio taken from userData.',
+      'Defines a function that expects to be handed one thing, which it will refer to as "profileData".',
+      'Pulls the "name" out of "profileData" and stores it in a variable called "name".',
+      'Finds the element with the id "username" and sets the text you see in it to that name.',
+      'Finds the element with the id "bio" and sets its text to the "bio" taken from "userData".',
       'Closes the function.'
     ],
     error: { msg: 'Uncaught ReferenceError: userData is not defined', src: 'profile.js:4' },
@@ -631,10 +631,10 @@ var CHALLENGES = [
 "    applyTheme(settings.theme);\n" +
 "  });",
     lineExplanations: [
-      "Starts a request to the server for the user's settings.",
+      'Starts a request to the server for the settings at "/api/user/settings".',
       'Once a reply arrives, unpacks it and passes the result along to the next step.',
-      'Takes that unpacked result, calls it settings, and begins the next step with it.',
-      'Reads theme out of settings and hands it to applyTheme.',
+      'Takes that unpacked result, calls it "settings", and begins the next step with it.',
+      'Reads "theme" out of "settings" and hands it to "applyTheme".',
       'Closes the second step and finishes the chain.'
     ],
     error: { msg: "Uncaught (in promise) SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON", src: 'settings.js:2' },
@@ -666,9 +666,9 @@ var CHALLENGES = [
 "}",
     lineExplanations: [
       'Defines a function that can wait for slow operations (like fetching data) to finish before moving on.',
-      'Calls another function to get the scores. The result gets stored in a variable called scores.',
-      'Goes through scores and keeps only the ones whose value is above 90, storing those as top.',
-      'Hands that shortlist to renderLeaderboard so it can be shown on the page.',
+      'Calls another function to get the scores. The result gets stored in a variable called "scores".',
+      'Goes through "scores" and keeps only the ones whose "value" is above 90, storing those as "top".',
+      'Hands that shortlist to "renderLeaderboard" so it can be shown on the page.',
       'Closes the function.'
     ],
     error: { msg: 'Uncaught (in promise) TypeError: scores.filter is not a function', src: 'scores.js:3' },
@@ -706,16 +706,16 @@ var CHALLENGES = [
 "form.addEventListener('submit', handleSignup);",
     lineExplanations: [
       'A note marking which file this part comes from. Browsers ignore it completely.',
-      'Opens the head of the page — the setup area, which holds nothing a visitor can see.',
-      'Loads app.js and runs it immediately, right at this spot in the page.',
-      'Closes the head section.',
-      'Opens the body — everything a visitor actually sees.',
-      'A form on the page, labelled with the id signup-form so code can find it later.',
-      'Closes the body.',
+      'Opens the "head" of the page — the setup area, which holds nothing a visitor can see.',
+      'Loads "app.js" and runs it at this point in the page.',
+      'Closes the "head" section.',
+      'Opens the "body" — everything a visitor actually sees.',
+      'A form on the page, labelled with the id "signup-form" so code can find it later.',
+      'Closes the "body".',
       'A blank line separating the page markup above from the JavaScript below.',
-      'A note saying the lines below live in app.js.',
-      'Searches the page for the element with the id signup-form and stores whatever it finds as form.',
-      'Asks that form to run handleSignup whenever it gets submitted.'
+      'A note saying the lines below live in "app.js".',
+      'Searches the page for the element with the id "signup-form" and stores whatever it finds as "form".',
+      'Asks that form to run "handleSignup" whenever it gets submitted.'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')", src: 'app.js:2' },
     question: 'What is this error actually telling you?',
@@ -746,12 +746,12 @@ var CHALLENGES = [
 "const saved = JSON.parse(localStorage.getItem('cart'));\n" +
 "restoreCart(saved);",
     lineExplanations: [
-      'Creates a cart holding two pieces: an empty list of items, and a total of 0.',
-      "Saves that cart into the browser's own storage under the name cart.",
+      'Creates a "cart" holding two pieces: an empty list of "items", and a "total" of 0.',
+      'Saves that cart into storage in the browser under the name "cart".',
       'A blank line separating the saving from the loading.',
       'A note for the reader: the lines below run on a later visit, not right away.',
-      'Reads back whatever was stored under cart and converts that text into usable data.',
-      'Hands the recovered cart to restoreCart so it can be put back on screen.'
+      'Reads back whatever was stored under "cart" and converts that text into usable data.',
+      'Hands the recovered cart to "restoreCart" so it can be put back on screen.'
     ],
     error: { msg: "Uncaught SyntaxError: Unexpected token 'o', \"[object Obj\"... is not valid JSON", src: 'cart.js:5' },
     question: 'What is this error actually telling you?',
@@ -780,9 +780,9 @@ var CHALLENGES = [
 "  card.classList.add('visible');\n" +
 "});",
     lineExplanations: [
-      'Collects every element on the page carrying the class card and stores the whole group as cards.',
-      'Tries to walk through that group one item at a time, calling each one card.',
-      'For each one, adds the class visible — which is what the styling uses to reveal it.',
+      'Collects every element on the page carrying the class "card" and stores the whole group as "cards".',
+      'Walks through that group one item at a time, calling each one "card".',
+      'For each one, adds the class "visible" — which is what the styling uses to reveal it.',
       'Closes the loop.'
     ],
     error: { msg: 'Uncaught TypeError: cards.forEach is not a function', src: 'gallery.js:2' },
@@ -816,12 +816,12 @@ var CHALLENGES = [
 "  sendWelcome(email);\n" +
 "});",
     lineExplanations: [
-      'A note showing what the real page contains: an input box whose id is email-input.',
-      'Searches the page for an element with the id emailInput and stores the result as field.',
-      'Searches for the element with the id submit-btn and stores it as btn.',
+      'A note showing what the real page contains: an input box whose id is "email-input".',
+      'Searches the page for an element with the id "emailInput" and stores the result as "field".',
+      'Searches for the element with the id "submit-btn" and stores it as "btn".',
       'Asks that button to run the instructions below whenever it gets clicked.',
-      'Reads whatever was typed into field and trims off stray spaces at either end.',
-      'Passes that address along to sendWelcome.',
+      'Reads whatever was typed into "field" and trims off stray spaces at either end.',
+      'Passes that address along to "sendWelcome".',
       'Closes the click handler.'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'value')", src: 'signup.js:5' },
@@ -846,11 +846,11 @@ var CHALLENGES = [
 "const total = bill + tipInput.value;\n" +
 "priceEl.textContent = '$' + total.toFixed(2);",
     lineExplanations: [
-      'Finds the element with the id price — the spot on the page where the total will be shown.',
-      'Finds the box where the customer types their tip.',
-      'Sets the bill to 42.50.',
-      'Combines the bill with whatever is sitting in the tip box and stores the outcome as total.',
-      'Rounds the total to two decimal places, puts a dollar sign in front, and writes it onto the page.'
+      'Finds the element with the id "price" — the spot on the page where the total will be shown.',
+      'Finds the box with the id "tip", where the customer types their tip.',
+      'Sets "bill" to 42.50.',
+      'Combines "bill" with whatever is sitting in the tip box and stores the outcome as "total".',
+      'Rounds "total" to two decimal places, puts a dollar sign in front, and writes it onto the page.'
     ],
     error: { msg: 'Uncaught TypeError: total.toFixed is not a function', src: 'checkout.js:5' },
     question: 'The error is thrown at line 5 — which line actually caused it? Tap a line number.',
@@ -876,9 +876,9 @@ var CHALLENGES = [
 "}",
     lineExplanations: [
       'Defines a function that is allowed to pause and wait for slow work to finish.',
-      'Calls getCurrentUser and stores whatever comes back as user.',
-      'Finds the element with the id banner, which is where the greeting will go.',
-      'Takes the name off user, breaks it apart at the spaces, and keeps the first piece.',
+      'Calls "getCurrentUser" and stores whatever comes back in a variable called "user".',
+      'Finds the element with the id "banner", which is where the greeting will go.',
+      'Takes the "name" off "user", breaks it apart at the spaces, and keeps the first piece.',
       'Glues that first name into a greeting and writes the result into the banner.',
       'Closes the function.'
     ],
@@ -908,8 +908,8 @@ var CHALLENGES = [
       'Defines a function that can wait for slow work to finish.',
       'Asks the server for the comments and waits right here until it replies.',
       'Unpacks that reply into usable data, waiting for the unpacking to finish.',
-      'Reaches into data for a piece called comments and stores it as list.',
-      'Walks through list and runs addComment on every entry.',
+      'Reaches into "data" for a piece called "comments" and stores it as "list".',
+      'Walks through "list" and runs "addComment" on every entry.',
       'Closes the function.'
     ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'forEach')", src: 'comments.js:5' },
@@ -936,9 +936,9 @@ var CHALLENGES = [
 "}",
     lineExplanations: [
       'Defines a function that is allowed to pause and wait for slow work.',
-      'Asks the weather service about Austin, waits for the reply, and stores what comes back as data.',
-      'Reaches into data for a piece called current, then for temp_f inside that.',
-      'Finds the element with the id temp and writes the temperature into it with a degree symbol on the end.',
+      'Asks the weather service about Austin, waits for the reply, and stores what comes back as "data".',
+      'Reaches into "data" for a piece called "current", then for "temp_f" inside that.',
+      'Finds the element with the id "temp" and writes the temperature into it with a degree symbol on the end.',
       'Closes the function.'
     ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'temp_f')", src: 'weather.js:3' },
@@ -965,10 +965,10 @@ var CHALLENGES = [
 "}",
     lineExplanations: [
       'Defines a function that takes one piece of text — the new to-do being added.',
-      'Reads whatever the browser has stored under the name todos.',
-      'Converts that stored text back into a usable list.',
+      'Reads whatever the browser has stored under the name "todos".',
+      'Converts that stored text back into a usable list called "todos".',
       'Adds a new entry to the list, holding the text and marked as not done.',
-      'Turns the updated list back into text and saves it under todos again.',
+      'Turns the updated list back into text and saves it under "todos" again.',
       'Closes the function.'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'push')", src: 'todos.js:4' },
@@ -996,11 +996,11 @@ var CHALLENGES = [
 "}",
     lineExplanations: [
       'Defines the function that sets up the dashboard.',
-      'Creates an empty container named stats, with nothing in it yet.',
+      'Creates an empty container named "stats", with nothing in it yet.',
       'Starts a request to the server for the dashboard numbers.',
       'Sets up a step to run once the reply arrives: unpack it and pass it along.',
-      'Sets up a second step: put that unpacked result into stats.',
-      'Reads widgets out of stats and hands it to renderCards to be drawn.',
+      'Sets up a second step: put that unpacked result into "stats".',
+      'Reads "widgets" out of "stats" and hands it to "renderCards" to be drawn.',
       'Closes the function.'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of undefined (reading 'widgets')", src: 'dashboard.js:6' },
