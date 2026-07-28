@@ -163,9 +163,18 @@
   }
   .code-card .filename {
     font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);
-    padding: 6px 12px; border-bottom: 1px solid var(--border);
+    padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--border);
     background: var(--bg-card);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
   }
+  .legend-btn {
+    flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+    background: none; border: 1px solid var(--border); color: var(--text-dim);
+    font-family: var(--mono); font-size: 0.72rem; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .legend-btn:hover { color: var(--accent); border-color: var(--accent); }
   .code-scroll { overflow-x: auto; }
   .code-lines {
     font-family: var(--mono); font-size: 0.8rem; line-height: 1.7;
@@ -197,6 +206,77 @@
   .tok-num { color: #79c0ff; }
   .tok-fn { color: #d2a8ff; }
   .tok-tag { color: #7ee787; }
+  .tok-var { color: #e6edf3; }
+  .tok-prop { color: #ffa657; }
+  .tok-attr { color: #56d4dd; }
+
+  /* ---------- Token tooltip ---------- */
+  [data-tok] { cursor: help; }
+  @media (hover: hover) {
+    [data-tok]:hover {
+      text-decoration: underline dotted;
+      text-underline-offset: 3px;
+    }
+  }
+  .tok-tip {
+    position: fixed; z-index: 60; left: 0; top: 0;
+    max-width: 250px;
+    background: #1c2333; border: 1px solid #3d4658;
+    border-radius: 8px; padding: 8px 11px;
+    font-family: var(--sans); font-size: 0.78rem; line-height: 1.45;
+    color: #d5dde7;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.12s ease;
+    pointer-events: none;
+  }
+  .tok-tip.visible { opacity: 1; visibility: visible; }
+  .tok-tip .tip-label {
+    display: block; font-family: var(--mono); font-size: 0.66rem;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px;
+  }
+
+  /* ---------- Legend modal ---------- */
+  .legend-backdrop {
+    position: fixed; inset: 0; z-index: 70;
+    background: rgba(1, 4, 9, 0.72);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .legend-backdrop.open { display: flex; }
+  .legend-modal {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; width: 100%; max-width: 420px;
+    max-height: 80vh; display: flex; flex-direction: column;
+    animation: popIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .legend-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    font-size: 0.92rem; font-weight: 600;
+  }
+  .legend-close {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 1rem; cursor: pointer; padding: 4px 6px; line-height: 1;
+  }
+  .legend-close:hover { color: var(--text); }
+  .legend-rows { overflow-y: auto; padding: 6px 16px 16px; }
+  .legend-row {
+    display: flex; gap: 11px; padding: 11px 0;
+    border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+  }
+  .legend-row:last-child { border-bottom: none; }
+  .legend-sample {
+    flex: 0 0 84px; font-family: var(--mono); font-size: 0.78rem;
+    word-break: break-word;
+  }
+  .legend-desc { flex: 1; font-size: 0.82rem; color: #c9d4e0; line-height: 1.5; }
+  .legend-desc strong { display: block; font-size: 0.72rem; color: var(--text-dim);
+    font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 600; margin-bottom: 2px; }
+  .legend-hint {
+    padding: 12px 16px 0; font-size: 0.76rem; color: var(--text-dim);
+  }
 
   /* ---------- Console error ---------- */
   .console-card {
@@ -371,6 +451,19 @@
   <div class="screen" id="screen-home"></div>
   <div class="screen" id="screen-challenge"></div>
   <div class="screen" id="screen-summary"></div>
+</div>
+
+<div class="tok-tip" id="tokTip"></div>
+
+<div class="legend-backdrop" id="legendBackdrop">
+  <div class="legend-modal" role="dialog" aria-modal="true" aria-label="What the colors mean">
+    <div class="legend-head">
+      <span>What the colors mean</span>
+      <button class="legend-close" id="legendClose" aria-label="Close">✕</button>
+    </div>
+    <div class="legend-hint" id="legendHint"></div>
+    <div class="legend-rows" id="legendRows"></div>
+  </div>
 </div>
 
 <script>
@@ -878,24 +971,89 @@ function esc(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/* Simple single-pass regex highlighter (input is already HTML-escaped). */
+/* ---------------------------------------------------------------------
+   Syntax highlighting + the plain-English meaning of every color.
+   Every token is tagged with data-tok so it can explain itself on
+   hover (desktop) or tap (touch).
+   ------------------------------------------------------------------ */
+var TOK_INFO = {
+  kw:   { label: 'Keyword',   sample: 'const',      color: '#ff7b72',
+          text: 'This is a JavaScript keyword — a built-in command the language understands.' },
+  str:  { label: 'String',    sample: "'hello'",    color: '#a5d6ff',
+          text: 'This is text data, wrapped in quotes.' },
+  num:  { label: 'Number',    sample: '42.50',      color: '#79c0ff',
+          text: 'A numeric value.' },
+  fn:   { label: 'Function',  sample: 'fetch()',    color: '#d2a8ff',
+          text: 'This is a function being called or defined.' },
+  'var':{ label: 'Variable',  sample: 'response',   color: '#e6edf3',
+          text: 'A named container holding a value.' },
+  prop: { label: 'Property',  sample: '.items',     color: '#ffa657',
+          text: 'Accessing a piece of data on an object.' },
+  com:  { label: 'Comment',   sample: '// note',    color: '#6e7681',
+          text: 'A note for humans, ignored by the code.' },
+  tag:  { label: 'HTML tag',  sample: '&lt;form&gt;', color: '#7ee787',
+          text: 'An HTML tag — one of the building blocks of the page.' },
+  attr: { label: 'HTML attribute', sample: 'id=',   color: '#56d4dd',
+          text: 'An HTML attribute — a setting attached to a page element.' }
+};
+
+function tok(kind, inner) {
+  return '<span class="tok-' + kind + '" data-tok="' + kind + '">' + inner + '</span>';
+}
+
+/* Inside an HTML tag: first name is the tag, the rest are attributes. */
+function highlightTag(tagText) {
+  var firstName = true;
+  var inner = tagText.replace(/(&[a-z]+;)|("[^"]*"|'[^']*')|([a-zA-Z_$][\w$-]*)/g,
+    function (m, entity, str, name) {
+      if (entity) return entity;              // leave &lt; / &gt; alone
+      if (str) return tok('str', str);
+      if (firstName) { firstName = false; return tok('tag', name); }
+      return tok('attr', name);
+    });
+  return '<span class="tok-tag" data-tok="tag">' + inner + '</span>';
+}
+
+var KEYWORDS = 'const|let|var|function|return|async|await|if|else|for|of|in|new|true|false|null|undefined|this';
+
+/* Order matters: earlier alternatives win at any given position. */
+var HL_RE = new RegExp(
+  '(\\/\\/[^\\n]*|&lt;!--[^\\n]*)' +                  // 1 comment
+  '|(&lt;\\/?[a-zA-Z][^&]*&gt;)' +                    // 2 html tag
+  '|(\'(?:[^\'\\\\]|\\\\.)*\'|"(?:[^"\\\\]|\\\\.)*")' + // 3 string
+  '|(&[a-z]+;)' +                                     // 4 stray entity
+  '|\\.([a-zA-Z_$][\\w$]*)(?=\\s*\\()' +              // 5 method call
+  '|\\.([a-zA-Z_$][\\w$]*)' +                         // 6 property
+  '|\\b(' + KEYWORDS + ')\\b' +                       // 7 keyword
+  '|\\b(\\d+(?:\\.\\d+)?)\\b' +                       // 8 number
+  '|\\b([a-zA-Z_$][\\w$]*)(?=\\s*\\()' +              // 9 function
+  '|\\b([a-zA-Z_$][\\w$]*)\\b',                       // 10 variable
+  'g');
+
+/* Single-pass highlighter (input is already HTML-escaped). */
 function highlight(escapedLine) {
-  var re = /(\/\/[^\n]*|&lt;!--[^\n]*)|('(?:[^'\\]|\\.)*'|&quot;(?:(?!&quot;).)*&quot;|"(?:[^"\\]|\\.)*")|(&lt;\/?[a-zA-Z][^\s&]*|\/?&gt;)|\b(const|let|var|function|return|async|await|if|else|for|of|in|new|true|false|null|undefined|this)\b|\b(\d+(?:\.\d+)?)\b|\b([a-zA-Z_$][\w$]*)(?=\()/g;
-  return escapedLine.replace(re, function (m, com, str, tag, kw, num, fn) {
-    if (com) return '<span class="tok-com">' + com + '</span>';
-    if (str) return '<span class="tok-str">' + str + '</span>';
-    if (tag) return '<span class="tok-tag">' + tag + '</span>';
-    if (kw)  return '<span class="tok-kw">' + kw + '</span>';
-    if (num) return '<span class="tok-num">' + num + '</span>';
-    if (fn)  return '<span class="tok-fn">' + fn + '</span>';
-    return m;
-  });
+  return escapedLine.replace(HL_RE,
+    function (m, com, tagText, str, entity, method, prop, kw, num, fn, name) {
+      if (com) return tok('com', com);
+      if (tagText) return highlightTag(tagText);
+      if (str) return tok('str', str);
+      if (entity) return entity;
+      if (method) return '.' + tok('fn', method);
+      if (prop) return '.' + tok('prop', prop);
+      if (kw) return tok('kw', kw);
+      if (num) return tok('num', num);
+      if (fn) return tok('fn', fn);
+      if (name) return tok('var', name);
+      return m;
+    });
 }
 
 function renderCodeCard(ch, clickableLines) {
   var lines = ch.code.split('\n');
   var html = '<div class="code-card">';
-  html += '<div class="filename">' + esc(ch.filename) + '</div>';
+  html += '<div class="filename"><span>' + esc(ch.filename) + '</span>' +
+          '<button class="legend-btn" data-legend="1" aria-label="What do the colors mean?" ' +
+          'title="What do the colors mean?">?</button></div>';
   html += '<div class="code-scroll"><div class="code-lines">';
   for (var i = 0; i < lines.length; i++) {
     var n = i + 1;
@@ -1335,8 +1493,92 @@ function renderSummary() {
 }
 
 /* =====================================================================
+   TOKEN TOOLTIPS + COLOR LEGEND
+   Hover explains a token on desktop; tap does it on touch screens.
+   ===================================================================== */
+var tipEl = document.getElementById('tokTip');
+var backdropEl = document.getElementById('legendBackdrop');
+var canHover = !!(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+
+function closestTok(node) {
+  return node && node.closest ? node.closest('[data-tok]') : null;
+}
+
+function showTip(target) {
+  var info = TOK_INFO[target.getAttribute('data-tok')];
+  if (!info) return;
+  tipEl.innerHTML = '<span class="tip-label" style="color:' + info.color + '">' +
+                    info.label + '</span>' + esc(info.text);
+  tipEl.classList.add('visible');
+
+  // Measure, then place above the token — flipping below if there's no room.
+  var r = target.getBoundingClientRect();
+  var tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+  var left = r.left + r.width / 2 - tw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  var top = r.top - th - 8;
+  if (top < 8) top = r.bottom + 8;
+  tipEl.style.left = left + 'px';
+  tipEl.style.top = top + 'px';
+}
+
+function hideTip() { tipEl.classList.remove('visible'); }
+
+document.addEventListener('mouseover', function (e) {
+  if (!canHover) return;
+  var t = closestTok(e.target);
+  if (t) showTip(t);
+});
+document.addEventListener('mouseout', function (e) {
+  if (!canHover) return;
+  if (closestTok(e.target)) hideTip();
+});
+
+/* Tap: explain the token — unless this line is a pickable answer, where the
+   tap belongs to the challenge. Tapping anywhere else dismisses. */
+document.addEventListener('click', function (e) {
+  var t = closestTok(e.target);
+  var inPickableLine = e.target.closest && e.target.closest('.code-line.clickable');
+  if (t && !inPickableLine) showTip(t);
+  else hideTip();
+});
+window.addEventListener('scroll', hideTip, true);
+window.addEventListener('resize', hideTip);
+
+function buildLegend() {
+  var order = ['kw', 'str', 'num', 'fn', 'var', 'prop', 'com', 'tag', 'attr'];
+  var html = '';
+  for (var i = 0; i < order.length; i++) {
+    var info = TOK_INFO[order[i]];
+    html += '<div class="legend-row">' +
+              '<span class="legend-sample" style="color:' + info.color + '">' + info.sample + '</span>' +
+              '<span class="legend-desc"><strong>' + info.label + '</strong>' + esc(info.text) + '</span>' +
+            '</div>';
+  }
+  document.getElementById('legendRows').innerHTML = html;
+  document.getElementById('legendHint').textContent = canHover
+    ? 'Tip: hover any colored word in the code to get just that one explained.'
+    : 'Tip: tap any colored word in the code to get just that one explained.';
+}
+
+function openLegend() { hideTip(); backdropEl.classList.add('open'); }
+function closeLegend() { backdropEl.classList.remove('open'); }
+
+document.addEventListener('click', function (e) {
+  if (e.target.closest && e.target.closest('[data-legend]')) openLegend();
+});
+document.getElementById('legendClose').addEventListener('click', closeLegend);
+backdropEl.addEventListener('click', function (e) {
+  if (e.target === backdropEl) closeLegend();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') { closeLegend(); hideTip(); }
+});
+
+/* =====================================================================
    BOOT
    ===================================================================== */
+buildLegend();
 updateProgress();
 renderHome();
 </script>
