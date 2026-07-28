@@ -278,6 +278,41 @@
     padding: 12px 16px 0; font-size: 0.76rem; color: var(--text-dim);
   }
 
+  /* ---------- Line-by-line explainer ---------- */
+  .explainer { margin: -6px 0 14px; }
+  .explainer-toggle {
+    display: flex; align-items: center; gap: 7px;
+    background: none; border: none; padding: 6px 2px;
+    color: var(--text-dim); font-family: var(--sans); font-size: 0.8rem;
+    cursor: pointer; transition: color 0.15s;
+  }
+  .explainer-toggle:hover { color: var(--accent); }
+  .explainer-toggle .caret {
+    display: inline-block; font-size: 0.66rem;
+    transition: transform 0.18s ease;
+  }
+  .explainer-toggle[aria-expanded="true"] { color: var(--accent); }
+  .explainer-toggle[aria-expanded="true"] .caret { transform: rotate(90deg); }
+  .explainer-body {
+    margin: 4px 0 0 5px; padding: 6px 0 2px 15px;
+    border-left: 2px solid var(--border);
+    display: flex; flex-direction: column; gap: 15px;
+    animation: fadeIn 0.2s ease;
+  }
+  /* display:flex would otherwise beat the `hidden` attribute */
+  .explainer-body[hidden] { display: none; }
+  .exp-code {
+    font-family: var(--mono); font-size: 0.76rem; line-height: 1.55;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .exp-ln { color: var(--text-dim); user-select: none; }
+  .exp-blank { color: #484f58; font-style: italic; }
+  .exp-text {
+    display: flex; gap: 8px; margin-top: 4px;
+    font-size: 0.84rem; line-height: 1.55; color: #c9d4e0;
+  }
+  .exp-arrow { flex: 0 0 auto; color: var(--accent); }
+
   /* ---------- Console error ---------- */
   .console-card {
     background: var(--bg-code); border: 1px solid var(--border);
@@ -494,6 +529,14 @@ var CHALLENGES = [
 "  const items = data.data.items;\n" +
 "  items.forEach(function (p) { renderCard(p); });\n" +
 "}",
+    lineExplanations: [
+      'Defines a function called loadProducts and marks it async, which means it is allowed to pause and wait for slow work to finish.',
+      'Asks the server for the products and waits right here until a reply comes back. The reply gets stored as response.',
+      'Unpacks that reply into usable data, waiting for the unpacking to finish too.',
+      'Reaches into data for a piece called data, then for items inside that, and stores whatever it finds.',
+      'Goes through items one at a time and draws a card on the page for each one.',
+      'Closes the function. Nothing runs here — it just marks the end.'
+    ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'items')", src: 'app.js:4' },
     question: 'What is this error actually telling you?',
     options: [
@@ -520,6 +563,12 @@ var CHALLENGES = [
 "button.addClickListener(function () {\n" +
 "  saveDraft();\n" +
 "});",
+    lineExplanations: [
+      'Searches the page for the element whose id is save-btn and stores it as button.',
+      'Tries to attach a click handler to that button using a method named addClickListener.',
+      'The instruction meant to run on every click: call saveDraft.',
+      'Closes the handler and the call that was opened two lines above.'
+    ],
     error: { msg: 'Uncaught TypeError: button.addClickListener is not a function', src: 'app.js:2' },
     question: 'What is this error actually telling you?',
     options: [
@@ -547,6 +596,13 @@ var CHALLENGES = [
 "  document.querySelector('#username').textContent = name;\n" +
 "  document.querySelector('#bio').textContent = userData.bio;\n" +
 "}",
+    lineExplanations: [
+      'Defines a function that expects to be handed one thing, which it will refer to as profileData.',
+      'Pulls the name out of profileData and stores it as name.',
+      'Finds the element with the id username and sets the text you see in it to that name.',
+      'Finds the element with the id bio and sets its text to the bio taken from userData.',
+      'Closes the function.'
+    ],
     error: { msg: 'Uncaught ReferenceError: userData is not defined', src: 'profile.js:4' },
     question: 'What is this error actually telling you?',
     options: [
@@ -574,6 +630,13 @@ var CHALLENGES = [
 "  .then(function (settings) {\n" +
 "    applyTheme(settings.theme);\n" +
 "  });",
+    lineExplanations: [
+      "Starts a request to the server for the user's settings.",
+      'Once a reply arrives, unpacks it and passes the result along to the next step.',
+      'Takes that unpacked result, calls it settings, and begins the next step with it.',
+      'Reads theme out of settings and hands it to applyTheme.',
+      'Closes the second step and finishes the chain.'
+    ],
     error: { msg: "Uncaught (in promise) SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON", src: 'settings.js:2' },
     question: 'What is this error actually telling you?',
     options: [
@@ -601,6 +664,13 @@ var CHALLENGES = [
 "  const top = scores.filter(function (s) { return s.value > 90; });\n" +
 "  renderLeaderboard(top);\n" +
 "}",
+    lineExplanations: [
+      'Defines a function that can wait for slow operations (like fetching data) to finish before moving on.',
+      'Calls another function to get the scores. The result gets stored in a variable called scores.',
+      'Goes through scores and keeps only the ones whose value is above 90, storing those as top.',
+      'Hands that shortlist to renderLeaderboard so it can be shown on the page.',
+      'Closes the function.'
+    ],
     error: { msg: 'Uncaught (in promise) TypeError: scores.filter is not a function', src: 'scores.js:3' },
     question: 'What is this error actually telling you?',
     options: [
@@ -634,6 +704,19 @@ var CHALLENGES = [
 "// app.js\n" +
 "const form = document.getElementById('signup-form');\n" +
 "form.addEventListener('submit', handleSignup);",
+    lineExplanations: [
+      'A note marking which file this part comes from. Browsers ignore it completely.',
+      'Opens the head of the page — the setup area, which holds nothing a visitor can see.',
+      'Loads app.js and runs it immediately, right at this spot in the page.',
+      'Closes the head section.',
+      'Opens the body — everything a visitor actually sees.',
+      'A form on the page, labelled with the id signup-form so code can find it later.',
+      'Closes the body.',
+      'A blank line separating the page markup above from the JavaScript below.',
+      'A note saying the lines below live in app.js.',
+      'Searches the page for the element with the id signup-form and stores whatever it finds as form.',
+      'Asks that form to run handleSignup whenever it gets submitted.'
+    ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')", src: 'app.js:2' },
     question: 'What is this error actually telling you?',
     options: [
@@ -662,6 +745,14 @@ var CHALLENGES = [
 "// ...later, on page load:\n" +
 "const saved = JSON.parse(localStorage.getItem('cart'));\n" +
 "restoreCart(saved);",
+    lineExplanations: [
+      'Creates a cart holding two pieces: an empty list of items, and a total of 0.',
+      "Saves that cart into the browser's own storage under the name cart.",
+      'A blank line separating the saving from the loading.',
+      'A note for the reader: the lines below run on a later visit, not right away.',
+      'Reads back whatever was stored under cart and converts that text into usable data.',
+      'Hands the recovered cart to restoreCart so it can be put back on screen.'
+    ],
     error: { msg: "Uncaught SyntaxError: Unexpected token 'o', \"[object Obj\"... is not valid JSON", src: 'cart.js:5' },
     question: 'What is this error actually telling you?',
     options: [
@@ -688,6 +779,12 @@ var CHALLENGES = [
 "cards.forEach(function (card) {\n" +
 "  card.classList.add('visible');\n" +
 "});",
+    lineExplanations: [
+      'Collects every element on the page carrying the class card and stores the whole group as cards.',
+      'Tries to walk through that group one item at a time, calling each one card.',
+      'For each one, adds the class visible — which is what the styling uses to reveal it.',
+      'Closes the loop.'
+    ],
     error: { msg: 'Uncaught TypeError: cards.forEach is not a function', src: 'gallery.js:2' },
     question: 'What is this error actually telling you?',
     options: [
@@ -718,6 +815,15 @@ var CHALLENGES = [
 "  const email = field.value.trim();\n" +
 "  sendWelcome(email);\n" +
 "});",
+    lineExplanations: [
+      'A note showing what the real page contains: an input box whose id is email-input.',
+      'Searches the page for an element with the id emailInput and stores the result as field.',
+      'Searches for the element with the id submit-btn and stores it as btn.',
+      'Asks that button to run the instructions below whenever it gets clicked.',
+      'Reads whatever was typed into field and trims off stray spaces at either end.',
+      'Passes that address along to sendWelcome.',
+      'Closes the click handler.'
+    ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'value')", src: 'signup.js:5' },
     question: 'The console says it blew up at line 5 — but which line actually planted the bomb? Tap a line number.',
     correctLine: 2,
@@ -739,6 +845,13 @@ var CHALLENGES = [
 "const bill = 42.50;\n" +
 "const total = bill + tipInput.value;\n" +
 "priceEl.textContent = '$' + total.toFixed(2);",
+    lineExplanations: [
+      'Finds the element with the id price — the spot on the page where the total will be shown.',
+      'Finds the box where the customer types their tip.',
+      'Sets the bill to 42.50.',
+      'Combines the bill with whatever is sitting in the tip box and stores the outcome as total.',
+      'Rounds the total to two decimal places, puts a dollar sign in front, and writes it onto the page.'
+    ],
     error: { msg: 'Uncaught TypeError: total.toFixed is not a function', src: 'checkout.js:5' },
     question: 'The error is thrown at line 5 — which line actually caused it? Tap a line number.',
     correctLine: 4,
@@ -761,6 +874,14 @@ var CHALLENGES = [
 "  const first = user.name.split(' ')[0];\n" +
 "  banner.textContent = 'Hey, ' + first + '!';\n" +
 "}",
+    lineExplanations: [
+      'Defines a function that is allowed to pause and wait for slow work to finish.',
+      'Calls getCurrentUser and stores whatever comes back as user.',
+      'Finds the element with the id banner, which is where the greeting will go.',
+      'Takes the name off user, breaks it apart at the spaces, and keeps the first piece.',
+      'Glues that first name into a greeting and writes the result into the banner.',
+      'Closes the function.'
+    ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'split')", src: 'greet.js:4' },
     question: 'The crash happens at line 4 — which line is actually to blame? Tap a line number.',
     correctLine: 2,
@@ -783,6 +904,14 @@ var CHALLENGES = [
 "  const list = data.comments;\n" +
 "  list.forEach(addComment);\n" +
 "}",
+    lineExplanations: [
+      'Defines a function that can wait for slow work to finish.',
+      'Asks the server for the comments and waits right here until it replies.',
+      'Unpacks that reply into usable data, waiting for the unpacking to finish.',
+      'Reaches into data for a piece called comments and stores it as list.',
+      'Walks through list and runs addComment on every entry.',
+      'Closes the function.'
+    ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'forEach')", src: 'comments.js:5' },
     question: 'This API returns a plain array of comments, like [ {...}, {...} ]. The error fires at line 5 — which line caused it? Tap a line number.',
     correctLine: 4,
@@ -805,6 +934,13 @@ var CHALLENGES = [
 "  const temp = data.current.temp_f;\n" +
 "  document.querySelector('#temp').textContent = temp + '\\u00b0F';\n" +
 "}",
+    lineExplanations: [
+      'Defines a function that is allowed to pause and wait for slow work.',
+      'Asks the weather service about Austin, waits for the reply, and stores what comes back as data.',
+      'Reaches into data for a piece called current, then for temp_f inside that.',
+      'Finds the element with the id temp and writes the temperature into it with a degree symbol on the end.',
+      'Closes the function.'
+    ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'temp_f')", src: 'weather.js:3' },
     question: 'In your own words: what is the ROOT CAUSE of this error? (Not the fix — the why.)',
     modelAnswer: "fetch doesn't give you the data — it gives you a Response object (status code, headers, and so on). The actual JSON body needs a second step: await data.json(). Since a Response object has no .current property, that comes back undefined, and reading .temp_f off undefined is the crash. The await IS there, which makes this sneaky — the code awaited the envelope but never opened it.",
@@ -827,6 +963,14 @@ var CHALLENGES = [
 "  todos.push({ text: text, done: false });\n" +
 "  localStorage.setItem('todos', JSON.stringify(todos));\n" +
 "}",
+    lineExplanations: [
+      'Defines a function that takes one piece of text — the new to-do being added.',
+      'Reads whatever the browser has stored under the name todos.',
+      'Converts that stored text back into a usable list.',
+      'Adds a new entry to the list, holding the text and marked as not done.',
+      'Turns the updated list back into text and saves it under todos again.',
+      'Closes the function.'
+    ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'push')", src: 'todos.js:4' },
     question: 'This works fine on your machine, but crashes for every brand-new visitor. What is the ROOT CAUSE?',
     modelAnswer: "On a first visit, nothing is saved yet — so localStorage.getItem returns null, JSON.parse(null) comes out as null too, and you can't push onto null. The code silently assumed saved data always exists, which was true on the developer's machine (where old data was lying around) and false for everyone else. The fix is a fallback for the empty case: JSON.parse(saved) || [].",
@@ -850,6 +994,15 @@ var CHALLENGES = [
 "    .then(function (json) { stats = json; });\n" +
 "  renderCards(stats.widgets);\n" +
 "}",
+    lineExplanations: [
+      'Defines the function that sets up the dashboard.',
+      'Creates an empty container named stats, with nothing in it yet.',
+      'Starts a request to the server for the dashboard numbers.',
+      'Sets up a step to run once the reply arrives: unpack it and pass it along.',
+      'Sets up a second step: put that unpacked result into stats.',
+      'Reads widgets out of stats and hands it to renderCards to be drawn.',
+      'Closes the function.'
+    ],
     error: { msg: "Uncaught TypeError: Cannot read properties of undefined (reading 'widgets')", src: 'dashboard.js:6' },
     question: 'The fetch URL is correct and the API works. What is the ROOT CAUSE of this crash?',
     modelAnswer: "This is a timing bug. fetch starts a request and moves on immediately — the .then callbacks only run later, when the response arrives. But line 6 runs right away, while stats is still undefined. The code starts a job and instantly tries to use its result, without waiting. The fix is to only use stats where the waiting happens: move renderCards inside the .then, or rewrite with await so the function genuinely pauses until the data exists.",
@@ -1067,6 +1220,30 @@ function renderCodeCard(ch, clickableLines) {
   return html;
 }
 
+/* Collapsed by default: what each line of the snippet is doing, in plain
+   English. Deliberately neutral — it describes, it doesn't point at the bug. */
+function renderExplainer(ch) {
+  if (!ch.lineExplanations) return '';
+  var lines = ch.code.split('\n');
+  var html = '<div class="explainer">' +
+             '<button class="explainer-toggle" data-explain="1" aria-expanded="false">' +
+               '<span class="caret">▸</span>' +
+               '<span class="toggle-label">Explain line by line</span>' +
+             '</button>' +
+             '<div class="explainer-body" hidden>';
+  for (var i = 0; i < lines.length; i++) {
+    var codeHtml = lines[i].trim() === ''
+      ? '<span class="exp-blank">(blank line)</span>'
+      : highlight(esc(lines[i]));
+    html += '<div class="exp-item">' +
+              '<div class="exp-code"><span class="exp-ln">Line ' + (i + 1) + ':</span> ' + codeHtml + '</div>' +
+              '<div class="exp-text"><span class="exp-arrow">→</span>' +
+                '<span>' + esc(ch.lineExplanations[i] || '') + '</span></div>' +
+            '</div>';
+  }
+  return html + '</div></div>';
+}
+
 function renderConsoleCard(ch) {
   return '' +
   '<div class="console-card">' +
@@ -1221,6 +1398,7 @@ function renderDrill(idx) {
   if (ch.lesson) html += '<button class="lesson-recap" id="btnRecap">↩ Re-read the lesson card</button>';
   html += '<div class="ch-title">' + esc(ch.title) + '</div>';
   html += renderCodeCard(ch, ch.type === 'line' && !state.done[ch.id]);
+  html += renderExplainer(ch);
   html += renderConsoleCard(ch);
   html += '<div class="question">' + esc(ch.question) + '</div>';
   html += '<div id="interaction"></div>';
@@ -1566,6 +1744,18 @@ function closeLegend() { backdropEl.classList.remove('open'); }
 
 document.addEventListener('click', function (e) {
   if (e.target.closest && e.target.closest('[data-legend]')) openLegend();
+});
+
+/* ---------- line-by-line explainer toggle ---------- */
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest && e.target.closest('[data-explain]');
+  if (!btn) return;
+  var body = btn.parentNode.querySelector('.explainer-body');
+  var isOpen = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+  body.hidden = isOpen;
+  btn.querySelector('.toggle-label').textContent =
+    isOpen ? 'Explain line by line' : 'Hide line-by-line';
 });
 document.getElementById('legendClose').addEventListener('click', closeLegend);
 backdropEl.addEventListener('click', function (e) {
