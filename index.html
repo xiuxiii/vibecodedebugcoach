@@ -73,6 +73,209 @@
   }
   .milestone.achieved { color: var(--green); }
 
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex; gap: 4px; margin-top: 10px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 9px; padding: 3px;
+  }
+  .tab {
+    flex: 1; background: none; border: none; border-radius: 7px;
+    padding: 7px 10px; font-family: var(--sans); font-size: 0.82rem;
+    font-weight: 600; color: var(--text-dim); cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { background: #21262d; color: var(--text); }
+  #practiceProgress[hidden] { display: none; }
+
+  /* ---------- Learn: lesson list ---------- */
+  .lessons-head { margin: 24px 0 4px; }
+  .lessons-head h2 { font-size: 1.25rem; margin-bottom: 6px; }
+  .lessons-head p { color: var(--text-dim); font-size: 0.9rem; }
+  .lessons-count {
+    display: inline-block; margin-top: 10px; font-family: var(--mono);
+    font-size: 0.72rem; color: var(--text-dim);
+    border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px;
+  }
+  .lesson-list { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .lesson-item {
+    width: 100%; text-align: left; cursor: pointer;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 16px 15px;
+    font-family: var(--sans); color: var(--text);
+    display: flex; gap: 13px; align-items: flex-start;
+    transition: border-color 0.15s, transform 0.06s;
+  }
+  .lesson-item:hover { border-color: var(--accent); }
+  .lesson-item:active { transform: scale(0.995); }
+  .lesson-check {
+    flex: 0 0 22px; height: 22px; border-radius: 50%; margin-top: 2px;
+    border: 1px solid var(--border); color: var(--text-dim);
+    display: flex; align-items: center; justify-content: center; font-size: 0.72rem;
+  }
+  .lesson-item.done .lesson-check {
+    border-color: var(--green); color: var(--green); background: var(--green-dim);
+  }
+  .lesson-item .lc-body { flex: 1; min-width: 0; }
+  .lesson-item .lc-body > span { display: block; }
+  .lesson-item .lc-title { font-size: 0.98rem; font-weight: 600; margin-bottom: 3px; }
+  .lesson-item .lc-blurb { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+  .lesson-item .lc-meta {
+    margin-top: 8px; font-family: var(--mono); font-size: 0.68rem;
+    color: var(--text-dim); letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .lesson-item.done .lc-meta { color: var(--green); }
+
+  /* ---------- Learn: lesson page ---------- */
+  .back-link {
+    background: none; border: none; padding: 6px 2px; margin-top: 16px;
+    color: var(--text-dim); font-family: var(--sans); font-size: 0.8rem;
+    cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .back-link:hover { color: var(--accent); }
+  .lesson-title { font-size: 1.5rem; line-height: 1.3; margin: 8px 0 0; }
+  .lesson-sub {
+    color: var(--text-dim); font-size: 0.85rem; margin-top: 8px;
+    font-family: var(--mono);
+  }
+  .sec { margin-top: 34px; }
+  .sec-label {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px;
+  }
+  .sec h3 { font-size: 1.12rem; margin-bottom: 12px; line-height: 1.35; }
+  .sec p { font-size: 0.95rem; line-height: 1.72; color: #c9d4e0; margin-bottom: 14px; }
+  .sec p:last-child { margin-bottom: 0; }
+  .sec strong { color: var(--text); font-weight: 600; }
+
+  .hook {
+    border-left: 3px solid var(--accent);
+    background: linear-gradient(100deg, rgba(88, 166, 255, 0.08), transparent 70%);
+    border-radius: 0 10px 10px 0; padding: 16px 18px; margin-top: 26px;
+  }
+  .hook p { font-size: 1rem; color: var(--text); margin: 0; line-height: 1.65; }
+
+  .analogy { display: flex; flex-direction: column; gap: 1px; margin-top: 6px;
+    border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .analogy-row { display: flex; background: var(--bg-card); gap: 0; }
+  .analogy-row.head { background: #1b2230; }
+  .analogy-row.head .ac { font-family: var(--mono); font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); }
+  .analogy-row .ac { flex: 1 1 50%; padding: 11px 13px; font-size: 0.86rem; line-height: 1.5; }
+  .analogy-row .ac:first-child { color: var(--text-dim); border-right: 1px solid var(--border); }
+  .analogy-row .ac:last-child { color: #c9d4e0; }
+  .analogy-row + .analogy-row { border-top: 1px solid var(--border); }
+
+  /* annotated code */
+  .anno { border-radius: 3px; padding: 1px 0; box-decoration-break: clone; }
+  /* the badge is a pointer, not code — keep it out of copied text */
+  .anno sup { font-size: 0.62em; font-weight: 700; padding: 0 2px; vertical-align: super;
+    user-select: none; -webkit-user-select: none; }
+  .anno-0 { background: rgba(210, 168, 255, 0.16); box-shadow: 0 1px 0 #d2a8ff; }
+  .anno-0 sup { color: #d2a8ff; }
+  .anno-1 { background: rgba(86, 212, 221, 0.16); box-shadow: 0 1px 0 #56d4dd; }
+  .anno-1 sup { color: #56d4dd; }
+  .anno-2 { background: rgba(126, 231, 135, 0.13); box-shadow: 0 1px 0 #7ee787; }
+  .anno-2 sup { color: #7ee787; }
+  .anno-3 { background: rgba(255, 166, 87, 0.16); box-shadow: 0 1px 0 #ffa657; }
+  .anno-3 sup { color: #ffa657; }
+
+  .anno-key { margin-top: 14px; display: flex; flex-direction: column; gap: 11px; }
+  .anno-item { display: flex; gap: 10px; align-items: flex-start; }
+  .anno-num {
+    flex: 0 0 20px; height: 20px; border-radius: 5px; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+  }
+  .anno-num.n0 { background: rgba(210, 168, 255, 0.18); color: #d2a8ff; }
+  .anno-num.n1 { background: rgba(86, 212, 221, 0.18); color: #56d4dd; }
+  .anno-num.n2 { background: rgba(126, 231, 135, 0.15); color: #7ee787; }
+  .anno-num.n3 { background: rgba(255, 166, 87, 0.18); color: #ffa657; }
+  .anno-item .at { flex: 1; font-size: 0.86rem; line-height: 1.55; color: #c9d4e0; }
+  .anno-item .at b { color: var(--text); font-weight: 600; }
+
+  /* run button + mini console */
+  .run-row { margin-top: 12px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .btn-run {
+    background: rgba(63, 185, 80, 0.12); border: 1px solid rgba(63, 185, 80, 0.45);
+    color: #6fdc82; border-radius: 8px; padding: 9px 16px;
+    font-family: var(--sans); font-size: 0.84rem; font-weight: 600; cursor: pointer;
+    transition: background 0.15s, transform 0.05s;
+  }
+  .btn-run:hover { background: rgba(63, 185, 80, 0.2); }
+  .btn-run:active { transform: scale(0.98); }
+  .run-hint { font-size: 0.78rem; color: var(--text-dim); }
+  .mini-console { margin-top: 12px; }
+  .mini-console[hidden] { display: none; }
+  .console-row.console-log {
+    background: transparent; color: #cdd9e5;
+    border-top: 1px solid var(--border);
+  }
+  .console-row.console-log .log-icon {
+    flex: 0 0 14px; color: var(--text-dim); font-size: 0.85rem; line-height: 1.2;
+  }
+  .after-run {
+    margin-top: 12px; font-size: 0.88rem; line-height: 1.6; color: #c9d4e0;
+    border-left: 2px solid var(--green); padding-left: 12px;
+  }
+  .after-run[hidden] { display: none; }
+
+  /* variations */
+  .variation { margin-top: 24px; }
+  .variation:first-child { margin-top: 6px; }
+  .var-head {
+    font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  }
+  .var-tag {
+    font-family: var(--mono); font-size: 0.64rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-dim);
+    border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px;
+  }
+  .var-note { font-size: 0.88rem; line-height: 1.65; color: #c9d4e0; margin: 8px 0 10px; }
+
+  /* pitfalls */
+  .pitfalls { display: flex; flex-direction: column; gap: 10px; }
+  .pitfall {
+    display: flex; gap: 11px; align-items: flex-start;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-left: 3px solid var(--red); border-radius: 8px; padding: 12px 14px;
+  }
+  .pitfall .pf-icon { flex: 0 0 auto; font-size: 0.9rem; }
+  .pitfall .pf-text { font-size: 0.88rem; line-height: 1.55; color: #c9d4e0; }
+  .pitfall .pf-text b { color: var(--text); font-weight: 600; }
+  .pitfalls-note { margin-top: 12px; font-size: 0.85rem; color: var(--text-dim); }
+
+  /* checkpoint */
+  .checkpoint {
+    background: linear-gradient(160deg, rgba(63, 185, 80, 0.07), rgba(88, 166, 255, 0.04));
+    border: 1px solid rgba(139, 148, 158, 0.22); border-radius: 14px;
+    padding: 20px; margin-top: 34px;
+  }
+  .checkpoint h3 { font-size: 1.05rem; margin-bottom: 14px; }
+  .abilities { display: flex; flex-direction: column; gap: 11px; margin-bottom: 20px; }
+  .ability { display: flex; gap: 10px; align-items: flex-start;
+    font-size: 0.9rem; line-height: 1.6; color: #c9d4e0; }
+  .ability .ab-tick { color: var(--green); flex: 0 0 auto; }
+  .done-state {
+    display: flex; align-items: center; gap: 9px;
+    color: var(--green); font-weight: 600; font-size: 0.92rem;
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .undo-link {
+    display: block; margin-top: 12px; background: none; border: none; padding: 0;
+    color: var(--text-dim); font-size: 0.76rem; font-family: var(--sans);
+    text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+  }
+  .undo-link:hover { color: var(--text); }
+  .next-step { margin-top: 16px; font-size: 0.86rem; color: var(--text-dim); }
+  .next-step button {
+    background: none; border: none; padding: 0; cursor: pointer;
+    color: var(--accent); font-family: var(--sans); font-size: 0.86rem;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+
   /* ---------- Screens ---------- */
   .screen { display: none; animation: fadeIn 0.25s ease; }
   .screen.active { display: block; }
@@ -475,10 +678,16 @@
   <div class="header-inner">
     <div class="brand">
       <h1><span class="siren">🚨</span>SLOP PATROL</h1>
-      <span class="module">Module 1 · Reading Errors Without Panicking</span>
+      <span class="module" id="moduleLabel">Module 1 · Reading Errors Without Panicking</span>
     </div>
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="milestone" id="milestoneText"></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" data-view="learn" role="tab">Learn</button>
+      <button class="tab" data-view="practice" role="tab">Practice</button>
+    </div>
+    <div id="practiceProgress">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="milestone" id="milestoneText"></div>
+    </div>
   </div>
 </header>
 
@@ -486,6 +695,8 @@
   <div class="screen" id="screen-home"></div>
   <div class="screen" id="screen-challenge"></div>
   <div class="screen" id="screen-summary"></div>
+  <div class="screen" id="screen-lessons"></div>
+  <div class="screen" id="screen-lesson"></div>
 </div>
 
 <div class="tok-tip" id="tokTip"></div>
@@ -1011,6 +1222,151 @@ var CHALLENGES = [
 ];
 
 /* =====================================================================
+   LESSONS — the Learn tab. Same shape as CHALLENGES: adding a lesson is
+   appending to this array. Sections are rendered by type, so a new lesson
+   can mix and match the section kinds below without new code.
+
+   Section types: hook | prose | analogy | demo | variations | pitfalls | checkpoint
+
+   A demo's annotations are given as {line, match}: the renderer finds that
+   snippet of text on that line and wraps it in a colored highlight.
+   ===================================================================== */
+var LESSONS = [
+  {
+    id: 'functions-101',
+    title: 'What is a JavaScript function?',
+    blurb: 'The one idea that unlocks most AI-generated bugs. Recipes, ingredients, and the difference between writing one down and actually cooking it.',
+    minutes: 6,
+    sections: [
+
+      { type: 'hook', text: 'Almost every bug you will ever hit involves a function doing something you did not expect. Learn to read one properly and most AI slop stops being mysterious — it turns into a short list of places to look.' },
+
+      {
+        type: 'prose',
+        label: 'The idea',
+        heading: 'A function is a recipe',
+        paragraphs: [
+          'You write a recipe down once, give it a name, and from then on you can cook it as many times as you like without writing it out again. That is the whole point of a function.',
+          'A recipe has three moving parts, and so does a function. It has a <strong>name</strong> — what you call it when you want it. It has <strong>ingredients</strong>, the information you hand it, which programmers call the <strong>inputs</strong>. And it has <strong>steps</strong>, the instructions it actually follows, which sit inside the curly brackets and are called the <strong>body</strong>.',
+          'Most recipes also produce something: the finished dish. In code that finished dish is called the <strong>return value</strong> — the answer the function hands back to whoever asked for it.',
+          'One more thing, and it is the one that trips people up. There are two separate moments. Writing the recipe down is <strong>defining</strong> the function — nothing happens yet, it is just words on a page. Actually cooking it is <strong>calling</strong> the function — that is the moment the steps run and a dish comes out. Hold onto that gap; a surprising number of bugs live in it.'
+        ]
+      },
+
+      {
+        type: 'analogy',
+        label: 'Side by side',
+        heading: 'The same thing, in two languages',
+        head: ['In a kitchen', 'In code'],
+        rows: [
+          ['The name of the recipe', 'The name of the function — how you ask for it later'],
+          ['The ingredients you hand the cook', 'The inputs — information the function needs to do its job'],
+          ['The steps you follow', 'The body — the instructions that actually run'],
+          ['The finished dish', 'The return value — what comes back out to you']
+        ]
+      },
+
+      {
+        type: 'demo',
+        label: 'See it run',
+        heading: 'One real function, start to finish',
+        intro: 'Here is a complete, working function. Read it once, then press Run and watch what comes out.',
+        code:
+          'function greet(name) {\n' +
+          '  return \'Hello, \' + name + \'!\';\n' +
+          '}\n' +
+          '\n' +
+          'console.log(greet(\'Sam\'));',
+        filename: 'example.js',
+        annotations: [
+          { line: 1, match: 'greet', title: 'The name',
+            text: 'What this recipe is called. Nothing happens because of this line alone — you are just writing the recipe down under a name so you can ask for it later.' },
+          { line: 1, match: 'name', title: 'The input',
+            text: 'A blank space in the recipe. Whatever you hand in gets called "name" for as long as the steps are running.' },
+          { line: 2, match: "return 'Hello, ' + name + '!';", title: 'The body',
+            text: 'The actual steps. This one glues "Hello, " onto whatever came in, and the word return means "this is the finished dish, hand it back".' },
+          { line: 5, match: "greet('Sam')", title: 'The call',
+            text: 'Here is where it finally cooks. You ask for the recipe by name and hand it one ingredient, the text "Sam".' }
+        ],
+        afterRun: 'That line in the console is the finished dish. The function took "Sam" in, built a new piece of text out of it, and handed it back — and console.log printed whatever came back.',
+        fallbackOutput: ['Hello, Sam!']
+      },
+
+      {
+        type: 'variations',
+        label: 'Variations',
+        heading: 'The same idea, three more ways',
+        intro: 'Functions differ mostly in what they take in and what they do inside. Nothing else about the shape changes.',
+        items: [
+          {
+            tag: 'no inputs',
+            title: 'A recipe that needs nothing',
+            code:
+              'function sayHi() {\n' +
+              '  return \'Hi there!\';\n' +
+              '}\n' +
+              '\n' +
+              'console.log(sayHi());',
+            note: 'What changed: the brackets are empty, because this recipe needs no ingredients. You still have to write the brackets both times, though — and you still have to ask for it. Even a function that takes nothing in has to be called before anything happens.',
+            fallbackOutput: ['Hi there!']
+          },
+          {
+            tag: 'two inputs',
+            title: 'A recipe with two ingredients',
+            code:
+              'function fullName(first, last) {\n' +
+              '  return first + \' \' + last;\n' +
+              '}\n' +
+              '\n' +
+              'console.log(fullName(\'Ada\', \'Lovelace\'));',
+            note: 'What changed: two inputs now, separated by a comma. The order is the whole agreement — the first thing you hand over becomes "first", the second becomes "last". Swap them at the call and you get "Lovelace Ada" with no complaint from anyone.',
+            fallbackOutput: ['Ada Lovelace']
+          },
+          {
+            tag: 'several steps',
+            title: 'A recipe that does some maths',
+            code:
+              'function totalWithTip(bill, tipPercent) {\n' +
+              '  const tip = bill * (tipPercent / 100);\n' +
+              '  return bill + tip;\n' +
+              '}\n' +
+              '\n' +
+              'console.log(totalWithTip(40, 15));',
+            note: 'What changed: more than one step, and a temporary holder called "tip" that exists only while the recipe is running. The kitchen is private — nothing outside this function can see "tip". Only the thing you return ever comes back out.',
+            fallbackOutput: ['46']
+          }
+        ]
+      },
+
+      {
+        type: 'pitfalls',
+        label: 'What goes wrong',
+        heading: 'How functions break in AI-generated code',
+        items: [
+          { bold: 'Called before it exists', rest: '— the code asks for a recipe that has not been written down yet.' },
+          { bold: 'The wrong number of ingredients', rest: '— the recipe expects two, gets one, and the missing one quietly turns into undefined.' },
+          { bold: 'A name that was never real', rest: '— the AI confidently calls a function that nobody ever wrote.' }
+        ],
+        note: 'You will meet all three over in Practice. For now, just knowing these patterns exist is enough.'
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Point at any function in a code snippet and say what it is called, what it takes in, and what it hands back.',
+          'Tell the difference between a function being written down and a function actually running.',
+          'Explain why the insides of a function are private, and why only the returned value comes back out.'
+        ],
+        buttonLabel: 'I get it',
+        doneLabel: 'Lesson complete',
+        undoLabel: 'Actually, let me read that again'
+      }
+    ]
+  }
+];
+
+/* =====================================================================
    STATE — persisted to localStorage. No streaks, no decay, no guilt.
    ===================================================================== */
 var STORAGE_KEY = 'slopPatrolProgress';
@@ -1025,6 +1381,8 @@ function defaultState() {
     done: {},              // id -> true, for answered mc/line challenges
     examGrades: {},        // id -> 'got' | 'missed'
     attempted: {},         // id -> true once the lesson card has been dismissed
+    view: 'practice',      // which tab is open: 'learn' | 'practice'
+    lessonsDone: {},       // lesson id -> true, self-assessed
     lastSeen: null
   };
 }
@@ -1035,8 +1393,10 @@ function loadState() {
     if (!raw) return defaultState();
     var parsed = JSON.parse(raw);
     if (!parsed || parsed.version !== 1) return defaultState();
-    // Saved before lesson cards existed: keep the progress, just add the field.
+    // Saved before a later feature existed: keep the progress, add the field.
     if (!parsed.attempted) parsed.attempted = {};
+    if (!parsed.lessonsDone) parsed.lessonsDone = {};
+    if (!parsed.view) parsed.view = 'practice';
     return parsed;
   } catch (e) {
     return defaultState();
@@ -1169,17 +1529,22 @@ function highlightTag(tagText) {
 
 var KEYWORDS = 'const|let|var|function|return|async|await|if|else|for|of|in|new|true|false|null|undefined|this';
 
+/* Lesson code can carry invisible annotation markers (see renderAnnotated).
+   They sit between tokens, so the "is this followed by a (" lookaheads have
+   to see straight through them. */
+var MARK = '[\\u0010-\\u0015]';
+
 /* Order matters: earlier alternatives win at any given position. */
 var HL_RE = new RegExp(
   '(\\/\\/[^\\n]*|&lt;!--[^\\n]*)' +                  // 1 comment
   '|(&lt;\\/?[a-zA-Z][^&]*&gt;)' +                    // 2 html tag
   '|(\'(?:[^\'\\\\]|\\\\.)*\'|"(?:[^"\\\\]|\\\\.)*")' + // 3 string
   '|(&[a-z]+;)' +                                     // 4 stray entity
-  '|\\.([a-zA-Z_$][\\w$]*)(?=\\s*\\()' +              // 5 method call
+  '|\\.([a-zA-Z_$][\\w$]*)(?=' + MARK + '*\\s*\\()' + // 5 method call
   '|\\.([a-zA-Z_$][\\w$]*)' +                         // 6 property
   '|\\b(' + KEYWORDS + ')\\b' +                       // 7 keyword
   '|\\b(\\d+(?:\\.\\d+)?)\\b' +                       // 8 number
-  '|\\b([a-zA-Z_$][\\w$]*)(?=\\s*\\()' +              // 9 function
+  '|\\b([a-zA-Z_$][\\w$]*)(?=' + MARK + '*\\s*\\()' + // 9 function
   '|\\b([a-zA-Z_$][\\w$]*)\\b',                       // 10 variable
   'g');
 
@@ -1665,10 +2030,348 @@ function renderSummary() {
       state = defaultState();
       saveState();
       updateProgress();
+      syncChrome();
       renderHome();
     }
   });
 }
+
+/* =====================================================================
+   LEARN — lesson list and lesson pages.
+   Sections render by type, so a new lesson is data only: add it to
+   LESSONS and it appears in the list with no code changes.
+   ===================================================================== */
+var RUNNABLES = {};                                    // run key -> snippet
+/* Invisible control characters used only while building a lesson code block:
+   they mark where a highlight starts and ends. Written with fromCharCode so
+   they stay visible and editable in this source file. */
+var M_OPEN = [String.fromCharCode(17), String.fromCharCode(18),
+              String.fromCharCode(19), String.fromCharCode(20)];
+var M_CLOSE = String.fromCharCode(16);
+
+function lessonDone(l) { return !!state.lessonsDone[l.id]; }
+
+function findLesson(id) {
+  for (var i = 0; i < LESSONS.length; i++) if (LESSONS[i].id === id) return LESSONS[i];
+  return null;
+}
+
+/* ---------- code blocks inside lessons ---------- */
+
+/* Wrap each annotation's target text in an invisible marker, highlight the
+   line as usual, then swap the markers for colored spans. Markers are
+   non-word characters, so they never split a token in the highlighter. */
+function renderLessonCode(code, filename, annotations) {
+  var lines = code.split('\n');
+  var html = '<div class="code-card">';
+  if (filename) {
+    html += '<div class="filename"><span>' + esc(filename) + '</span>' +
+            '<button class="legend-btn" data-legend="1" aria-label="What do the colors mean?" ' +
+            'title="What do the colors mean?">?</button></div>';
+  }
+  html += '<div class="code-scroll"><div class="code-lines">';
+  for (var i = 0; i < lines.length; i++) {
+    var escaped = esc(lines[i]);
+    if (annotations) {
+      for (var a = 0; a < annotations.length && a < M_OPEN.length; a++) {
+        var an = annotations[a];
+        if (an.line !== i + 1) continue;
+        var needle = esc(an.match);
+        var at = escaped.indexOf(needle);
+        if (at === -1) continue;
+        escaped = escaped.slice(0, at) + M_OPEN[a] + needle + M_CLOSE +
+                  escaped.slice(at + needle.length);
+      }
+    }
+    var lineHtml = swapMarkers(highlight(escaped));
+    html += '<div class="code-line"><span class="ln">' + (i + 1) + '</span>' +
+            '<span class="lc">' + (lineHtml || ' ') + '</span></div>';
+  }
+  return html + '</div></div></div>';
+}
+
+function swapMarkers(s) {
+  for (var a = 0; a < M_OPEN.length; a++) {
+    s = s.split(M_OPEN[a]).join('<span class="anno anno-' + a + '"><sup>' + (a + 1) + '</sup>');
+  }
+  return s.split(M_CLOSE).join('</span>');
+}
+
+function renderAnnoKey(annotations) {
+  var html = '<div class="anno-key">';
+  for (var i = 0; i < annotations.length; i++) {
+    html += '<div class="anno-item"><span class="anno-num n' + i + '">' + (i + 1) + '</span>' +
+              '<span class="at"><b>' + esc(annotations[i].title) + '</b> — ' +
+              esc(annotations[i].text) + '</span></div>';
+  }
+  return html + '</div>';
+}
+
+/* ---------- actually running the snippets ---------- */
+function formatLogValue(v) {
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'boolean' || v === null) return String(v);
+  if (v === undefined) return 'undefined';
+  try { return JSON.stringify(v); } catch (e) { return String(v); }
+}
+
+function runSnippet(code, fallback) {
+  var out = [];
+  try {
+    var fakeConsole = { log: function () {
+      var parts = [];
+      for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
+      out.push(parts.join(' '));
+    } };
+    (new Function('console', code))(fakeConsole);
+    return out.length ? out : ['(nothing was printed)'];
+  } catch (e) {
+    // e.g. somewhere that blocks Function(); show the known-good output instead.
+    return (fallback && fallback.length) ? fallback.slice() : ['(could not run here)'];
+  }
+}
+
+function renderRunRow(key, code, fallback, afterRun) {
+  RUNNABLES[key] = { code: code, fallback: fallback };
+  var html = '<div class="run-row">' +
+               '<button class="btn-run" data-run="' + key + '">▶ Run this code</button>' +
+               '<span class="run-hint" id="hint-' + key + '">Nothing has run yet.</span>' +
+             '</div>' +
+             '<div class="mini-console" id="con-' + key + '" hidden></div>';
+  if (afterRun) {
+    html += '<div class="after-run" id="after-' + key + '" hidden>' + esc(afterRun) + '</div>';
+  }
+  return html;
+}
+
+function renderMiniConsole(lines) {
+  var html = '<div class="console-card">' +
+    '<div class="console-tab"><span>Elements</span><span class="tab-active">Console</span>' +
+    '<span>Network</span><span>Sources</span></div>';
+  for (var i = 0; i < lines.length; i++) {
+    html += '<div class="console-row console-log"><span class="log-icon">›</span>' +
+            '<span class="err-msg">' + esc(lines[i]) + '</span></div>';
+  }
+  return html + '</div>';
+}
+
+/* ---------- section renderers, keyed by section.type ---------- */
+function secHead(sec) {
+  var html = '';
+  if (sec.label) html += '<div class="sec-label">' + esc(sec.label) + '</div>';
+  if (sec.heading) html += '<h3>' + esc(sec.heading) + '</h3>';
+  return html;
+}
+
+var SECTION_RENDERERS = {
+
+  hook: function (sec) {
+    return '<div class="hook"><p>' + esc(sec.text) + '</p></div>';
+  },
+
+  /* paragraphs are authored markup — <strong> is allowed on purpose */
+  prose: function (sec) {
+    var html = '<div class="sec">' + secHead(sec);
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
+    return html + '</div>';
+  },
+
+  analogy: function (sec) {
+    var html = '<div class="sec">' + secHead(sec) + '<div class="analogy">' +
+               '<div class="analogy-row head"><span class="ac">' + esc(sec.head[0]) + '</span>' +
+               '<span class="ac">' + esc(sec.head[1]) + '</span></div>';
+    for (var i = 0; i < sec.rows.length; i++) {
+      html += '<div class="analogy-row"><span class="ac">' + esc(sec.rows[i][0]) + '</span>' +
+              '<span class="ac">' + esc(sec.rows[i][1]) + '</span></div>';
+    }
+    return html + '</div></div>';
+  },
+
+  demo: function (sec, lesson, idx) {
+    var key = lesson.id + '-demo' + idx;
+    var html = '<div class="sec">' + secHead(sec) + '<p>' + esc(sec.intro) + '</p>';
+    html += renderLessonCode(sec.code, sec.filename, sec.annotations);
+    html += renderAnnoKey(sec.annotations);
+    html += renderRunRow(key, sec.code, sec.fallbackOutput, sec.afterRun);
+    return html + '</div>';
+  },
+
+  variations: function (sec, lesson, idx) {
+    var html = '<div class="sec">' + secHead(sec) + '<p>' + esc(sec.intro) + '</p>';
+    for (var i = 0; i < sec.items.length; i++) {
+      var item = sec.items[i];
+      var key = lesson.id + '-var' + idx + '-' + i;
+      html += '<div class="variation">' +
+                '<div class="var-head">' + esc(item.title) +
+                  '<span class="var-tag">' + esc(item.tag) + '</span></div>' +
+                renderLessonCode(item.code, null, null) +
+                renderRunRow(key, item.code, item.fallbackOutput, null) +
+                '<div class="var-note">' + esc(item.note) + '</div>' +
+              '</div>';
+    }
+    return html + '</div>';
+  },
+
+  pitfalls: function (sec) {
+    var html = '<div class="sec">' + secHead(sec) + '<div class="pitfalls">';
+    for (var i = 0; i < sec.items.length; i++) {
+      html += '<div class="pitfall"><span class="pf-icon">⚠️</span>' +
+                '<span class="pf-text"><b>' + esc(sec.items[i].bold) + '</b> ' +
+                esc(sec.items[i].rest) + '</span></div>';
+    }
+    html += '</div>';
+    if (sec.note) html += '<div class="pitfalls-note">' + esc(sec.note) + '</div>';
+    return html + '</div>';
+  },
+
+  checkpoint: function (sec, lesson) {
+    var done = lessonDone(lesson);
+    var html = '<div class="checkpoint"><h3>' + esc(sec.heading) + '</h3><div class="abilities">';
+    for (var i = 0; i < sec.abilities.length; i++) {
+      html += '<div class="ability"><span class="ab-tick">✓</span><span>' +
+              esc(sec.abilities[i]) + '</span></div>';
+    }
+    html += '</div>';
+    if (done) {
+      html += '<div class="done-state"><span>✅</span><span>' + esc(sec.doneLabel) + '</span></div>' +
+              '<button class="undo-link" data-lesson-undo="' + esc(lesson.id) + '">' +
+                esc(sec.undoLabel) + '</button>' +
+              '<div class="next-step">Ready to try it on real broken code? ' +
+                '<button data-goto-practice="1">Go to Practice →</button></div>';
+    } else {
+      html += '<button class="btn btn-green" data-lesson-done="' + esc(lesson.id) + '">' +
+              esc(sec.buttonLabel) + '</button>';
+    }
+    return html + '</div>';
+  }
+};
+
+/* ---------- screens ---------- */
+function renderLessonList() {
+  var done = 0;
+  for (var i = 0; i < LESSONS.length; i++) if (lessonDone(LESSONS[i])) done++;
+
+  var html = '<div class="lessons-head"><h2>Learn</h2>' +
+    '<p>Short lessons that explain the idea before you go hunting for it in broken code. ' +
+    'No quizzes and nothing locked — read one whenever you want firmer ground.</p>' +
+    '<span class="lessons-count">' + done + ' of ' + LESSONS.length + ' complete</span></div>' +
+    '<div class="lesson-list">';
+
+  for (var j = 0; j < LESSONS.length; j++) {
+    var l = LESSONS[j];
+    var isDone = lessonDone(l);
+    html += '<button class="lesson-item' + (isDone ? ' done' : '') + '" data-lesson="' + esc(l.id) + '">' +
+              '<span class="lesson-check">' + (isDone ? '✓' : (j + 1)) + '</span>' +
+              '<span class="lc-body">' +
+                '<span class="lc-title">' + esc(l.title) + '</span>' +
+                '<span class="lc-blurb">' + esc(l.blurb) + '</span>' +
+                '<span class="lc-meta">' + (isDone ? '✓ Completed' : l.minutes + ' min read') + '</span>' +
+              '</span></button>';
+  }
+  document.getElementById('screen-lessons').innerHTML = html + '</div>';
+}
+
+function renderLessonPage(id) {
+  var lesson = findLesson(id);
+  if (!lesson) { renderLessonList(); show('screen-lessons'); return; }
+  RUNNABLES = {};
+
+  var html = '<button class="back-link" data-back-to-lessons="1">← Back to lessons</button>' +
+             '<h1 class="lesson-title">' + esc(lesson.title) + '</h1>' +
+             '<div class="lesson-sub">' + lesson.minutes + ' min read' +
+             (lessonDone(lesson) ? ' · ✓ completed' : '') + '</div>';
+
+  for (var i = 0; i < lesson.sections.length; i++) {
+    var sec = lesson.sections[i];
+    var render = SECTION_RENDERERS[sec.type];
+    if (render) html += render(sec, lesson, i);
+  }
+  document.getElementById('screen-lesson').innerHTML = html;
+  show('screen-lesson');
+}
+
+/* ---------- tabs ---------- */
+function syncChrome() {
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-view') === state.view);
+  }
+  document.getElementById('practiceProgress').hidden = state.view !== 'practice';
+  document.getElementById('moduleLabel').textContent = state.view === 'learn'
+    ? 'Module 1 · Concepts'
+    : 'Module 1 · Reading Errors Without Panicking';
+}
+
+function enterLearn() {
+  state.view = 'learn';
+  saveState();
+  syncChrome();
+  renderLessonList();
+  show('screen-lessons');
+}
+
+/* Coming back to Practice drops you where you were, not on the welcome screen. */
+function enterPractice() {
+  state.view = 'practice';
+  saveState();
+  syncChrome();
+  if (moduleComplete()) { renderSummary(); show('screen-summary'); }
+  else if (state.started) { renderChallenge(state.current); show('screen-challenge'); }
+  else renderHome();
+}
+
+document.addEventListener('click', function (e) {
+  if (!e.target.closest) return;
+  var el;
+
+  if ((el = e.target.closest('.tab'))) {
+    var v = el.getAttribute('data-view');
+    if (v === 'learn') enterLearn(); else enterPractice();
+    return;
+  }
+  if ((el = e.target.closest('[data-lesson]'))) {
+    renderLessonPage(el.getAttribute('data-lesson'));
+    return;
+  }
+  if (e.target.closest('[data-back-to-lessons]')) {
+    renderLessonList();
+    show('screen-lessons');
+    return;
+  }
+  if ((el = e.target.closest('[data-lesson-done]'))) {
+    state.lessonsDone[el.getAttribute('data-lesson-done')] = true;
+    saveState();
+    renderLessonPage(el.getAttribute('data-lesson-done'));
+    return;
+  }
+  if ((el = e.target.closest('[data-lesson-undo]'))) {
+    delete state.lessonsDone[el.getAttribute('data-lesson-undo')];
+    saveState();
+    renderLessonPage(el.getAttribute('data-lesson-undo'));
+    return;
+  }
+  if (e.target.closest('[data-goto-practice]')) enterPractice();
+});
+
+/* run buttons inside lessons */
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest && e.target.closest('[data-run]');
+  if (!btn) return;
+  var key = btn.getAttribute('data-run');
+  var entry = RUNNABLES[key];
+  if (!entry) return;
+
+  var lines = runSnippet(entry.code, entry.fallback);
+  var con = document.getElementById('con-' + key);
+  con.innerHTML = renderMiniConsole(lines);
+  con.hidden = false;
+
+  var hint = document.getElementById('hint-' + key);
+  if (hint) hint.textContent = 'This really ran — that is the actual output.';
+  var after = document.getElementById('after-' + key);
+  if (after) after.hidden = false;
+  btn.textContent = '▶ Run it again';
+});
 
 /* =====================================================================
    TOKEN TOOLTIPS + COLOR LEGEND
@@ -1770,7 +2473,9 @@ document.addEventListener('keydown', function (e) {
    ===================================================================== */
 buildLegend();
 updateProgress();
-renderHome();
+syncChrome();
+if (state.view === 'learn') enterLearn();
+else renderHome();
 </script>
 </body>
 </html>
