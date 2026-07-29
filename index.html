@@ -1233,6 +1233,109 @@ var CHALLENGES = [
    ===================================================================== */
 var LESSONS = [
   {
+    id: 'code-101',
+    title: 'What is code, actually?',
+    blurb: 'Start here if you have never written a line. What running code means, what the console is, and why an error is just the computer telling you something.',
+    minutes: 5,
+    sections: [
+
+      { type: 'hook', text: 'Nothing here assumes you know anything. By the end of this page you will have run five small pieces of code yourself and seen exactly what each one did.' },
+
+      {
+        type: 'step',
+        label: 'Step 1',
+        heading: 'What "running" code means',
+        paragraphs: [
+          'Code is a list of written instructions. <strong>Running</strong> it means the computer starts at the top, does what that line says, then moves to the next one until it runs out of lines.',
+          'Until you run it, code is just text sitting there doing nothing.'
+        ],
+        code: "console.log('hi');",
+        filename: 'try-it.js',
+        fallbackOutput: ['hi'],
+        afterRun: 'That is the entire idea. One line, read and carried out exactly as written. The computer did not decide anything — the line said to write out "hi", so it wrote out "hi".'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 2',
+        heading: 'What the console is',
+        paragraphs: [
+          'The <strong>console</strong> is a plain text panel built into every browser — closer to a text conversation than anything else, where you send instructions and it sends short replies back.',
+          'It has two jobs: showing anything your code deliberately writes out, and showing errors when something goes wrong. The instruction <strong>console.log</strong> means what it says — log this to the console.'
+        ],
+        code:
+          "console.log('This message came from the code.');\n" +
+          "console.log('Each log gets its own line.');",
+        filename: 'try-it.js',
+        fallbackOutput: ['This message came from the code.', 'Each log gets its own line.'],
+        afterRun: 'Two instructions, two replies, in the order they were written. This is how you check what your code is really doing: you ask it to write something out, and you read what comes back.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 3',
+        heading: 'What a variable is',
+        paragraphs: [
+          'A <strong>variable</strong> is a labelled box. You put a value into it, give the box a name, and from then on you can refer to that value by name instead of writing it out again.',
+          'Line 1 below puts the text Sam into a box labelled name, and line 2 asks for whatever is in that box.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "console.log(name);",
+        filename: 'try-it.js',
+        fallbackOutput: ['Sam'],
+        afterRun: 'Look closely at line 2: there are no quotes around name. That matters. Without quotes it means "the box called name, whatever is in it". With quotes it would have written out the literal word name instead.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 4',
+        heading: 'Text and numbers are different things',
+        paragraphs: [
+          "Quotes are how you mark something as text.",
+          "<strong>'Sam'</strong> with quotes is text; <strong>42</strong> without quotes is a number the computer can count with. This matters because the + sign does two completely different jobs depending on what it is handed."
+        ],
+        code:
+          "console.log('Sam' + '!');\n" +
+          "console.log(5 + 3);\n" +
+          "console.log('5' + '3');",
+        filename: 'try-it.js',
+        fallbackOutput: ['Sam!', '8', '53'],
+        afterRun: 'Same + sign, three different outcomes. Between text it glues the pieces together. Between numbers it adds them. The third line is the one that catches people out: "5" and "3" look like numbers, but the quotes make them text, so they get glued into 53 instead of added into 8.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 5',
+        heading: 'What an error looks like',
+        paragraphs: [
+          'This code is broken on purpose. The box is called <strong>name</strong>, but line 2 asks for <strong>nam</strong> — a name that was never used for anything.',
+          'Run it and watch what appears in the console.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "console.log(nam);",
+        filename: 'try-it.js',
+        fallbackOutput: [{ text: 'Uncaught ReferenceError: nam is not defined', type: 'error' }],
+        afterRun: 'Red does not mean you broke something, and nothing is wrong with your computer. That line is the computer telling you, as precisely as it can, that you asked for nam and it has never heard of it. An error always names the thing it could not do — which is why reading one beats guessing at it.'
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Read a line of code and say what will happen when it runs.',
+          'Say what the console is, and what console.log puts there.',
+          'Recognise an error when you see one, and say what it is complaining about.'
+        ],
+        buttonLabel: 'I get it',
+        doneLabel: 'Lesson complete',
+        undoLabel: 'Actually, let me read that again'
+      }
+    ]
+  },
+
+  {
     id: 'functions-101',
     title: 'What is a JavaScript function?',
     blurb: 'The one idea that unlocks most AI-generated bugs. Recipes, ingredients, and the difference between writing one down and actually cooking it.',
@@ -2115,20 +2218,42 @@ function formatLogValue(v) {
   try { return JSON.stringify(v); } catch (e) { return String(v); }
 }
 
+/* Output lines are { text, type } where type is 'log' or 'error'. Authored
+   fallbacks may be plain strings, which mean 'log'. */
+function normalizeOutput(arr) {
+  var out = [];
+  for (var i = 0; i < (arr || []).length; i++) {
+    var v = arr[i];
+    out.push(typeof v === 'string' ? { text: v, type: 'log' }
+                                   : { text: v.text, type: v.type || 'log' });
+  }
+  return out;
+}
+
 function runSnippet(code, fallback) {
   var out = [];
+  var fakeConsole = { log: function () {
+    var parts = [];
+    for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
+    out.push({ text: parts.join(' '), type: 'log' });
+  } };
+
+  var fn;
   try {
-    var fakeConsole = { log: function () {
-      var parts = [];
-      for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
-      out.push(parts.join(' '));
-    } };
-    (new Function('console', code))(fakeConsole);
-    return out.length ? out : ['(nothing was printed)'];
+    fn = new Function('console', code);
   } catch (e) {
-    // e.g. somewhere that blocks Function(); show the known-good output instead.
-    return (fallback && fallback.length) ? fallback.slice() : ['(could not run here)'];
+    // Somewhere that blocks Function() entirely; show the known-good output.
+    var fb = normalizeOutput(fallback);
+    return fb.length ? fb : [{ text: '(could not run here)', type: 'log' }];
   }
+
+  try {
+    fn(fakeConsole);
+  } catch (err) {
+    // A snippet that throws on purpose lands here — report it like DevTools does.
+    out.push({ text: 'Uncaught ' + (err.name || 'Error') + ': ' + err.message, type: 'error' });
+  }
+  return out.length ? out : [{ text: '(nothing was printed)', type: 'log' }];
 }
 
 function renderRunRow(key, code, fallback, afterRun) {
@@ -2149,8 +2274,13 @@ function renderMiniConsole(lines) {
     '<div class="console-tab"><span>Elements</span><span class="tab-active">Console</span>' +
     '<span>Network</span><span>Sources</span></div>';
   for (var i = 0; i < lines.length; i++) {
-    html += '<div class="console-row console-log"><span class="log-icon">›</span>' +
-            '<span class="err-msg">' + esc(lines[i]) + '</span></div>';
+    if (lines[i].type === 'error') {
+      html += '<div class="console-row"><span class="err-icon">✕</span>' +
+              '<span class="err-msg">' + esc(lines[i].text) + '</span></div>';
+    } else {
+      html += '<div class="console-row console-log"><span class="log-icon">›</span>' +
+              '<span class="err-msg">' + esc(lines[i].text) + '</span></div>';
+    }
   }
   return html + '</div>';
 }
@@ -2185,6 +2315,16 @@ var SECTION_RENDERERS = {
               '<span class="ac">' + esc(sec.rows[i][1]) + '</span></div>';
     }
     return html + '</div></div>';
+  },
+
+  /* intro -> code -> Run -> console. The workhorse of a beginner lesson. */
+  step: function (sec, lesson, idx) {
+    var key = lesson.id + '-step' + idx;
+    var html = '<div class="sec">' + secHead(sec);
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
+    html += renderLessonCode(sec.code, sec.filename || null, null);
+    html += renderRunRow(key, sec.code, sec.fallbackOutput, sec.afterRun);
+    return html + '</div>';
   },
 
   demo: function (sec, lesson, idx) {
