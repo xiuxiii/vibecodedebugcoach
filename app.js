@@ -868,6 +868,7 @@ function renderSummary() {
    LESSONS and it appears in the list with no code changes.
    ===================================================================== */
 var RUNNABLES = {};                                    // run key -> snippet
+var LPREDICTS = {};                                    // run key -> lesson predict block
 /* Invisible control characters used only while building a lesson code block:
    they mark where a highlight starts and ends. Written with fromCharCode so
    they stay visible and editable in this source file. */
@@ -1181,6 +1182,40 @@ function outputMatches(output, expected) {
   return true;
 }
 
+/* Optional "say what it prints before you run it" gate above a lesson snippet.
+   Deliberately only on a couple of steps — prompting on every re-read nags. */
+function renderPredictGate(key, predict) {
+  if (!predict) return '';
+  var html = '<div class="lpredict" id="lp-' + key + '">' +
+               '<div class="sec-label">PREDICT FIRST</div>' +
+               '<p class="lp-q">' + esc(predict.question) + '</p>' +
+               '<div class="options">';
+  for (var i = 0; i < predict.options.length; i++) {
+    html += '<button class="opt" data-lpredict="' + key + '" data-lp-opt="' + i + '">' +
+            esc(predict.options[i]) + '</button>';
+  }
+  return html + '</div><div class="lp-note" id="lpnote-' + key + '"></div></div>';
+}
+
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest && e.target.closest('[data-lpredict]');
+  if (!btn) return;
+  var key = btn.getAttribute('data-lpredict');
+  var predict = LPREDICTS[key];
+  if (!predict) return;
+  var pick = parseInt(btn.getAttribute('data-lp-opt'), 10);
+  var wrap = document.getElementById('lp-' + key);
+  var opts = wrap.querySelectorAll('.opt');
+  for (var i = 0; i < opts.length; i++) {
+    opts[i].disabled = true;
+    if (i === predict.correct) opts[i].classList.add('right');
+  }
+  if (pick !== predict.correct) btn.classList.add('wrong');
+  document.getElementById('lpnote-' + key).textContent = pick === predict.correct
+    ? 'Now run it and confirm.'
+    : 'Run it and see what actually comes back — that gap is the useful bit.';
+});
+
 function renderRunRow(key, code, fallback, afterRun) {
   RUNNABLES[key] = { code: code, fallback: fallback };
   var html = '<div class="run-row">' +
@@ -1248,6 +1283,7 @@ var SECTION_RENDERERS = {
     var html = '<div class="sec">' + secHead(sec);
     for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
     html += renderLessonCode(sec.code, sec.filename || null, null);
+    if (sec.predict) { LPREDICTS[key] = sec.predict; html += renderPredictGate(key, sec.predict); }
     html += renderRunRow(key, sec.code, sec.fallbackOutput, sec.afterRun);
     return html + '</div>';
   },
@@ -1270,6 +1306,7 @@ var SECTION_RENDERERS = {
                 '<div class="var-head">' + esc(item.title) +
                   '<span class="var-tag">' + esc(item.tag) + '</span></div>' +
                 renderLessonCode(item.code, null, null) +
+                (item.predict ? (LPREDICTS[key] = item.predict, renderPredictGate(key, item.predict)) : '') +
                 renderRunRow(key, item.code, item.fallbackOutput, null) +
                 '<div class="var-note">' + esc(item.note) + '</div>' +
               '</div>';
@@ -1340,6 +1377,7 @@ function renderLessonPage(id) {
   var lesson = findLesson(id);
   if (!lesson) { renderLessonList(); show('screen-lessons'); return; }
   RUNNABLES = {};
+  LPREDICTS = {};
 
   var html = '<button class="back-link" data-back-to-lessons="1">[ BACK TO LESSONS ]</button>' +
              '<h1 class="lesson-title">' + esc(lesson.title) + '</h1>' +

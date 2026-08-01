@@ -761,6 +761,11 @@ var LESSONS = [
           "console.log(5 + 3);\n" +
           "console.log('5' + '3');",
         filename: 'try-it.js',
+        predict: {
+          question: 'Before you press Run — what do these three lines print?',
+          options: ['Sam! / 8 / 8', 'Sam! / 8 / 53', 'Sam! / 53 / 53', 'Sam! / 8 / an error'],
+          correct: 1
+        },
         fallbackOutput: ['Sam!', '8', '53'],
         afterRun: 'Same + sign, three different outcomes. Between text it glues the pieces together. Between numbers it adds them. The third line is the one that catches people out: "5" and "3" look like numbers, but the quotes make them text, so they get glued into 53 instead of added into 8.'
       },
@@ -896,6 +901,11 @@ var LESSONS = [
               '}\n' +
               '\n' +
               'console.log(totalWithTip(40, 15));',
+            predict: {
+              question: 'Before you run it — a bill of 40 with a 15% tip. What prints?',
+              options: ['46', '6', '55', 'undefined — "tip" is never returned'],
+              correct: 0
+            },
             note: 'What changed: more than one step, and a temporary holder called "tip" that exists only while the recipe is running. The kitchen is private — nothing outside this function can see "tip". Only the thing you return ever comes back out.',
             fallbackOutput: ['46']
           }
