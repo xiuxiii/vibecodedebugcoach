@@ -1,4 +1,4 @@
-/* Slop Patrol — content only: challenges, lessons, and the syntax-colour
+/* Vibe Coach — content only: challenges, lessons, and the syntax-colour
    legend. Loaded before app.js, which renders all of this. */
 'use strict';
 

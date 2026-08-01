@@ -1,11 +1,12 @@
-/* Slop Patrol — engine: state, rendering, the highlighter and the code runner.
+/* Vibe Coach — engine: state, rendering, the highlighter and the code runner.
    Depends on CHALLENGES / LESSONS / TOK_INFO from content.js. */
 'use strict';
 
 /* =====================================================================
    STATE — persisted to localStorage. No streaks, no decay, no guilt.
    ===================================================================== */
-var STORAGE_KEY = 'slopPatrolProgress';
+var STORAGE_KEY = 'vibeCoachProgress';
+var LEGACY_STORAGE_KEY = 'slopPatrolProgress';  // app's former name; adopted once on load
 
 var state = loadState();
 
@@ -29,6 +30,20 @@ function defaultState() {
 function loadState() {
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
+    // Progress saved under the old app name carries over on first load, so the
+    // rename doesn't look like a wipe. Copy the value to the new key *before*
+    // dropping the old one, so an interruption mid-migration can't lose data —
+    // and so the new key exists even if the user never triggers another save.
+    if (!raw) {
+      var legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (legacy) {
+        raw = legacy;
+        try {
+          localStorage.setItem(STORAGE_KEY, legacy);
+          localStorage.removeItem(LEGACY_STORAGE_KEY);
+        } catch (e) { /* private mode: still works for this session */ }
+      }
+    }
     if (!raw) return defaultState();
     var parsed = JSON.parse(raw);
     if (!parsed || parsed.version !== 1) return defaultState();
@@ -315,7 +330,7 @@ function renderHome() {
     return;
   }
   if (state.started) {
-    html += '<div class="big-icon">$ ./slop-patrol --resume</div>';
+    html += '<div class="big-icon">$ ./vibe-coach --resume</div>';
     html += '<h2>Welcome back</h2>';
     html += '<div class="welcome-back">You’re on challenge <strong>' +
             (state.current + 1) + ' of ' + CHALLENGES.length +
@@ -323,7 +338,7 @@ function renderHome() {
     html += '<div class="actions" style="justify-content:center">' +
             '<button class="btn btn-primary" id="btnContinue">[ CONTINUE ]</button></div>';
   } else {
-    html += '<div class="big-icon">$ ./slop-patrol --module 1</div>';
+    html += '<div class="big-icon">$ ./vibe-coach --module 1</div>';
     html += '<h2>Reading Errors Without Panicking</h2>';
     html += '<p>15 challenges built from real AI slop: hallucinated methods, invented response shapes, half-renamed variables, missing awaits.</p>';
     html += '<p>You’ll learn to read the error, find the guilty line, and diagnose root causes cold.</p>';
@@ -852,7 +867,7 @@ function renderSummary() {
     show('screen-challenge');
   });
   document.getElementById('btnReset').addEventListener('click', function () {
-    if (confirm('Wipe all Slop Patrol progress and start fresh?')) {
+    if (confirm('Wipe all Vibe Coach progress and start fresh?')) {
       state = defaultState();
       saveState();
       updateProgress();
