@@ -209,7 +209,7 @@ var MARK = '[\\u0010-\\u0015]';
 var HL_RE = new RegExp(
   '(\\/\\/[^\\n]*|&lt;!--[^\\n]*)' +                  // 1 comment
   '|(&lt;\\/?[a-zA-Z][^&]*&gt;)' +                    // 2 html tag
-  '|(\'(?:[^\'\\\\]|\\\\.)*\'|"(?:[^"\\\\]|\\\\.)*")' + // 3 string
+  '|(\'(?:[^\'\\\\]|\\\\.)*\'|"(?:[^"\\\\]|\\\\.)*"|`(?:[^`\\\\]|\\\\.)*`)' + // 3 string (incl. backtick)
   '|(&[a-z]+;)' +                                     // 4 stray entity
   '|\\.([a-zA-Z_$][\\w$]*)(?=' + MARK + '*\\s*\\()' + // 5 method call
   '|\\.([a-zA-Z_$][\\w$]*)' +                         // 6 property
@@ -1278,6 +1278,23 @@ var SECTION_RENDERERS = {
   prose: function (sec) {
     var html = '<div class="sec">' + secHead(sec);
     for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
+    return html + '</div>';
+  },
+
+  /* one punctuation mark, shown large, with a plain-English read and a
+     "here is what breaks" note. paragraphs/breaks are authored markup. */
+  symbol: function (sec) {
+    var html = '<div class="sec symbol-sec">' +
+      '<div class="symbol-head">' +
+        '<span class="symbol-glyph">' + esc(sec.symbol) + '</span>' +
+        '<span class="symbol-name">' + esc(sec.name) + '</span>' +
+      '</div>';
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
+    if (sec.code) html += renderLessonCode(sec.code, null, null);
+    if (sec.breaks) {
+      html += '<div class="symbol-breaks"><span class="sb-label">MISSING OR WRONG</span>' +
+              sec.breaks + '</div>';
+    }
     return html + '</div>';
   },
 

@@ -802,6 +802,162 @@ var LESSONS = [
   },
 
   {
+    id: 'symbols-101',
+    title: 'Reading the symbols: punctuation in code',
+    blurb: 'Parentheses, brackets, dots, equals signs — what every piece of code punctuation actually means, and what breaks when it is missing or wrong.',
+    minutes: 7,
+    sections: [
+
+      { type: 'hook', text: 'You do not need to memorize any of this. Read it once, then refer back whenever a symbol confuses you in Practice — each mark below is its own small entry you can jump to.' },
+
+      {
+        type: 'symbol',
+        symbol: '( )',
+        name: 'parentheses',
+        paragraphs: [
+          'Parentheses do two different jobs, and telling them apart is most of the battle. Right after a function’s name as you <strong>call</strong> it, they mean “run this now,” and whatever sits inside is what you hand over. After a function’s name as you <strong>define</strong> it, they instead list the names of the inputs it expects.',
+          'Same symbol, two roles: on the last line below the parentheses run <strong>greet</strong>; on the first line they hold what greet takes in.'
+        ],
+        code:
+          "function greet(name) {\n" +
+          "  return 'Hi, ' + name;\n" +
+          "}\n" +
+          "\n" +
+          "greet('Sam');",
+        breaks: 'Leave the parentheses off when calling — just <strong>greet</strong> instead of <strong>greet()</strong> — and nothing runs. You get a reference to the function itself rather than its result, which is a common reason “nothing happens.”'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '{ }',
+        name: 'curly braces',
+        paragraphs: [
+          'Curly braces fence off a block of code that belongs together. Everything between the opening <strong>{</strong> and the closing <strong>}</strong> is the body — the steps inside a function, or what should happen inside an <strong>if</strong>.',
+          'Read them as “all of this, as one group.”'
+        ],
+        code:
+          "if (score > 90) {\n" +
+          "  console.log('top marks');\n" +
+          "}",
+        breaks: 'Drop the closing <strong>}</strong> and everything after it gets swallowed into the block, usually ending in an <strong>Unexpected end of input</strong> error — the browser reached the end of the file still waiting for the brace that never came.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '[ ]',
+        name: 'square brackets',
+        paragraphs: [
+          'Square brackets have two closely related uses. Wrapping a comma-separated run of things makes a <strong>list</strong> (an array). Putting a number in brackets after a list <strong>reaches into it</strong> and pulls out the item at that position.',
+          'Counting starts at zero, so <strong>colors[0]</strong> is the first item — ‘red’ here — and colors[1] is the second.'
+        ],
+        code:
+          "const colors = ['red', 'green', 'blue'];\n" +
+          "console.log(colors[0]);",
+        breaks: 'Ask for a position that is not there, like colors[9] in a three-item list, and you get <strong>undefined</strong> — which then breaks the moment you try to read a property off it.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: ';',
+        name: 'semicolon',
+        paragraphs: [
+          'A semicolon marks the end of one instruction, the way a full stop ends a sentence. JavaScript can usually work out where a statement ends on its own, so semicolons are optional — but they make the boundary explicit.',
+          'One statement, one semicolon.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "console.log(name);",
+        breaks: 'You will rarely see an error from a <em>missing</em> semicolon. The real trap is the opposite — a stray semicolon in the wrong spot, like right after an <strong>if</strong> condition, quietly ends the statement early and changes what the code does.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: ',',
+        name: 'comma',
+        paragraphs: [
+          'Commas separate things in a row — the items in a list, or the several inputs handed to a function. Each comma simply says “and here is the next one.”'
+        ],
+        code:
+          "greet('Sam', 'hello');\n" +
+          "const nums = [1, 2, 3];",
+        breaks: 'Miss a comma between two items and they run together into one broken thing; add one where none belongs and some environments choke on it. When a list or a call “looks right” but errors, a comma is often why.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '.',
+        name: 'dot · the important one',
+        paragraphs: [
+          'The dot means “reach into this thing and grab a piece of it.” <strong>user.name</strong> takes the name out of user; <strong>scores.filter</strong> reaches for the filter tool that lives on scores. Read the dot as an apostrophe-s: “user’s name.”',
+          'This is the single most important symbol for reading AI-generated code, because most of its bugs are a wrong path of dots. When an error says <strong>cannot read properties of undefined (reading ‘name’)</strong>, it is telling you the thing immediately to the <strong>left</strong> of that last dot was empty.'
+        ],
+        code:
+          "const user = { name: 'Sam', age: 30 };\n" +
+          "console.log(user.name);\n" +
+          "scores.filter(isHigh);",
+        breaks: 'Follow a dot off something that is not there and you hit the most common error in this whole app. <strong>user.address.city</strong> throws the instant address turns out to be missing — you cannot reach into nothing.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '=  ==  ===',
+        name: 'assign vs. compare',
+        paragraphs: [
+          'One equals sign <strong>assigns</strong>: it puts the value on the right into the name on the left. Two or three equals signs <strong>compare</strong>: they ask whether two values are the same and answer true or false. (Three is the stricter, safer check — prefer it.)',
+          'Read <strong>=</strong> as “becomes” and <strong>===</strong> as “is equal to.”'
+        ],
+        code:
+          "let x = 5;      // assign: put 5 into x\n" +
+          "x === 5;        // compare: is x equal to 5?",
+        breaks: 'Writing <strong>if (x = 5)</strong> when you meant <strong>if (x === 5)</strong> is a classic bug: instead of checking x, you overwrite it with 5, and the <strong>if</strong> then runs almost every time. One character, completely different behaviour.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '=>',
+        name: 'arrow',
+        paragraphs: [
+          'The arrow is a shorter way to write a function. Both lines below define the same thing: something that takes <strong>n</strong> and gives back n times two. The inputs sit to the <strong>left</strong> of the arrow; what it produces is on the <strong>right</strong>.',
+          'When you meet <strong>=&gt;</strong> in AI code, read it as “…becomes…”: <strong>n =&gt; n * 2</strong> is “n becomes n times two.”'
+        ],
+        code:
+          "function double(n) { return n * 2; }\n" +
+          "\n" +
+          "const double = n => n * 2;",
+        breaks: 'Nothing breaks — it is purely shorthand. It is worth knowing only so the arrow stops looking like a foreign symbol: it is the word <strong>function</strong> in disguise.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: "'  \"  `",
+        name: 'quotes',
+        paragraphs: [
+          'All three mark <strong>text</strong> (a string). Single and double quotes are interchangeable — pick one and stay consistent. Backticks do everything the others do plus one extra trick: inside them, <strong>${ }</strong> drops a variable straight into the text.',
+          'So <strong>`Hi, ${name}!`</strong> with name set to Sam produces “Hi, Sam!” — no gluing with + required.'
+        ],
+        code:
+          "const a = 'single';\n" +
+          "const b = \"double\";\n" +
+          "const c = `Hi, ${name}!`;",
+        breaks: 'The quotes must match: open with <strong>‘</strong> and you have to close with <strong>‘</strong>. Mixing them, or forgetting to close one, gives an <strong>Unterminated string</strong> error — the browser kept reading, hunting for the closing quote that never arrived.'
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Look at a line of code and name what each bracket, dot, and equals sign is doing.',
+          'Tell an assignment (=) apart from a comparison (===) at a glance.',
+          'Trace a chain of dots and say which part would be empty when it errors.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'Lesson complete',
+        undoLabel: '[ MARK INCOMPLETE ]'
+      }
+    ]
+  },
+
+  {
     id: 'functions-101',
     title: 'What is a JavaScript function?',
     blurb: 'The one idea that unlocks most AI-generated bugs. Recipes, ingredients, and the difference between writing one down and actually cooking it.',
