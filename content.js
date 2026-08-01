@@ -28,12 +28,12 @@ var CHALLENGES = [
 "  items.forEach(function (p) { renderCard(p); });\n" +
 "}",
     lineExplanations: [
-      'Defines a function called "loadProducts" and marks it "async", which means it is allowed to pause and wait for slow work to finish.',
-      'Asks the server for the products and waits right here until a reply comes back. The reply gets stored in a variable called "response".',
-      'Unpacks that reply into usable data and waits for the unpacking to finish too. The result is stored as "data".',
-      'Reaches into "data" for a piece called "data", then for "items" inside that, and stores whatever it finds.',
-      'Goes through "items" one at a time and draws a card on the page for each one.',
-      'Closes the function. Nothing runs here — it just marks the end.'
+      'function defines a named, reusable block of steps — here one called "loadProducts". The async keyword in front marks it as allowed to pause and wait for slow work before finishing.',
+      'await pauses until the operation beside it finishes, then hands back its result instead of a claim ticket. Here it waits on "fetch" and const labels the reply "response" — a name fixed to that value.',
+      'The "json" method turns the body of a reply into usable data; it is slow itself, so await waits for it, and const labels the result "data".',
+      'A dot reaches into a value for the piece named on its right. This chains twice — into "data" for a piece also called "data", then into that for "items" — and const labels the end result "items".',
+      'The "forEach" method runs a function once for every item in a list. Here it calls "renderCard" on each entry of "items".',
+      'A closing curly brace ends the block it matches — here the body of the function above.'
     ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'items')", src: 'app.js:4' },
     question: 'What is this error actually telling you?',
@@ -62,10 +62,10 @@ var CHALLENGES = [
 "  saveDraft();\n" +
 "});",
     lineExplanations: [
-      'Searches the page for the element whose id is "save-btn" and stores it in a variable called "button".',
-      'Attaches a click handler to that button using a method named "addClickListener".',
-      'The instruction meant to run on every click: call "saveDraft".',
-      'Closes the handler and the call that was opened two lines above.'
+      'The "querySelector" method finds the first page element matching a selector, or null when none matches. const labels the result "button" — here the element with id "save-btn".',
+      'A dot calls a method that belongs to the value on its left. Here it calls "addClickListener" on "button", handing over a function to run each time the button is clicked.',
+      'Parentheses after a name call it — run it now. This runs "saveDraft", the step set to happen on each click.',
+      'These close the function handed over above and the call it sat inside.'
     ],
     error: { msg: 'Uncaught TypeError: button.addClickListener is not a function', src: 'app.js:2' },
     question: 'What is this error actually telling you?',
@@ -95,11 +95,11 @@ var CHALLENGES = [
 "  document.querySelector('#bio').textContent = userData.bio;\n" +
 "}",
     lineExplanations: [
-      'Defines a function that expects to be handed one thing, which it will refer to as "profileData".',
-      'Pulls the "name" out of "profileData" and stores it in a variable called "name".',
-      'Finds the element with the id "username" and sets the text you see in it to that name.',
-      'Finds the element with the id "bio" and sets its text to the "bio" taken from "userData".',
-      'Closes the function.'
+      'function defines a reusable block of steps under a name. The name in its parentheses, "profileData", is a parameter — a label for whatever value gets handed in when the function is called.',
+      'A dot reaches into a value for a named piece of it. This reads the "name" piece out of "profileData" and const labels it "name".',
+      'A single = assigns — it puts the value on the right into the target on the left. Here it sets the "textContent" (the visible text) of the element with id "username" to that name.',
+      'A dot reads the "bio" piece out of "userData", and = writes it into the "textContent" of the element with id "bio".',
+      'The closing brace ends the body of the function above.'
     ],
     error: { msg: 'Uncaught ReferenceError: userData is not defined', src: 'profile.js:4' },
     question: 'What is this error actually telling you?',
@@ -129,11 +129,11 @@ var CHALLENGES = [
 "    applyTheme(settings.theme);\n" +
 "  });",
     lineExplanations: [
-      'Starts a request to the server for the settings at "/api/user/settings".',
-      'Once a reply arrives, unpacks it and passes the result along to the next step.',
-      'Takes that unpacked result, calls it "settings", and begins the next step with it.',
-      'Reads "theme" out of "settings" and hands it to "applyTheme".',
-      'Closes the second step and finishes the chain.'
+      '"fetch" starts a network request to a URL and hands back a promise — a claim ticket for a reply that arrives later. Here it requests "/api/user/settings".',
+      'The "then" method schedules a function to run once the promise settles, receiving its result. return hands a value back out — here the unpacked body from "res.json()", for the next step.',
+      'A second "then" runs after the first finishes, receiving what the first returned. It labels that value "settings".',
+      'Parentheses call "applyTheme", running it now, and a dot passes it the "theme" piece read out of "settings".',
+      'These close the second function and the chain of steps.'
     ],
     error: { msg: "Uncaught (in promise) SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON", src: 'settings.js:2' },
     question: 'What is this error actually telling you?',
@@ -163,11 +163,11 @@ var CHALLENGES = [
 "  renderLeaderboard(top);\n" +
 "}",
     lineExplanations: [
-      'Defines a function that can wait for slow operations (like fetching data) to finish before moving on.',
-      'Calls another function to get the scores. The result gets stored in a variable called "scores".',
-      'Goes through "scores" and keeps only the ones whose "value" is above 90, storing those as "top".',
-      'Hands that shortlist to "renderLeaderboard" so it can be shown on the page.',
-      'Closes the function.'
+      'async marks a function as allowed to pause and wait for slow work; function defines the reusable block itself, here "showTopScores".',
+      'Parentheses after a name call it — run it and collect what it hands back. const labels the result of "fetchScores" as "scores".',
+      'The "filter" method walks a list and keeps only the items whose test returns true, producing a new list. Here it keeps each score whose "value" is above 90, and const labels that list "top".',
+      'Parentheses call "renderLeaderboard", passing it "top" so the shortlist can be shown on the page.',
+      'The closing brace ends the body of the function above.'
     ],
     error: { msg: 'Uncaught (in promise) TypeError: scores.filter is not a function', src: 'scores.js:3' },
     question: 'What is this error actually telling you?',
@@ -203,17 +203,17 @@ var CHALLENGES = [
 "const form = document.getElementById('signup-form');\n" +
 "form.addEventListener('submit', handleSignup);",
     lineExplanations: [
-      'A note marking which file this part comes from. Browsers ignore it completely.',
-      'Opens the "head" of the page — the setup area, which holds nothing a visitor can see.',
-      'Loads "app.js" and runs it at this point in the page.',
-      'Closes the "head" section.',
-      'Opens the "body" — everything a visitor actually sees.',
-      'A form on the page, labelled with the id "signup-form" so code can find it later.',
-      'Closes the "body".',
-      'A blank line separating the page markup above from the JavaScript below.',
-      'A note saying the lines below live in "app.js".',
-      'Searches the page for the element with the id "signup-form" and stores whatever it finds as "form".',
-      'Asks that form to run "handleSignup" whenever it gets submitted.'
+      'An HTML comment, written between the arrows. The browser ignores it; here it just labels which file follows.',
+      'An HTML tag opens a section of the page. "head" is the setup area — it holds settings and scripts, nothing a visitor sees.',
+      'A script tag loads and runs a JavaScript file at the point where it sits. Its "src" attribute names the file, here "app.js".',
+      'A closing tag, written with a slash, ends the section its matching open tag began — here the "head".',
+      'The "body" tag opens the part of the page a visitor actually sees.',
+      'A form element, given an id of "signup-form". An id is a unique label, so code can find this exact element later.',
+      'A closing tag ends the "body" section.',
+      'A blank line. It separates the page markup above from the JavaScript below and has no effect.',
+      'A // comment runs to the end of its line and is ignored when the code runs. Here it notes the lines below live in "app.js".',
+      'The "getElementById" method searches the whole page for the element with a given id, handing back that element or null when none carries it. const labels the result "form".',
+      'The "addEventListener" method attaches a function to an element so it runs on a named event. Here "handleSignup" is set to run when "form" fires its "submit".'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')", src: 'app.js:2' },
     question: 'What is this error actually telling you?',
@@ -244,12 +244,12 @@ var CHALLENGES = [
 "const saved = JSON.parse(localStorage.getItem('cart'));\n" +
 "restoreCart(saved);",
     lineExplanations: [
-      'Creates a "cart" holding two pieces: an empty list of "items", and a "total" of 0.',
-      'Saves that cart into storage in the browser under the name "cart".',
-      'A blank line separating the saving from the loading.',
-      'A note for the reader: the lines below run on a later visit, not right away.',
-      'Reads back whatever was stored under "cart" and converts that text into usable data.',
-      'Hands the recovered cart to "restoreCart" so it can be put back on screen.'
+      'Curly braces here build an object — a bundle of named pieces. const labels it "cart", holding an empty list "items" and a "total" of 0.',
+      'The "setItem" method saves a value in storage in the browser under a name, to survive between visits. Here it stores "cart" under the name "cart".',
+      'A blank line, separating the saving above from the loading below.',
+      'A // comment, ignored by the code. It notes the lines below run on a later visit.',
+      'The "getItem" method reads back the value stored under a name. "JSON.parse" then turns stored text into usable data, and const labels the result "saved".',
+      'Parentheses call "restoreCart", passing "saved" so the cart can be put back on screen.'
     ],
     error: { msg: "Uncaught SyntaxError: Unexpected token 'o', \"[object Obj\"... is not valid JSON", src: 'cart.js:5' },
     question: 'What is this error actually telling you?',
@@ -278,10 +278,10 @@ var CHALLENGES = [
 "  card.classList.add('visible');\n" +
 "});",
     lineExplanations: [
-      'Collects every element on the page carrying the class "card" and stores the whole group as "cards".',
-      'Walks through that group one item at a time, calling each one "card".',
-      'For each one, adds the class "visible" — which is what the styling uses to reveal it.',
-      'Closes the loop.'
+      'The "getElementsByClassName" method collects every element carrying a given CSS class into one group. const labels that group "cards" — here everything with the class "card".',
+      'The "forEach" method runs a function once for each item in a list, handing it that item. Here each entry of "cards" is taken in turn as "card".',
+      '"classList" is the set of CSS classes on an element, and its "add" method puts a new one on. Here it adds "visible" to each "card".',
+      'These close the function and the loop it belongs to.'
     ],
     error: { msg: 'Uncaught TypeError: cards.forEach is not a function', src: 'gallery.js:2' },
     question: 'What is this error actually telling you?',
@@ -314,13 +314,13 @@ var CHALLENGES = [
 "  sendWelcome(email);\n" +
 "});",
     lineExplanations: [
-      'A note showing what the real page contains: an input box whose id is "email-input".',
-      'Searches the page for an element with the id "emailInput" and stores the result as "field".',
-      'Searches for the element with the id "submit-btn" and stores it as "btn".',
-      'Asks that button to run the instructions below whenever it gets clicked.',
-      'Reads whatever was typed into "field" and trims off stray spaces at either end.',
-      'Passes that address along to "sendWelcome".',
-      'Closes the click handler.'
+      'A // comment, ignored when the code runs. It shows the real page has an input whose id is "email-input".',
+      'The "getElementById" method searches the page for the element with an exact id, handing back that element or null when none matches. const labels the result "field", searching for id "emailInput".',
+      'Another "getElementById" search, this time for the id "submit-btn", labelled "btn" with const.',
+      'The "addEventListener" method attaches a function to run on a named event. Here the function below runs each time "btn" fires a "click".',
+      'A dot reaches into a value for a piece of it. This reads the "value" (the typed text) of "field", then the "trim" method removes stray spaces from the ends; const labels the result "email".',
+      'Parentheses call "sendWelcome", passing it "email".',
+      'These close the click handler function.'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'value')", src: 'signup.js:5' },
     question: 'The console says it blew up at line 5 — but which line actually planted the bomb? Tap a line number.',
@@ -344,11 +344,11 @@ var CHALLENGES = [
 "const total = bill + tipInput.value;\n" +
 "priceEl.textContent = '$' + total.toFixed(2);",
     lineExplanations: [
-      'Finds the element with the id "price" — the spot on the page where the total will be shown.',
-      'Finds the box with the id "tip", where the customer types their tip.',
-      'Sets "bill" to 42.50.',
-      'Combines "bill" with whatever is sitting in the tip box and stores the outcome as "total".',
-      'Rounds "total" to two decimal places, puts a dollar sign in front, and writes it onto the page.'
+      'The "querySelector" method finds the first page element matching a selector. const labels it "priceEl" — here the element with id "price", where the total will show.',
+      'Another "querySelector", labelled "tipInput" — the box with id "tip" where the customer types a tip.',
+      'const labels a fixed value with a name. Here the number 42.50 is labelled "bill".',
+      'The + operator adds two numbers, or joins two pieces of text end to end, depending on what it is given. Here it combines "bill" with the "value" of "tipInput", and const labels the result "total".',
+      'The "toFixed" method rounds a number to a set number of decimal places, handing back text. Here = writes a "$" joined to that rounded "total" into the "textContent" of "priceEl".'
     ],
     error: { msg: 'Uncaught TypeError: total.toFixed is not a function', src: 'checkout.js:5' },
     question: 'The error is thrown at line 5 — which line actually caused it? Tap a line number.',
@@ -373,12 +373,12 @@ var CHALLENGES = [
 "  banner.textContent = 'Hey, ' + first + '!';\n" +
 "}",
     lineExplanations: [
-      'Defines a function that is allowed to pause and wait for slow work to finish.',
-      'Calls "getCurrentUser" and stores whatever comes back in a variable called "user".',
-      'Finds the element with the id "banner", which is where the greeting will go.',
-      'Takes the "name" off "user", breaks it apart at the spaces, and keeps the first piece.',
-      'Glues that first name into a greeting and writes the result into the banner.',
-      'Closes the function.'
+      'async marks a function as able to pause for slow work; function defines the block, here "greetUser".',
+      'Parentheses after a name call it and collect what it returns. const labels the result of "getCurrentUser" as "user".',
+      'The "querySelector" method finds the first element matching a selector; const labels it "banner", here the element with id "banner".',
+      'A dot reads a piece of a value; the "split" method cuts a string into a list wherever a separator appears; and [0] takes the first item of a list. Here it reads "name" from "user", splits it on spaces, and keeps the first piece as "first".',
+      'The + operator joins text end to end, and = writes the result in. Here it builds a greeting around "first" and sets it as the "textContent" of "banner".',
+      'The closing brace ends the body of the function above.'
     ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'split')", src: 'greet.js:4' },
     question: 'The crash happens at line 4 — which line is actually to blame? Tap a line number.',
@@ -403,12 +403,12 @@ var CHALLENGES = [
 "  list.forEach(addComment);\n" +
 "}",
     lineExplanations: [
-      'Defines a function that can wait for slow work to finish.',
-      'Asks the server for the comments and waits right here until it replies.',
-      'Unpacks that reply into usable data, waiting for the unpacking to finish.',
-      'Reaches into "data" for a piece called "comments" and stores it as "list".',
-      'Walks through "list" and runs "addComment" on every entry.',
-      'Closes the function.'
+      'async marks a function as able to pause for slow work; function names the block "loadComments".',
+      'await pauses until the operation beside it finishes and hands back its result. Here it waits for "fetch" to reach "/api/comments" and const labels the reply "res".',
+      'The "json" method turns the body of a reply into usable data — a slow step, so await waits for it — and const labels the result "data".',
+      'A dot reaches into a value for a named piece. Here it reads a piece called "comments" out of "data" and labels it "list".',
+      'The "forEach" method runs a function once per item in a list. Here it calls "addComment" on every entry of "list".',
+      'The closing brace ends the body of the function above.'
     ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'forEach')", src: 'comments.js:5' },
     question: 'This API returns a plain array of comments, like [ {...}, {...} ]. The error fires at line 5 — which line caused it? Tap a line number.',
@@ -433,8 +433,8 @@ var CHALLENGES = [
       "console.log(1 + '1');\n" +
       "console.log('3' * 2);",
     lineExplanations: [
-      'Adds the number 1 to the text "1" and writes the result out.',
-      'Multiplies the text "3" by the number 2 and writes the result out.'
+      'console.log prints a value to the console. The + operator inside adds two numbers or joins two texts end to end — here it is handed the number 1 and the text "1".',
+      'The * operator multiplies. Unlike +, it only ever does maths, so it first turns any text it is given into a number — here the text "3" and the number 2.'
     ],
     question: 'What does this print? Commit to an answer, then run it.',
     options: ['2 then 6', '11 then 6', '11 then 32', 'It throws — you cannot mix text and numbers'],
@@ -457,9 +457,9 @@ var CHALLENGES = [
       "console.log(user.age);\n" +
       "console.log(user.age.length);",
     lineExplanations: [
-      'Creates a "user" holding one piece: a "name" set to the text Sam.',
-      'Asks "user" for an "age" and writes out whatever comes back.',
-      'Asks that same "age" for its "length" and writes out the result.'
+      'Curly braces build an object — a bundle of named pieces. const labels it "user", holding a single piece "name" set to the text "Sam".',
+      'A dot reaches into an object for a named piece, handing back undefined when no such piece is there. Here it reads "age" from "user" and prints whatever comes back.',
+      'Chaining another dot reads a piece of that result. Here it asks the "age" value for its "length" before printing.'
     ],
     question: 'What does this print? Commit to an answer, then run it.',
     options: [
@@ -489,11 +489,11 @@ var CHALLENGES = [
       "\n" +
       "console.log(getCount());",
     lineExplanations: [
-      'Defines a function called "getCount" and marks it "async".',
-      'Its only step: hand back the number 1.',
-      'Closes the function.',
-      'A blank line.',
-      'Calls "getCount" and writes out whatever comes back, with no await.'
+      'async marks a function so that calling it always hands back a promise — a claim ticket — rather than a plain value. function names the block "getCount".',
+      'return hands a value back out to whoever called the function and stops it there. Here it returns the number 1.',
+      'The closing brace ends the body of the function above.',
+      'A blank line, with no effect.',
+      'Parentheses call "getCount" and console.log prints what comes back. There is no await here, so what prints is whatever the call hands back directly.'
     ],
     question: 'What does this print? Commit to an answer, then run it.',
     options: ['1', 'Promise {<pending>}', '[object Promise]', 'It throws — getCount was never awaited'],
@@ -519,11 +519,11 @@ var CHALLENGES = [
 "  document.querySelector('#temp').textContent = temp + '\\u00b0F';\n" +
 "}",
     lineExplanations: [
-      'Defines a function that is allowed to pause and wait for slow work.',
-      'Asks the weather service about Austin, waits for the reply, and stores what comes back as "data".',
-      'Reaches into "data" for a piece called "current", then for "temp_f" inside that.',
-      'Finds the element with the id "temp" and writes the temperature into it with a degree symbol on the end.',
-      'Closes the function.'
+      'async marks a function as able to pause for slow work; function names the block "loadWeather".',
+      'await pauses until the operation beside it finishes and hands back its result. Here it waits on "fetch" for the weather URL and const labels what comes back "data".',
+      'A dot reaches into a value for a named piece, and chains. Here it reads "current" out of "data", then "temp_f" out of that, labelling the result "temp".',
+      'A single = writes the value on its right into the target on its left. Here it sets the "textContent" of the element with id "temp" to "temp" joined with a degree symbol.',
+      'The closing brace ends the body of the function above.'
     ],
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'temp_f')", src: 'weather.js:3' },
     question: 'In your own words: what is the ROOT CAUSE of this error? (Not the fix — the why.)',
@@ -576,12 +576,12 @@ var CHALLENGES = [
 "  localStorage.setItem('todos', JSON.stringify(todos));\n" +
 "}",
     lineExplanations: [
-      'Defines a function that takes one piece of text — the new to-do being added.',
-      'Reads whatever the browser has stored under the name "todos".',
-      'Converts that stored text back into a usable list called "todos".',
-      'Adds a new entry to the list, holding the text and marked as not done.',
-      'Turns the updated list back into text and saves it under "todos" again.',
-      'Closes the function.'
+      'function defines a reusable block; the name in its parentheses, "text", is a parameter — a label for the value handed in when the function is called.',
+      'The "getItem" method reads back the value stored in the browser under a name, or null when nothing is stored there. const labels the result "saved", reading the name "todos".',
+      '"JSON.parse" turns stored text back into usable data — a list or object. const labels the result "todos".',
+      'The "push" method adds one new item onto the end of a list. Here it adds an object with a "text" and a "done" flag onto "todos".',
+      '"JSON.stringify" turns data into text so it can be stored, and the "setItem" method saves that text under a name. Here it stores "todos" back under "todos".',
+      'The closing brace ends the body of the function above.'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'push')", src: 'todos.js:4' },
     question: 'This works fine on your machine, but crashes for every brand-new visitor. What is the ROOT CAUSE?',
@@ -638,13 +638,13 @@ var CHALLENGES = [
 "  renderCards(stats.widgets);\n" +
 "}",
     lineExplanations: [
-      'Defines the function that sets up the dashboard.',
-      'Creates an empty container named "stats", with nothing in it yet.',
-      'Starts a request to the server for the dashboard numbers.',
-      'Sets up a step to run once the reply arrives: unpack it and pass it along.',
-      'Sets up a second step: put that unpacked result into "stats".',
-      'Reads "widgets" out of "stats" and hands it to "renderCards" to be drawn.',
-      'Closes the function.'
+      'function defines the reusable block, here "loadDashboard".',
+      'let makes a variable whose value can be set and swapped later. Here "stats" starts out empty, holding undefined until something is put in it.',
+      '"fetch" starts a network request and hands back a promise — a claim ticket for a reply that arrives later, not the reply itself.',
+      'The "then" method schedules a function to run once the promise settles, receiving its result. return here hands back the unpacked body from "res.json()", for the next step.',
+      'A second "then" runs after the first, and a single = assigns — here it puts the unpacked result into "stats".',
+      'Parentheses call "renderCards" now, passing the "widgets" piece read from "stats".',
+      'The closing brace ends the body of the function above.'
     ],
     error: { msg: "Uncaught TypeError: Cannot read properties of undefined (reading 'widgets')", src: 'dashboard.js:6' },
     question: 'The fetch URL is correct and the API works. What is the ROOT CAUSE of this crash?',
