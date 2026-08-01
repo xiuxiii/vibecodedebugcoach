@@ -13,7 +13,8 @@ function defaultState() {
   return {
     version: 1,
     started: false,
-    current: 0,            // index of the challenge the user is on
+    current: 0,            // array index, derived at load time from currentId
+    currentId: null,       // the durable pointer: challenge ids never shift
     done: {},              // id -> true, for answered mc/line challenges
     examGrades: {},        // id -> 'got' | 'missed' (self-graded written stage)
     fixes: {},             // id -> true once the user's own code actually passes
@@ -37,6 +38,16 @@ function loadState() {
     if (!parsed.fixes) parsed.fixes = {};
     if (!parsed.assisted) parsed.assisted = {};
     if (!parsed.view) parsed.view = 'practice';
+
+    // Saves written before ids were stored used a bare array index. Back then the
+    // array was ids 1..15 in order, so index i meant id i+1 — remap once, then
+    // resolve whatever id we have back to its current position.
+    var wantId = parsed.currentId;
+    if (wantId === undefined || wantId === null) wantId = (parsed.current || 0) + 1;
+    for (var i = 0; i < CHALLENGES.length; i++) {
+      if (CHALLENGES[i].id === wantId) { parsed.current = i; break; }
+    }
+    parsed.currentId = wantId;
     return parsed;
   } catch (e) {
     return defaultState();
@@ -45,6 +56,9 @@ function loadState() {
 
 function saveState() {
   state.lastSeen = Date.now();
+  // Record where the user is by challenge id. Storing only the array index
+  // breaks the moment a challenge is inserted anywhere before it.
+  state.currentId = CHALLENGES[state.current] ? CHALLENGES[state.current].id : null;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) { /* private mode etc. — app still works for this session */ }
@@ -57,6 +71,7 @@ function hasAttempted(ch) {
 }
 
 function isChallengeDone(ch) {
+  if (ch.type === 'predict') return !!state.done[ch.id];
   if (ch.type === 'exam') {
     // Two stages: the written root cause, then code that actually runs.
     var explained = state.examGrades[ch.id] === 'got';
@@ -90,7 +105,7 @@ function examsExplained() {
 }
 
 function moduleComplete() {
-  return phaseDone('mc') && phaseDone('line') && phaseDone('exam');
+  return phaseDone('mc') && phaseDone('line') && phaseDone('predict') && phaseDone('exam');
 }
 
 /* Highest challenge index the user has reached (for nav locking) */
@@ -129,8 +144,10 @@ function updateProgress() {
     text = '[x] You can fix what you diagnosed — Module 1 complete';
   } else if (phaseDone('mc') && phaseDone('line') && examsExplained()) {
     text = '[x] You can diagnose root causes cold — now make the code run';
+  } else if (phaseDone('mc') && phaseDone('line') && phaseDone('predict')) {
+    text = '[x] You can predict what code will do — final exam in progress';
   } else if (phaseDone('mc') && phaseDone('line')) {
-    text = '[x] You can locate which line broke — final exam in progress';
+    text = '[x] You can locate which line broke — now: say what code will print';
   } else if (phaseDone('mc')) {
     text = '[x] You can read a console error — now: find the guilty line';
   } else {
@@ -330,6 +347,7 @@ function renderHome() {
 function phaseLabel(ch) {
   if (ch.type === 'mc') return 'READ THE ERROR';
   if (ch.type === 'line') return 'FIND THE LINE';
+  if (ch.type === 'predict') return 'PREDICT THE OUTPUT';
   return 'FINAL EXAM';
 }
 
@@ -404,7 +422,7 @@ function renderDrill(idx) {
   html += '<div class="ch-title">' + esc(ch.title) + '</div>';
   html += renderCodeCard(ch, ch.type === 'line' && !state.done[ch.id]);
   html += renderExplainer(ch);
-  html += renderConsoleCard(ch);
+  if (ch.error) html += renderConsoleCard(ch);
   html += '<div class="question">' + esc(ch.question) + '</div>';
   html += '<div id="interaction"></div>';
   html += '<div id="feedback" class="feedback"></div>';
@@ -417,6 +435,7 @@ function renderDrill(idx) {
 
   if (ch.type === 'mc') setupMC(ch, idx);
   else if (ch.type === 'line') setupLine(ch, idx);
+  else if (ch.type === 'predict') setupPredict(ch, idx);
   else setupExam(ch, idx);
 }
 
@@ -452,6 +471,64 @@ function showNextButton(idx) {
 }
 
 /* ---------- multiple choice ---------- */
+/* ---------- predict the output ----------
+   Pick what you think it prints, then the app really runs it and shows what
+   came back. The answer is settled by execution, not by the option key. */
+function setupPredict(ch, idx) {
+  var box = document.getElementById('interaction');
+  var answered = !!state.done[ch.id];
+
+  var html = '<div class="options">';
+  for (var i = 0; i < ch.options.length; i++) {
+    var cls = 'opt' + (answered && i === ch.correct ? ' right' : '');
+    html += '<button class="' + cls + '" data-opt="' + i + '" ' +
+            (answered ? 'disabled' : '') + '>' + esc(ch.options[i]) + '</button>';
+  }
+  html += '</div><div class="try-again-note" id="tryNote"></div>' +
+          '<div id="predictRun"></div>';
+  box.innerHTML = html;
+
+  function reveal(picked) {
+    var host = document.getElementById('predictRun');
+    host.innerHTML = '<div class="run-row"><span class="run-hint">running it for real…</span></div>';
+    runSandboxed(ch.code, ch.env, ch.seed).then(function (res) {
+      var matched = outputMatches(res.output, ch.expected);
+      host.innerHTML =
+        '<div class="predict-actual"><div class="sec-label">WHAT IT ACTUALLY PRINTED</div>' +
+        renderMiniConsole(res.output) + '</div>' +
+        (matched ? '' : '<div class="fix-verdict fail">[ !! ] the executed output did not ' +
+                        'match the expected answer — that is a bug in this challenge, not in you</div>');
+      if (picked) showExplanation(ch, true);
+      else showExplanation(ch, false);
+      showNextButton(idx);
+    });
+  }
+
+  if (answered) { reveal(false); return; }
+
+  var opts = box.querySelectorAll('.opt');
+  for (var j = 0; j < opts.length; j++) {
+    opts[j].addEventListener('click', function () {
+      var pick = parseInt(this.getAttribute('data-opt'), 10);
+      if (pick === ch.correct) {
+        state.done[ch.id] = true;
+        saveState();
+        updateProgress();
+        for (var k = 0; k < opts.length; k++) opts[k].disabled = true;
+        this.classList.add('right');
+        this.classList.remove('wrong');
+        document.getElementById('tryNote').textContent = '';
+        reveal(true);
+      } else {
+        this.classList.add('wrong');
+        this.disabled = true;
+        document.getElementById('tryNote').textContent =
+          'INCORRECT — think it through once more, then pick again. Retries are free.';
+      }
+    });
+  }
+}
+
 function setupMC(ch, idx) {
   var box = document.getElementById('interaction');
   var answered = !!state.done[ch.id];
@@ -859,6 +936,9 @@ function renderAnnoKey(annotations) {
 /* ---------- actually running the snippets ---------- */
 function formatLogValue(v) {
   if (typeof v === 'string') return v;
+  // JSON.stringify flattens a promise to "{}", which hides the whole point when
+  // the lesson is about un-awaited calls. Chrome prints Promise {<pending>}.
+  if (v && typeof v.then === 'function') return 'Promise {<pending>}';
   if (typeof v === 'number' || typeof v === 'boolean' || v === null) return String(v);
   if (v === undefined) return 'undefined';
   try { return JSON.stringify(v); } catch (e) { return String(v); }

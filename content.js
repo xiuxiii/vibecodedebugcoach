@@ -416,7 +416,93 @@ var CHALLENGES = [
     explanation: "The API hands back the array directly, but line 4 confidently reaches for data.comments — a wrapper property the AI imagined. That gives undefined, which line 5 then tries to loop over. When an error names a property you never see in the actual response, the bug is wherever the code invented that property, not where it crashed."
   },
 
-  /* ---------------- Phase 3 (13-15): FINAL EXAM ---------------- */
+  /* ---------------- Phase 3 (16-18): PREDICT THE OUTPUT ----------------
+     Commit to an answer, then the app really executes the snippet and shows
+     what came back. Ids are 16-18 because they were added after the exams;
+     position in this array is what sets the running order. -------------- */
+  {
+    id: 16, type: 'predict',
+    title: 'Same symbol, two jobs',
+    lesson: {
+      kind: 'New skill: predicting output',
+      where: 'Console tab',
+      text: "Reading an error is reacting. Predicting output is the thing that stops you needing to. From here on you say what the code will print before you run it, then watch it actually run. Get it wrong and you learn far more than by getting it right — the gap between what you expected and what happened is exactly where a wrong mental model shows itself."
+    },
+    filename: 'predict.js',
+    code:
+      "console.log(1 + '1');\n" +
+      "console.log('3' * 2);",
+    lineExplanations: [
+      'Adds the number 1 to the text "1" and writes the result out.',
+      'Multiplies the text "3" by the number 2 and writes the result out.'
+    ],
+    question: 'What does this print? Commit to an answer, then run it.',
+    options: ['2 then 6', '11 then 6', '11 then 32', 'It throws — you cannot mix text and numbers'],
+    correct: 1,
+    expected: ['11', '6'],
+    explanation: "Plus is the odd one out. Given a number and some text it gives up on maths and glues them together, so 1 + '1' becomes \"11\". Every other maths symbol has no gluing behaviour to fall back on, so * quietly converts the text to a number and really multiplies: '3' * 2 is 6. This is why a total can come out as \"42.510\" instead of 52.50 — one stray + on text."
+  },
+
+  {
+    id: 17, type: 'predict',
+    title: 'Missing, and missing one level deeper',
+    lesson: {
+      kind: 'undefined vs. a thrown error',
+      where: 'Console tab',
+      text: 'Asking an object for something it does not have is not an error. You get back undefined, quietly, and the code carries on. It only becomes an error when you then ask undefined for something. Those are two different moments, and telling them apart is what makes the very first challenge in this module obvious rather than mysterious.'
+    },
+    filename: 'predict.js',
+    code:
+      "const user = { name: 'Sam' };\n" +
+      "console.log(user.age);\n" +
+      "console.log(user.age.length);",
+    lineExplanations: [
+      'Creates a "user" holding one piece: a "name" set to the text Sam.',
+      'Asks "user" for an "age" and writes out whatever comes back.',
+      'Asks that same "age" for its "length" and writes out the result.'
+    ],
+    question: 'What does this print? Commit to an answer, then run it.',
+    options: [
+      'undefined, then an error about reading length of undefined',
+      'null, then 0',
+      'An error on the first log — there is no age',
+      'undefined, then undefined'
+    ],
+    correct: 0,
+    expected: ['undefined'],
+    explanation: "Line 2 is perfectly legal. There is no age, so you get undefined and nothing complains. Line 3 is where it dies, because undefined has no .length to give. That is the exact two-step behind \"Cannot read properties of undefined\" — a harmless miss on one line, then a crash on the next line that touched the result."
+  },
+
+  {
+    id: 18, type: 'predict',
+    title: 'The IOU, printed',
+    lesson: {
+      kind: 'What an un-awaited call really returns',
+      where: 'Console tab',
+      text: 'You have met the claim-ticket idea twice now. This time you see the ticket itself. An async function always hands back a promise, even when its body just returns a plain number — and printing that promise shows you something that is very obviously not your data.'
+    },
+    filename: 'predict.js',
+    code:
+      "async function getCount() {\n" +
+      "  return 1;\n" +
+      "}\n" +
+      "\n" +
+      "console.log(getCount());",
+    lineExplanations: [
+      'Defines a function called "getCount" and marks it "async".',
+      'Its only step: hand back the number 1.',
+      'Closes the function.',
+      'A blank line.',
+      'Calls "getCount" and writes out whatever comes back, with no await.'
+    ],
+    question: 'What does this print? Commit to an answer, then run it.',
+    options: ['1', 'Promise {<pending>}', '[object Promise]', 'It throws — getCount was never awaited'],
+    correct: 1,
+    expected: ['Promise {<pending>}'],
+    explanation: "The body returns 1, but the async marker wraps it, so what comes out is the promise rather than the number. Chrome prints it as Promise {<pending>} — pending because the value is not ready at the instant you logged it. Nothing throws here, which is why a missing await so often surfaces later and somewhere else, as .filter is not a function or reading a property of undefined."
+  },
+
+  /* ---------------- Phase 4 (13-15): FINAL EXAM ---------------- */
   {
     id: 13, type: 'exam',
     title: 'Final exam 1 of 3',
