@@ -180,6 +180,71 @@ function esc(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+/* ---------------------------------------------------------------------
+   codeify — turn code terms inside a prose string into inline mono tokens
+   coloured from the SAME .tok-* palette the code blocks use, so an
+   explanation's "const" looks like the const in the snippet above it.
+
+   Recognises, conservatively (only real code terms, never plain words):
+     - a small set of unambiguous keywords  -> .tok-kw
+     - "quoted" identifiers                 -> .tok-fn (known calls) or .tok-var
+     - "quoted" literals / paths / values   -> .tok-str (quotes kept)
+     - .method() and .property mentions     -> .tok-fn / .tok-prop
+
+   It is HTML-aware: it only touches text between tags, so authored markup
+   in lesson prose (<strong>, backtick examples, ${ }) passes through
+   untouched.
+   ------------------------------------------------------------------ */
+var CT_KW = /\b(?:const|let|var|function|return|async|await)\b/;
+/* names that appear as calls in the code — coloured like functions */
+var CT_FN = {};
+(function () {
+  var fns = ('fetch filter map forEach json then push trim split getItem setItem ' +
+    'getElementById querySelector getElementsByClassName addEventListener toFixed ' +
+    'add parse stringify log fetchScores renderLeaderboard renderCard renderCards ' +
+    'saveDraft applyTheme restoreCart sendWelcome addComment getCurrentUser getCount ' +
+    'handleSignup loadProducts loadWeather loadComments loadDashboard addTodo ' +
+    'displayProfile greetUser showTopScores').split(' ');
+  for (var i = 0; i < fns.length; i++) CT_FN[fns[i]] = true;
+})();
+
+function ctSpan(kind, inner) { return '<code class="ct tok-' + kind + '">' + inner + '</code>'; }
+
+function ctQuoted(inner) {
+  // inner is already HTML-escaped. Plain identifier -> var/fn (no quotes);
+  // anything with spaces/slashes/dots/digits/symbols -> string literal (keep quotes).
+  if (/^[A-Za-z_$][\w$]*$/.test(inner)) {
+    return ctSpan(CT_FN[inner] ? 'fn' : 'var', inner);
+  }
+  return ctSpan('str', '"' + inner + '"');
+}
+
+/* one left-to-right pass over already-HTML-safe text (escaped, or authored
+   with entities); replacements are never re-scanned, so inserted spans cannot
+   be re-matched */
+function ctColorizeSafe(s) {
+  return s.replace(
+    /"([^"<>]+)"|\b(?:const|let|var|function|return|async|await)\b|\.([A-Za-z_$][\w$]*)(\(\))?/g,
+    function (m, quoted, dotName, call) {
+      if (quoted !== undefined) return ctQuoted(quoted);
+      if (dotName !== undefined) return ctSpan(call ? 'fn' : 'prop', '.' + dotName + (call || ''));
+      return CT_KW.test(m) ? ctSpan('kw', m) : m;   // keyword alternative
+    });
+}
+
+/* codeify: a RAW prose string (plain text that may contain literal < > &,
+   e.g. an explanation mentioning <head>). Escape it whole, then colorize. */
+function codeify(text) { return ctColorizeSafe(esc(text)); }
+
+/* codeifyHTML: an AUTHORED prose string that already contains intended markup
+   (<strong>) and entities (&gt;, ${ }). Keep the tags and entities as-is;
+   colorize only the text between tags, without re-escaping. */
+function codeifyHTML(html) {
+  return String(html).replace(/(<[^>]*>)|([^<]+)/g, function (m, tag, text) {
+    return tag ? tag : ctColorizeSafe(text);
+  });
+}
+
 
 function tok(kind, inner) {
   return '<span class="tok-' + kind + '" data-tok="' + kind + '">' + inner + '</span>';
@@ -274,7 +339,7 @@ function renderExplainer(ch) {
     html += '<div class="exp-item">' +
               '<div class="exp-code"><span class="exp-ln">Line ' + (i + 1) + ':</span> ' + codeHtml + '</div>' +
               '<div class="exp-text"><span class="exp-arrow">-&gt;</span>' +
-                '<span>' + esc(ch.lineExplanations[i] || '') + '</span></div>' +
+                '<span>' + codeify(ch.lineExplanations[i] || '') + '</span></div>' +
             '</div>';
   }
   return html + '</div></div>';
@@ -393,7 +458,7 @@ function renderLesson(idx) {
             '<div class="lesson-fact"><span class="fact-key">Look in</span>' +
               '<span class="fact-val">' + esc(ch.lesson.where) + '</span></div>' +
           '</div>';
-  html += '<div class="lesson-text">' + esc(ch.lesson.text) + '</div>';
+  html += '<div class="lesson-text">' + codeify(ch.lesson.text) + '</div>';
   html += '<div class="lesson-actions"><button class="btn-lesson" id="btnGotIt">' +
           '[ GOT IT — SHOW CHALLENGE ]</button>';
   html += '<div class="lesson-skip-note">' + (seenBefore
@@ -464,7 +529,7 @@ function showExplanation(ch, cheer) {
             CHEERS[Math.floor(Math.random() * CHEERS.length)] + '</span></div>';
   }
   html += '<div class="explain"><span class="explain-label">WHY THIS HAPPENS</span>' +
-          esc(ch.explanation) + '</div>';
+          codeify(ch.explanation) + '</div>';
   fb.innerHTML = html;
 }
 
@@ -747,10 +812,10 @@ function setupExam(ch, idx) {
 
   if (grade) {
     var html = '<div class="model-answer"><span class="ma-label">MODEL ANSWER</span>' +
-               esc(ch.modelAnswer) + '</div>';
+               codeify(ch.modelAnswer) + '</div>';
     html += '<div class="explain" style="margin-top:12px"><span class="explain-label">' +
             (grade === 'got' ? '[ OK ] EXPLAINED' : '[ -- ] MARKED AS MISSED') +
-            '</span>' + esc(ch.explanation) + '</div>';
+            '</span>' + codeify(ch.explanation) + '</div>';
     if (ch.fix) html += renderFixStage(ch);
     box.innerHTML = html;
     if (ch.fix) wireFixStage(ch, idx);
@@ -782,7 +847,7 @@ function setupExam(ch, idx) {
     this.style.display = 'none';
 
     var html = '<div class="model-answer"><span class="ma-label">MODEL ANSWER</span>' +
-               esc(ch.modelAnswer) + '</div>';
+               codeify(ch.modelAnswer) + '</div>';
     if (userText) {
       html += '<div class="your-answer"><strong>Your answer:</strong>\n' + esc(userText) + '</div>';
     }
@@ -944,7 +1009,7 @@ function renderAnnoKey(annotations) {
   for (var i = 0; i < annotations.length; i++) {
     html += '<div class="anno-item"><span class="anno-num n' + i + '">' + (i + 1) + '</span>' +
               '<span class="at"><b>' + esc(annotations[i].title) + '</b> — ' +
-              esc(annotations[i].text) + '</span></div>';
+              codeify(annotations[i].text) + '</span></div>';
   }
   return html + '</div>';
 }
@@ -1239,7 +1304,7 @@ function renderRunRow(key, code, fallback, afterRun) {
              '</div>' +
              '<div class="mini-console" id="con-' + key + '" hidden></div>';
   if (afterRun) {
-    html += '<div class="after-run" id="after-' + key + '" hidden>' + esc(afterRun) + '</div>';
+    html += '<div class="after-run" id="after-' + key + '" hidden>' + codeify(afterRun) + '</div>';
   }
   return html;
 }
@@ -1271,13 +1336,13 @@ function secHead(sec) {
 var SECTION_RENDERERS = {
 
   hook: function (sec) {
-    return '<div class="hook"><p>' + esc(sec.text) + '</p></div>';
+    return '<div class="hook"><p>' + codeify(sec.text) + '</p></div>';
   },
 
   /* paragraphs are authored markup — <strong> is allowed on purpose */
   prose: function (sec) {
     var html = '<div class="sec">' + secHead(sec);
-    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + codeifyHTML(sec.paragraphs[i]) + '</p>';
     return html + '</div>';
   },
 
@@ -1289,11 +1354,11 @@ var SECTION_RENDERERS = {
         '<span class="symbol-glyph">' + esc(sec.symbol) + '</span>' +
         '<span class="symbol-name">' + esc(sec.name) + '</span>' +
       '</div>';
-    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + codeifyHTML(sec.paragraphs[i]) + '</p>';
     if (sec.code) html += renderLessonCode(sec.code, null, null);
     if (sec.breaks) {
       html += '<div class="symbol-breaks"><span class="sb-label">MISSING OR WRONG</span>' +
-              sec.breaks + '</div>';
+              codeifyHTML(sec.breaks) + '</div>';
     }
     return html + '</div>';
   },
@@ -1303,8 +1368,8 @@ var SECTION_RENDERERS = {
                '<div class="analogy-row head"><span class="ac">' + esc(sec.head[0]) + '</span>' +
                '<span class="ac">' + esc(sec.head[1]) + '</span></div>';
     for (var i = 0; i < sec.rows.length; i++) {
-      html += '<div class="analogy-row"><span class="ac">' + esc(sec.rows[i][0]) + '</span>' +
-              '<span class="ac">' + esc(sec.rows[i][1]) + '</span></div>';
+      html += '<div class="analogy-row"><span class="ac">' + codeify(sec.rows[i][0]) + '</span>' +
+              '<span class="ac">' + codeify(sec.rows[i][1]) + '</span></div>';
     }
     return html + '</div></div>';
   },
@@ -1313,7 +1378,7 @@ var SECTION_RENDERERS = {
   step: function (sec, lesson, idx) {
     var key = lesson.id + '-step' + idx;
     var html = '<div class="sec">' + secHead(sec);
-    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + sec.paragraphs[i] + '</p>';
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + codeifyHTML(sec.paragraphs[i]) + '</p>';
     html += renderLessonCode(sec.code, sec.filename || null, null);
     if (sec.predict) { LPREDICTS[key] = sec.predict; html += renderPredictGate(key, sec.predict); }
     html += renderRunRow(key, sec.code, sec.fallbackOutput, sec.afterRun);
@@ -1322,7 +1387,7 @@ var SECTION_RENDERERS = {
 
   demo: function (sec, lesson, idx) {
     var key = lesson.id + '-demo' + idx;
-    var html = '<div class="sec">' + secHead(sec) + '<p>' + esc(sec.intro) + '</p>';
+    var html = '<div class="sec">' + secHead(sec) + '<p>' + codeify(sec.intro) + '</p>';
     html += renderLessonCode(sec.code, sec.filename, sec.annotations);
     html += renderAnnoKey(sec.annotations);
     html += renderRunRow(key, sec.code, sec.fallbackOutput, sec.afterRun);
@@ -1330,7 +1395,7 @@ var SECTION_RENDERERS = {
   },
 
   variations: function (sec, lesson, idx) {
-    var html = '<div class="sec">' + secHead(sec) + '<p>' + esc(sec.intro) + '</p>';
+    var html = '<div class="sec">' + secHead(sec) + '<p>' + codeify(sec.intro) + '</p>';
     for (var i = 0; i < sec.items.length; i++) {
       var item = sec.items[i];
       var key = lesson.id + '-var' + idx + '-' + i;
@@ -1340,7 +1405,7 @@ var SECTION_RENDERERS = {
                 renderLessonCode(item.code, null, null) +
                 (item.predict ? (LPREDICTS[key] = item.predict, renderPredictGate(key, item.predict)) : '') +
                 renderRunRow(key, item.code, item.fallbackOutput, null) +
-                '<div class="var-note">' + esc(item.note) + '</div>' +
+                '<div class="var-note">' + codeify(item.note) + '</div>' +
               '</div>';
     }
     return html + '</div>';
@@ -1351,10 +1416,10 @@ var SECTION_RENDERERS = {
     for (var i = 0; i < sec.items.length; i++) {
       html += '<div class="pitfall"><span class="pf-icon">!</span>' +
                 '<span class="pf-text"><b>' + esc(sec.items[i].bold) + '</b> ' +
-                esc(sec.items[i].rest) + '</span></div>';
+                codeify(sec.items[i].rest) + '</span></div>';
     }
     html += '</div>';
-    if (sec.note) html += '<div class="pitfalls-note">' + esc(sec.note) + '</div>';
+    if (sec.note) html += '<div class="pitfalls-note">' + codeify(sec.note) + '</div>';
     return html + '</div>';
   },
 
@@ -1363,7 +1428,7 @@ var SECTION_RENDERERS = {
     var html = '<div class="checkpoint"><h3>' + esc(sec.heading) + '</h3><div class="abilities">';
     for (var i = 0; i < sec.abilities.length; i++) {
       html += '<div class="ability"><span class="ab-tick">-</span><span>' +
-              esc(sec.abilities[i]) + '</span></div>';
+              codeify(sec.abilities[i]) + '</span></div>';
     }
     html += '</div>';
     if (done) {
