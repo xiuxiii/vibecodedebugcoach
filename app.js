@@ -15,7 +15,9 @@ function defaultState() {
     started: false,
     current: 0,            // index of the challenge the user is on
     done: {},              // id -> true, for answered mc/line challenges
-    examGrades: {},        // id -> 'got' | 'missed'
+    examGrades: {},        // id -> 'got' | 'missed' (self-graded written stage)
+    fixes: {},             // id -> true once the user's own code actually passes
+    assisted: {},          // id -> true if the solution was revealed rather than solved
     attempted: {},         // id -> true once the lesson card has been dismissed
     view: 'practice',      // which tab is open: 'learn' | 'practice'
     lessonsDone: {},       // lesson id -> true, self-assessed
@@ -32,6 +34,8 @@ function loadState() {
     // Saved before a later feature existed: keep the progress, add the field.
     if (!parsed.attempted) parsed.attempted = {};
     if (!parsed.lessonsDone) parsed.lessonsDone = {};
+    if (!parsed.fixes) parsed.fixes = {};
+    if (!parsed.assisted) parsed.assisted = {};
     if (!parsed.view) parsed.view = 'practice';
     return parsed;
   } catch (e) {
@@ -53,7 +57,11 @@ function hasAttempted(ch) {
 }
 
 function isChallengeDone(ch) {
-  if (ch.type === 'exam') return state.examGrades[ch.id] === 'got';
+  if (ch.type === 'exam') {
+    // Two stages: the written root cause, then code that actually runs.
+    var explained = state.examGrades[ch.id] === 'got';
+    return ch.fix ? (explained && !!state.fixes[ch.id]) : explained;
+  }
   return !!state.done[ch.id];
 }
 
@@ -68,6 +76,15 @@ function completedCount() {
 function phaseDone(type) {
   for (var i = 0; i < CHALLENGES.length; i++) {
     if (CHALLENGES[i].type === type && !isChallengeDone(CHALLENGES[i])) return false;
+  }
+  return true;
+}
+
+/* Every exam has its written stage graded 'got' (the fix stage may still be open). */
+function examsExplained() {
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    var ch = CHALLENGES[i];
+    if (ch.type === 'exam' && state.examGrades[ch.id] !== 'got') return false;
   }
   return true;
 }
@@ -109,7 +126,9 @@ function updateProgress() {
   var achieved = true;
   var text;
   if (moduleComplete()) {
-    text = '[x] You can diagnose root causes cold — Module 1 complete';
+    text = '[x] You can fix what you diagnosed — Module 1 complete';
+  } else if (phaseDone('mc') && phaseDone('line') && examsExplained()) {
+    text = '[x] You can diagnose root causes cold — now make the code run';
   } else if (phaseDone('mc') && phaseDone('line')) {
     text = '[x] You can locate which line broke — final exam in progress';
   } else if (phaseDone('mc')) {
@@ -523,6 +542,113 @@ function setupLine(ch, idx) {
 }
 
 /* ---------- final exam ---------- */
+/* =====================================================================
+   FIX STAGE — the second half of a final exam. You explained the bug;
+   now edit the code until it genuinely runs. Verified by execution, not
+   by self-assessment.
+   ===================================================================== */
+function renderFixStage(ch) {
+  var passed = !!state.fixes[ch.id];
+  var assisted = !!state.assisted[ch.id];
+
+  var html = '<div class="fix-stage">' +
+    '<div class="sec-label">STAGE 2 — MAKE IT RUN</div>' +
+    '<p class="fix-intro">' + esc(ch.fix.intro) + '</p>';
+
+  if (passed) {
+    html += '<div class="fix-verdict pass">[ PASS ] your code produced the expected output' +
+            (assisted ? ' — with the solution shown' : '') + '</div>';
+  }
+
+  html += '<div class="fix-editor-wrap">' +
+            '<div class="fix-editor-bar"><span>fix.js</span>' +
+              '<span class="fix-expect">expects: ' + esc(ch.fix.expect.join(' / ')) + '</span></div>' +
+            '<textarea class="fix-editor" id="fixCode" spellcheck="false" ' +
+              'aria-label="Editable code">' + esc(ch.fix.broken) + '</textarea>' +
+          '</div>' +
+          '<div class="run-row">' +
+            '<button class="btn-run" id="fixRun">[ RUN ]</button>' +
+            '<button class="btn btn-ghost" id="fixReset">[ RESET CODE ]</button>' +
+            '<span class="run-hint" id="fixHintLine">not run yet</span>' +
+          '</div>' +
+          '<div class="mini-console" id="fixConsole" hidden></div>' +
+          '<div id="fixVerdict"></div>' +
+          '<div class="fix-help">' +
+            '<button class="btn btn-ghost" id="fixHintBtn">[ HINT ]</button>' +
+            '<button class="btn btn-ghost" id="fixSolBtn">[ SHOW SOLUTION ]</button>' +
+          '</div>' +
+          '<div class="fix-hints" id="fixHints"></div>';
+  return html + '</div>';
+}
+
+function wireFixStage(ch, idx) {
+  var editor = document.getElementById('fixCode');
+  var hintsShown = 0;
+
+  function verdict(html) { document.getElementById('fixVerdict').innerHTML = html; }
+
+  document.getElementById('fixRun').addEventListener('click', function () {
+    var code = editor.value;
+    // Clear the previous result first — leaving a stale PASS/FAIL on screen
+    // while the next run is in flight reads as the new answer.
+    verdict('');
+    document.getElementById('fixConsole').hidden = true;
+    document.getElementById('fixHintLine').textContent = 'running…';
+    runSandboxed(code, ch.fix.env, ch.fix.seed).then(function (res) {
+      var con = document.getElementById('fixConsole');
+      con.innerHTML = renderMiniConsole(res.output);
+      con.hidden = false;
+      document.getElementById('fixHintLine').textContent = 'your code, actually executed';
+
+      if (outputMatches(res.output, ch.fix.expect)) {
+        state.fixes[ch.id] = true;
+        saveState();
+        updateProgress();
+        verdict('<div class="fix-verdict pass">[ PASS ] that is the expected output' +
+                (state.assisted[ch.id] ? ' — solution was shown' : '') + '</div>');
+      } else {
+        var got = [];
+        for (var i = 0; i < res.output.length; i++) {
+          if (res.output[i].type === 'log') got.push(res.output[i].text);
+        }
+        verdict('<div class="fix-verdict fail">[ FAIL ] not there yet</div>' +
+                '<div class="fix-diff">' +
+                  '<div class="fix-diff-row"><span class="fdk">expected</span>' +
+                    '<span class="fdv ok">' + esc(ch.fix.expect.join('\n') || '(nothing)') + '</span></div>' +
+                  '<div class="fix-diff-row"><span class="fdk">yours</span>' +
+                    '<span class="fdv no">' + esc(got.join('\n') ||
+                      (res.threw ? '(threw before printing anything)' : '(nothing printed)')) + '</span></div>' +
+                '</div>');
+      }
+    });
+  });
+
+  document.getElementById('fixReset').addEventListener('click', function () {
+    editor.value = ch.fix.broken;
+    document.getElementById('fixConsole').hidden = true;
+    verdict('');
+    document.getElementById('fixHintLine').textContent = 'back to the broken version';
+  });
+
+  document.getElementById('fixHintBtn').addEventListener('click', function () {
+    if (hintsShown >= ch.fix.hints.length) return;
+    var box = document.getElementById('fixHints');
+    box.innerHTML += '<div class="fix-hint"><span class="fh-n">hint ' + (hintsShown + 1) + '</span>' +
+                     esc(ch.fix.hints[hintsShown]) + '</div>';
+    hintsShown++;
+    if (hintsShown >= ch.fix.hints.length) this.disabled = true;
+  });
+
+  document.getElementById('fixSolBtn').addEventListener('click', function () {
+    editor.value = ch.fix.solution;
+    state.assisted[ch.id] = true;
+    saveState();
+    this.disabled = true;
+    verdict('<div class="fix-verdict assisted">[ -- ] solution loaded into the editor. ' +
+            'Run it to see it work, then hit RESET CODE and try it yourself.</div>');
+  });
+}
+
 function setupExam(ch, idx) {
   var box = document.getElementById('interaction');
   var grade = state.examGrades[ch.id];
@@ -531,9 +657,11 @@ function setupExam(ch, idx) {
     var html = '<div class="model-answer"><span class="ma-label">MODEL ANSWER</span>' +
                esc(ch.modelAnswer) + '</div>';
     html += '<div class="explain" style="margin-top:12px"><span class="explain-label">' +
-            (grade === 'got' ? '[ OK ] PASSED' : '[ -- ] MARKED AS MISSED') +
+            (grade === 'got' ? '[ OK ] EXPLAINED' : '[ -- ] MARKED AS MISSED') +
             '</span>' + esc(ch.explanation) + '</div>';
+    if (ch.fix) html += renderFixStage(ch);
     box.innerHTML = html;
+    if (ch.fix) wireFixStage(ch, idx);
     var act = document.getElementById('chActions');
     var last = idx === CHALLENGES.length - 1;
     act.innerHTML =
@@ -772,6 +900,205 @@ function runSnippet(code, fallback) {
     out.push({ text: 'Uncaught ' + (err.name || 'Error') + ': ' + err.message, type: 'error' });
   }
   return out.length ? out : [{ text: '(nothing was printed)', type: 'log' }];
+}
+
+/* =====================================================================
+   SANDBOX — runs the user's own edited code for the fix challenges.
+
+   runSnippet above is synchronous, which is fine for the lesson demos but
+   cannot execute anything with await or fetch — and those are exactly the
+   bugs worth practising. This runner wraps the code in an async IIFE (so
+   top-level await works) and injects fake versions of whatever the browser
+   APIs the challenge needs. Nothing here touches the real page or network.
+   ===================================================================== */
+
+/* A stand-in Response, so res.json() behaves like the real thing. */
+function fakeResponse(payload, status) {
+  return {
+    ok: (status || 200) < 400,
+    status: status || 200,
+    json: function () { return Promise.resolve(payload); },
+    text: function () { return Promise.resolve(JSON.stringify(payload)); }
+  };
+}
+
+/* Minimal element good enough for the DOM-flavoured challenges. */
+function fakeElement(id) {
+  return {
+    id: id, textContent: '', value: '', innerHTML: '',
+    classList: { add: function () {}, remove: function () {}, toggle: function () {} },
+    addEventListener: function (evt, fn) { if (typeof fn === 'function') this['on' + evt] = fn; },
+    appendChild: function () {}, setAttribute: function () {}, focus: function () {}
+  };
+}
+
+/* env: which globals the challenge asks for. seed: canned data for them. */
+function buildSandbox(env, seed, out) {
+  seed = seed || {};
+  var api = {
+    console: {
+      log: function () {
+        var parts = [];
+        for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
+        out.push({ text: parts.join(' '), type: 'log' });
+      },
+      error: function () {
+        var parts = [];
+        for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
+        out.push({ text: parts.join(' '), type: 'error' });
+      }
+    }
+  };
+  var wants = env || [];
+
+  if (wants.indexOf('fetch') !== -1) {
+    // seed.responses maps a url substring -> payload (or { payload, status }).
+    api.fetch = function (url) {
+      var table = seed.responses || {};
+      for (var key in table) {
+        if (Object.prototype.hasOwnProperty.call(table, key) && String(url).indexOf(key) !== -1) {
+          var hit = table[key];
+          var body = (hit && hit.payload !== undefined) ? hit.payload : hit;
+          return Promise.resolve(fakeResponse(body, hit && hit.status));
+        }
+      }
+      return Promise.resolve(fakeResponse({ error: 'not found' }, 404));
+    };
+  }
+
+  if (wants.indexOf('dom') !== -1) {
+    var nodes = {};
+    var lookup = function (key) {
+      key = String(key).replace(/^[#.]/, '');
+      if (!nodes[key]) nodes[key] = fakeElement(key);
+      return (seed.missing || []).indexOf(key) !== -1 ? null : nodes[key];
+    };
+    api.document = {
+      getElementById: lookup,
+      querySelector: lookup,
+      querySelectorAll: function () { return []; },
+      getElementsByClassName: function () { return []; },
+      addEventListener: function () {}
+    };
+  }
+
+  if (wants.indexOf('storage') !== -1) {
+    var store = {};
+    for (var k in (seed.storage || {})) {
+      if (Object.prototype.hasOwnProperty.call(seed.storage, k)) store[k] = seed.storage[k];
+    }
+    api.localStorage = {
+      getItem: function (key) {
+        return Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null;
+      },
+      setItem: function (key, val) { store[key] = String(val); },
+      removeItem: function (key) { delete store[key]; }
+    };
+  }
+  return api;
+}
+
+/* Browser globals a snippet must never reach by accident. Anything the
+   challenge did not ask for is shadowed with undefined, so a challenge that
+   forgets to declare `dom` fails loudly instead of quietly driving the real
+   page. This is for predictable behaviour, not security — a determined
+   escape is always possible, and the only code running here is the user's own. */
+var SHADOWED_GLOBALS = [
+  'fetch', 'document', 'localStorage', 'sessionStorage', 'XMLHttpRequest',
+  'window', 'globalThis', 'self', 'top', 'parent', 'frames', 'location',
+  'navigator', 'alert', 'confirm', 'prompt', 'indexedDB', 'WebSocket',
+  'importScripts', 'open', 'postMessage'
+  // NB: 'eval' and 'arguments' are illegal as strict-mode parameter names, so
+  // they cannot be shadowed. Direct eval inherits this scope anyway, meaning
+  // eval('document') still sees the shadowed undefined.
+];
+
+/* Best-effort capture of rejections that surface after the snippet returns.
+   Note: Chrome does NOT dispatch unhandledrejection (or error) to page listeners
+   for code compiled via the Function constructor — it reports those straight to
+   DevTools — so a promise the snippet starts and never awaits cannot be caught
+   here. That case is handled instead by the explicit "nothing was printed"
+   diagnostic below, which names the usual cause. */
+var sandboxOut = null;
+window.addEventListener('unhandledrejection', function (e) {
+  if (!sandboxOut) return;
+  var err = e.reason;
+  sandboxOut.push({
+    text: 'Uncaught (in promise) ' + ((err && err.name) || 'Error') +
+          ': ' + ((err && err.message) || String(err)),
+    type: 'error'
+  });
+  e.preventDefault();
+});
+
+/* Resolves to { output, threw }. Never rejects — a thrown error is a result. */
+function runSandboxed(code, env, seed) {
+  var out = [];
+  var api = buildSandbox(env, seed, out);
+  var names = [], values = [];
+  for (var i = 0; i < SHADOWED_GLOBALS.length; i++) {
+    var g = SHADOWED_GLOBALS[i];
+    if (!Object.prototype.hasOwnProperty.call(api, g)) { names.push(g); values.push(undefined); }
+  }
+  for (var n in api) {
+    if (Object.prototype.hasOwnProperty.call(api, n)) { names.push(n); values.push(api[n]); }
+  }
+
+  var fn;
+  try {
+    // The async wrapper is what lets a challenge's own `await` work.
+    fn = Function.apply(null, names.concat(
+      '"use strict"; return (async function () {\n' + code + '\n})();'));
+  } catch (err) {
+    out.push({ text: 'Uncaught SyntaxError: ' + err.message, type: 'error' });
+    return Promise.resolve({ output: out, threw: true });
+  }
+
+  var settled;
+  sandboxOut = out;
+  try {
+    settled = Promise.resolve(fn.apply(null, values));
+  } catch (err) {
+    settled = Promise.reject(err);
+  }
+
+  var threw = false;
+  return settled.catch(function (err) {
+    threw = true;
+    out.push({
+      text: 'Uncaught ' + ((err && err.name) || 'Error') + ': ' + ((err && err.message) || String(err)),
+      type: 'error'
+    });
+  }).then(function () {
+    // Chrome reports an unhandled rejection a couple of task hops after the
+    // snippet returns (measured just under 1ms), so a setTimeout(0) or two loses
+    // the race. Wait a short fixed grace instead — imperceptible on a button
+    // press, and if it ever were missed the error just falls back to the real
+    // console rather than breaking anything.
+    return new Promise(function (done) { setTimeout(done, 30); });
+  }).then(function () {
+    sandboxOut = null;
+    for (var i = 0; i < out.length; i++) if (out[i].type === 'error') threw = true;
+    if (!out.length) {
+      // Silence almost always means async work was started and never awaited:
+      // the snippet returned before anything could print.
+      out.push({ text: '(nothing reached the console — if this code starts async ' +
+                       'work, check that every call to it is awaited)', type: 'log' });
+    }
+    return { output: out, threw: threw };
+  });
+}
+
+/* Output matches when the printed log lines equal the expected ones. */
+function outputMatches(output, expected) {
+  var got = [];
+  for (var i = 0; i < output.length; i++) {
+    if (output[i].type === 'log') got.push(output[i].text.trim());
+  }
+  var want = (expected || []).map(function (s) { return String(s).trim(); });
+  if (got.length !== want.length) return false;
+  for (var j = 0; j < want.length; j++) if (got[j] !== want[j]) return false;
+  return true;
 }
 
 function renderRunRow(key, code, fallback, afterRun) {

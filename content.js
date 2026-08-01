@@ -442,7 +442,35 @@ var CHALLENGES = [
     error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'temp_f')", src: 'weather.js:3' },
     question: 'In your own words: what is the ROOT CAUSE of this error? (Not the fix — the why.)',
     modelAnswer: "fetch doesn't give you the data — it gives you a Response object (status code, headers, and so on). The actual JSON body needs a second step: await data.json(). Since a Response object has no .current property, that comes back undefined, and reading .temp_f off undefined is the crash. The await IS there, which makes this sneaky — the code awaited the envelope but never opened it.",
-    explanation: "If your answer mentioned that fetch returns a Response (not the parsed data) and that the .json() step is missing, you nailed it."
+    explanation: "If your answer mentioned that fetch returns a Response (not the parsed data) and that the .json() step is missing, you nailed it.",
+    fix: {
+      intro: 'Now make it actually run. The weather service returns { current: { temp_f: 88 } }. Edit the code until the console prints 88°F.',
+      env: ['fetch'],
+      seed: { responses: { '/api/weather': { current: { temp_f: 88 } } } },
+      broken:
+        'async function loadWeather() {\n' +
+        "  const data = await fetch('/api/weather?city=austin');\n" +
+        '  const temp = data.current.temp_f;\n' +
+        "  console.log(temp + '°F');\n" +
+        '}\n' +
+        '\n' +
+        'await loadWeather();',
+      expect: ['88°F'],
+      hints: [
+        'Run it first. The error names the property it could not read — work backwards from there.',
+        'fetch hands you an envelope, not the letter. What is in "data" right now is the Response, which has no .current on it.',
+        'Opening the envelope is its own step, and it also has to be waited for: const data = await res.json();'
+      ],
+      solution:
+        'async function loadWeather() {\n' +
+        "  const res = await fetch('/api/weather?city=austin');\n" +
+        '  const data = await res.json();\n' +
+        '  const temp = data.current.temp_f;\n' +
+        "  console.log(temp + '°F');\n" +
+        '}\n' +
+        '\n' +
+        'await loadWeather();'
+    }
   },
 
   {
@@ -472,7 +500,38 @@ var CHALLENGES = [
     error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'push')", src: 'todos.js:4' },
     question: 'This works fine on your machine, but crashes for every brand-new visitor. What is the ROOT CAUSE?',
     modelAnswer: "On a first visit, nothing is saved yet — so localStorage.getItem returns null, JSON.parse(null) comes out as null too, and you can't push onto null. The code silently assumed saved data always exists, which was true on the developer's machine (where old data was lying around) and false for everyone else. The fix is a fallback for the empty case: JSON.parse(saved) || [].",
-    explanation: "If your answer covered the empty first-visit case — getItem returning null and the code assuming data always exists — you got the core of it. \"Works for me, breaks for new users\" is almost always a hidden assumption about existing state."
+    explanation: "If your answer covered the empty first-visit case — getItem returning null and the code assuming data always exists — you got the core of it. \"Works for me, breaks for new users\" is almost always a hidden assumption about existing state.",
+    fix: {
+      intro: 'Now make it work for a brand-new visitor. Storage starts completely empty here, exactly like a first visit. Edit the code until the console prints 1.',
+      env: ['storage'],
+      seed: { storage: {} },
+      broken:
+        'function addTodo(text) {\n' +
+        "  const saved = localStorage.getItem('todos');\n" +
+        '  const todos = JSON.parse(saved);\n' +
+        '  todos.push({ text: text, done: false });\n' +
+        "  localStorage.setItem('todos', JSON.stringify(todos));\n" +
+        '  return todos;\n' +
+        '}\n' +
+        '\n' +
+        "console.log(addTodo('buy milk').length);",
+      expect: ['1'],
+      hints: [
+        'Nothing has ever been saved here, so think about what getItem hands back when the key does not exist.',
+        'It returns null — and JSON.parse(null) is still null. You cannot push onto null.',
+        'Give it something to fall back to when there is nothing saved: JSON.parse(saved) || []'
+      ],
+      solution:
+        'function addTodo(text) {\n' +
+        "  const saved = localStorage.getItem('todos');\n" +
+        '  const todos = JSON.parse(saved) || [];\n' +
+        '  todos.push({ text: text, done: false });\n' +
+        "  localStorage.setItem('todos', JSON.stringify(todos));\n" +
+        '  return todos;\n' +
+        '}\n' +
+        '\n' +
+        "console.log(addTodo('buy milk').length);"
+    }
   },
 
   {
@@ -504,7 +563,36 @@ var CHALLENGES = [
     error: { msg: "Uncaught TypeError: Cannot read properties of undefined (reading 'widgets')", src: 'dashboard.js:6' },
     question: 'The fetch URL is correct and the API works. What is the ROOT CAUSE of this crash?',
     modelAnswer: "This is a timing bug. fetch starts a request and moves on immediately — the .then callbacks only run later, when the response arrives. But line 6 runs right away, while stats is still undefined. The code starts a job and instantly tries to use its result, without waiting. The fix is to only use stats where the waiting happens: move renderCards inside the .then, or rewrite with await so the function genuinely pauses until the data exists.",
-    explanation: "If your answer said the render runs before the fetch finishes — that the code doesn't wait for the async work — you've got the mental model that untangles most vibe-code bugs."
+    explanation: "If your answer said the render runs before the fetch finishes — that the code doesn't wait for the async work — you've got the mental model that untangles most vibe-code bugs.",
+    fix: {
+      intro: 'Last one. The stats endpoint returns { widgets: [3 items] }. Edit the code until the console prints 3 — the count has to be read after the data has actually arrived.',
+      env: ['fetch'],
+      seed: { responses: { '/api/stats': { widgets: ['a', 'b', 'c'] } } },
+      broken:
+        'async function loadDashboard() {\n' +
+        '  let stats;\n' +
+        "  fetch('/api/stats')\n" +
+        '    .then(function (res) { return res.json(); })\n' +
+        '    .then(function (json) { stats = json; });\n' +
+        '  console.log(stats.widgets.length);\n' +
+        '}\n' +
+        '\n' +
+        'await loadDashboard();',
+      expect: ['3'],
+      hints: [
+        'Nothing here is misspelled and the endpoint works. Ask instead: at the moment that last line runs, has the data arrived yet?',
+        'It has not. fetch starts the request and the code sails straight past it — the .then callbacks run later.',
+        'Either move the logging inside the final .then, or drop the chain entirely: const res = await fetch(...); const stats = await res.json();'
+      ],
+      solution:
+        'async function loadDashboard() {\n' +
+        "  const res = await fetch('/api/stats');\n" +
+        '  const stats = await res.json();\n' +
+        '  console.log(stats.widgets.length);\n' +
+        '}\n' +
+        '\n' +
+        'await loadDashboard();'
+    }
   }
 ];
 
