@@ -958,6 +958,124 @@ var LESSONS = [
   },
 
   {
+    id: 'objects-101',
+    title: 'Objects and arrays: how code holds data',
+    blurb: 'The single most useful concept for reading real AI-generated code. Almost every bug involves reaching into data shaped differently than expected — this is the reading skill for that.',
+    minutes: 7,
+    sections: [
+
+      { type: 'hook', text: 'This is the concept you need most for reading real code. Almost every bug in Practice will involve reaching into data that is shaped differently than expected — this lesson is where you learn to trace those paths.' },
+
+      {
+        type: 'step',
+        label: 'Step 1',
+        heading: 'Why grouped data exists',
+        paragraphs: [
+          'One variable holds one value. That is fine for a single number, but real programs deal with lots of related values at once — a user has a name, an age, an email.',
+          'Rather than juggle three loose variables that only you know belong together, you group them. The example below shows both, so the difference is on screen.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "const age = 16;\n" +
+          "const email = 'sam@example.com';\n" +
+          "console.log(name, age, email);\n" +
+          "\n" +
+          "const user = { name: 'Sam', age: 16, email: 'sam@example.com' };\n" +
+          "console.log(user);",
+        filename: 'try-it.js',
+        fallbackOutput: [
+          'Sam 16 sam@example.com',
+          '{"name":"Sam","age":16,"email":"sam@example.com"}'
+        ],
+        afterRun: 'Same three pieces of information, held two ways. The bottom form is a single named thing that carries all three together — which means you can pass it around, store it, or read from it as one value.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 2',
+        heading: 'Arrays — an ordered list',
+        paragraphs: [
+          'The square brackets you met in the symbols lesson do two jobs, and both show up here. Wrapping a comma-separated run of values in <strong>[ ]</strong> makes an <strong>array</strong> — an ordered list. Writing <strong>[N]</strong> after a list reaches in and pulls out the item at position N.',
+          'Positions start at 0, not 1. So in the list below, <strong>"scores[0]"</strong> is the first score and <strong>"scores.length"</strong> is how many scores there are.'
+        ],
+        code:
+          "const scores = [90, 85, 70];\n" +
+          "console.log(scores[0]);\n" +
+          "console.log(scores[2]);\n" +
+          "console.log(scores.length);",
+        filename: 'try-it.js',
+        fallbackOutput: ['90', '70', '3'],
+        afterRun: 'The order is what makes it a list. If someone rearranged the scores, "scores[0]" would still give you the first one — whichever score that is now.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 3',
+        heading: 'Objects — labelled data',
+        paragraphs: [
+          'The curly braces you saw around <strong>"user"</strong> in step 1 make an <strong>object</strong> — grouped data where every piece has a name. Each named piece is written <strong>key: value</strong>, and the commas separate them.',
+          'The dot you met in the symbols lesson is how you reach in. <strong>"user.name"</strong> reads the piece labelled <strong>"name"</strong>, and <strong>"user.age"</strong> reads the piece labelled <strong>"age"</strong>.'
+        ],
+        code:
+          "const user = { name: 'Sam', age: 16 };\n" +
+          "console.log(user.name);\n" +
+          "console.log(user.age);",
+        filename: 'try-it.js',
+        fallbackOutput: ['Sam', '16'],
+        afterRun: 'Unlike an array, an object has no order — you reach in by name, not by position. That is the whole difference: square brackets make a list you index by number, curly braces make a bundle you index by label.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 4',
+        heading: 'Nesting — the reading skill',
+        paragraphs: [
+          'This is the important one. Real data is almost always <strong>nested</strong> — an object holds an array, which holds more objects. Reading it is a walk left to right, one step at a time.',
+          'Trace <strong>"data.results[0].title"</strong> below: start at <strong>"data"</strong>, reach into <strong>"results"</strong> (a list), grab item 0 (an object), reach into <strong>"title"</strong>. That is one path, four steps.'
+        ],
+        code:
+          "const data = {\n" +
+          "  results: [\n" +
+          "    { title: 'First post' },\n" +
+          "    { title: 'Second post' }\n" +
+          "  ]\n" +
+          "};\n" +
+          "\n" +
+          "console.log(data.results[0].title);\n" +
+          "console.log(data.results[1].title);\n" +
+          "console.log(data.results.length);",
+        filename: 'try-it.js',
+        fallbackOutput: ['First post', 'Second post', '2'],
+        afterRun: 'Every dot and every pair of square brackets is one step deeper. Read a path like "a.b[0].c" the same way, left to right, and you can predict what will come out before you run it.'
+      },
+
+      {
+        type: 'prose',
+        label: 'Where this bites',
+        heading: 'Why this breaks AI-generated code',
+        paragraphs: [
+          'When an AI assistant writes code that reads data from a server, it does not actually know the shape of that data. It <strong>guesses</strong> — and it guesses confidently, in a way that reads as certain.',
+          'That is why you will meet code that writes <strong>"response.data.items"</strong> when the real reply is shaped as <strong>"response.results"</strong>, or reads <strong>"data.comments"</strong> when the API just hands back an array. The path in the code and the path through the real data disagree, and the error is always the same shape: <strong>"cannot read properties of undefined"</strong>, naming the piece the code reached for after the wrong step.',
+          'You have now seen the two containers and the two ways to reach in. Every one of those bugs is a mis-typed path — and now you can trace it.'
+        ]
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Look at a pair of square brackets or a pair of curly braces in code and say which one it is and how you would read from it.',
+          'Trace a path like "data.results[0].title" step by step and say what comes out at each dot and bracket.',
+          'Recognise a "wrong-path" bug when you see one — an error naming a piece that was never in the real data.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'Lesson complete',
+        undoLabel: '[ MARK INCOMPLETE ]'
+      }
+    ]
+  },
+
+  {
     id: 'functions-101',
     title: 'What is a JavaScript function?',
     blurb: 'The one idea that unlocks most AI-generated bugs. Recipes, ingredients, and the difference between writing one down and actually cooking it.',
