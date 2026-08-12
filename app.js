@@ -8,6 +8,11 @@
 var STORAGE_KEY = 'vibeCoachProgress';
 var LEGACY_STORAGE_KEY = 'slopPatrolProgress';  // app's former name; adopted once on load
 
+/* True only when there is no saved progress at all — a genuine first visit.
+   Set inside loadState(); drives whether the welcome screen shows on boot.
+   Declared before the loadState() call below so its assignment is not clobbered. */
+var firstVisit = false;
+
 var state = loadState();
 
 function defaultState() {
@@ -44,9 +49,9 @@ function loadState() {
         } catch (e) { /* private mode: still works for this session */ }
       }
     }
-    if (!raw) return defaultState();
+    if (!raw) { firstVisit = true; return defaultState(); }
     var parsed = JSON.parse(raw);
-    if (!parsed || parsed.version !== 1) return defaultState();
+    if (!parsed || parsed.version !== 1) { firstVisit = true; return defaultState(); }
     // Saved before a later feature existed: keep the progress, add the field.
     if (!parsed.attempted) parsed.attempted = {};
     if (!parsed.lessonsDone) parsed.lessonsDone = {};
@@ -1510,6 +1515,34 @@ function enterLearn() {
   show('screen-lessons');
 }
 
+/* First-run intro (also reachable anytime via the header "[ about ]" link).
+   Sits in front of the app; it changes nothing until the user acts. */
+function renderWelcome() {
+  var el = document.getElementById('screen-welcome');
+  el.innerHTML =
+    '<div class="welcome">' +
+      '<div class="welcome-brand"><span class="siren">$</span>VIBE COACH</div>' +
+      '<p class="welcome-lede">A place to learn to read, understand, and debug ' +
+        'AI-generated code — one small concept at a time.</p>' +
+      '<p class="welcome-real">This will not make you a developer on its own — nothing does ' +
+        'except building real things and getting stuck. Think of it as the manual you keep open ' +
+        'while you do that: a place to drill error-reading and look up what a symbol means when ' +
+        'you are confused.</p>' +
+      '<div class="welcome-paths">' +
+        '<div class="welcome-path"><span class="wp-tag">[ LEARN ]</span>' +
+          '<span class="wp-text">Short lessons that build up from zero: what code is, what the ' +
+          'symbols mean, how functions work.</span></div>' +
+        '<div class="welcome-path"><span class="wp-tag">[ PRACTICE ]</span>' +
+          '<span class="wp-text">Drills where you read broken AI code and find what is wrong.</span></div>' +
+      '</div>' +
+      '<div class="welcome-actions">' +
+        '<button class="btn btn-primary" id="btnStartLearning">[ START LEARNING ]</button></div>' +
+    '</div>';
+  document.getElementById('btnStartLearning').addEventListener('click', enterLearn);
+  document.getElementById('practiceProgress').hidden = true;   // no practice chrome on welcome
+  show('screen-welcome');
+}
+
 /* Coming back to Practice drops you where you were, not on the welcome screen. */
 function enterPractice() {
   state.view = 'practice';
@@ -1523,6 +1556,8 @@ function enterPractice() {
 document.addEventListener('click', function (e) {
   if (!e.target.closest) return;
   var el;
+
+  if (e.target.closest('#aboutLink')) { renderWelcome(); return; }
 
   if ((el = e.target.closest('.tab'))) {
     var v = el.getAttribute('data-view');
@@ -1675,5 +1710,6 @@ document.addEventListener('keydown', function (e) {
 buildLegend();
 updateProgress();
 syncChrome();
-if (state.view === 'learn') enterLearn();
+if (firstVisit) renderWelcome();          // no saved progress -> intro first
+else if (state.view === 'learn') enterLearn();
 else renderHome();

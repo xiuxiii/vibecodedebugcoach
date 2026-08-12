@@ -66,6 +66,13 @@
   }
   .brand h1 .siren { color: var(--green); margin-right: 8px; font-weight: 400; }
   .brand .module { font-size: 0.75rem; color: var(--dim); letter-spacing: 0.04em; }
+  /* deliberately a small dim link, not a full button — a tertiary utility */
+  .about-link {
+    margin-left: auto; background: none; border: none; padding: 2px 4px;
+    color: var(--dimmer); font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.04em; cursor: pointer; transition: color 0.12s;
+  }
+  .about-link:hover { color: var(--green); }
 
   /* ASCII progress meter */
   .progress-track { margin-top: 8px; }
@@ -264,6 +271,39 @@
   .screen { display: none; }
   .screen.active { display: block; animation: fadeIn 0.12s linear; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ---------- Welcome (first-run / about) ---------- */
+  .welcome { padding: 44px 0 28px; }
+  .welcome-brand {
+    font-family: var(--mono); font-size: 1.7rem; font-weight: 700;
+    letter-spacing: 0.05em; color: var(--heading); margin-bottom: 24px;
+  }
+  .welcome-brand .siren { color: var(--green); margin-right: 10px; font-weight: 400; }
+  .welcome-lede {
+    font-size: 1.2rem; line-height: 1.5; color: var(--text);
+    letter-spacing: -0.01em; margin-bottom: 24px; max-width: 52ch;
+  }
+  .welcome-real {
+    font-size: 0.95rem; line-height: 1.75; color: var(--body);
+    margin-bottom: 36px; max-width: 60ch;
+  }
+  .welcome-paths { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+  .welcome-path {
+    display: flex; gap: 16px; align-items: baseline;
+    border: 1px solid var(--border); border-left: 2px solid var(--green);
+    background: var(--bg-panel); padding: 14px 16px;
+  }
+  .welcome-path .wp-tag {
+    flex: 0 0 96px; white-space: nowrap;
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.05em; color: var(--green);
+  }
+  .welcome-path .wp-text { font-size: 0.9rem; line-height: 1.6; color: var(--body); max-width: 52ch; }
+  .welcome-actions { margin-top: 4px; }
+  @media (max-width: 560px) {
+    .welcome-brand { font-size: 1.4rem; }
+    .welcome-lede { font-size: 1.05rem; }
+  }
 
   /* ---------- Home ---------- */
   .home { padding-top: 40px; }
@@ -689,6 +729,7 @@
     <div class="brand">
       <h1><span class="siren">$</span>VIBE COACH</h1>
       <span class="module" id="moduleLabel">Module 1 · Reading Errors Without Panicking</span>
+      <button class="about-link" id="aboutLink">[ about ]</button>
     </div>
     <div class="tabs" role="tablist">
       <button class="tab" data-view="learn" role="tab">[ LEARN ]</button>
@@ -702,6 +743,7 @@
 </header>
 
 <div class="wrap">
+  <div class="screen" id="screen-welcome"></div>
   <div class="screen" id="screen-home"></div>
   <div class="screen" id="screen-challenge"></div>
   <div class="screen" id="screen-summary"></div>
