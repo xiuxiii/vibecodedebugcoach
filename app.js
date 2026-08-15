@@ -28,6 +28,10 @@ function defaultState() {
     attempted: {},         // id -> true once the lesson card has been dismissed
     view: 'practice',      // which tab is open: 'learn' | 'practice'
     lessonsDone: {},       // lesson id -> true, self-assessed
+    /* setup: null on a genuine first visit — the setup screen shows and Q1 routes
+       where the app opens. On existing saves it stays null (they were never asked)
+       or holds { level, track, goal } once completed. */
+    setup: null,
     lastSeen: null
   };
 }
@@ -58,6 +62,13 @@ function loadState() {
     if (!parsed.fixes) parsed.fixes = {};
     if (!parsed.assisted) parsed.assisted = {};
     if (!parsed.view) parsed.view = 'practice';
+    /* setup was added later — a legacy save is treated as "did not go through
+       setup"; they should not be routed back into a wizard against their will.
+       So mark it as an implicit acknowledgment rather than null. Users can still
+       reopen [ setup ] anytime to adjust and record answers. */
+    if (parsed.setup === undefined) {
+      parsed.setup = { level: 'legacy', track: 'javascript', goal: null };
+    }
 
     // Saves written before ids were stored used a bare array index. Back then the
     // array was ids 1..15 in order, so index i meant id i+1 — remap once, then
@@ -1538,9 +1549,146 @@ function renderWelcome() {
       '<div class="welcome-actions">' +
         '<button class="btn btn-primary" id="btnStartLearning">[ START LEARNING ]</button></div>' +
     '</div>';
-  document.getElementById('btnStartLearning').addEventListener('click', enterLearn);
+  /* welcome -> setup (routes to app on [ LET'S GO ]). Existing users who
+     reopen welcome via [ about ] still pass through setup, which is pre-filled
+     with their saved answers — one click of the primary button and they are in. */
+  document.getElementById('btnStartLearning').addEventListener('click', renderSetup);
   document.getElementById('practiceProgress').hidden = true;   // no practice chrome on welcome
   show('screen-welcome');
+}
+
+/* =====================================================================
+   SETUP — three questions after welcome, shown once on first visit and
+   reopenable from the header. Only Q1 changes routing; Q2 and Q3 are
+   captured honestly for future use (no fake personalization).
+   ===================================================================== */
+
+/* Q1 answer -> where the app should open. Kept as data so the wiring is
+   obvious and any future levels only need an entry here. */
+var LEVEL_ROUTES = {
+  beginner: { view: 'learn',     lessonId: 'code-101' },
+  basics:   { view: 'learn',     lessonId: 'objects-101' },
+  reader:   { view: 'practice',  lessonId: null }
+};
+
+var LEVEL_OPTIONS = [
+  { id: 'beginner', label: "Total beginner — I don't really know what code is" },
+  { id: 'basics',   label: 'I know the basics — variables, maybe functions' },
+  { id: 'reader',   label: 'I can read code okay, I just want the debugging drills' }
+];
+
+var TRACK_OPTIONS = [
+  { id: 'javascript', label: 'JavaScript',                              enabled: true  },
+  { id: 'python',     label: 'Python',      tag: 'coming soon',         enabled: false },
+  { id: 'sql',        label: 'SQL',         tag: 'coming soon',         enabled: false },
+  { id: 'other',      label: 'Other / not sure', tag: 'coming soon',    enabled: false }
+];
+
+var GOAL_OPTIONS = [
+  { id: 'landing', label: 'A landing page or website' },
+  { id: 'webapp',  label: 'A small web app' },
+  { id: 'scripts', label: 'Automate something / scripts' },
+  { id: 'unsure',  label: 'Not sure yet' }
+];
+
+function renderSetup() {
+  var el = document.getElementById('screen-setup');
+  var s = state.setup || {};
+  var level = s.level && LEVEL_ROUTES[s.level] ? s.level : null;
+  var track = s.track || 'javascript';
+  var goal  = s.goal || null;
+
+  function optButton(kind, opt, selected, disabled) {
+    var mark = selected ? '[x]' : '[ ]';
+    var cls = 'setup-opt' + (selected ? ' selected' : '');
+    var attrs = 'data-setup-opt="' + kind + '" data-setup-value="' + opt.id + '"';
+    if (disabled) attrs += ' disabled';
+    var tag = opt.tag ? '<span class="so-tag">' + esc(opt.tag) + '</span>' : '';
+    return '<button class="' + cls + '" ' + attrs + '>' +
+      '<span class="so-mark">' + mark + '</span>' +
+      '<span class="so-body">' + esc(opt.label) + '</span>' + tag +
+    '</button>';
+  }
+
+  var html = '<div class="setup">' +
+    '<div class="setup-head">Quick setup</div>' +
+    '<div class="setup-title">A few questions before you start</div>' +
+    '<p class="setup-intro">Only the first one changes anything today — it decides where the app opens for you. ' +
+      'The other two are honestly here so they exist for later; nothing hidden.</p>';
+
+  // Q1
+  html += '<div class="setup-q"><div class="setup-q-num">Q1 · Starting point</div>' +
+    '<h3>How much do you already know?</h3><div class="setup-opts">';
+  LEVEL_OPTIONS.forEach(function (o) {
+    html += optButton('level', o, level === o.id, false);
+  });
+  html += '</div></div>';
+
+  // Q2
+  html += '<div class="setup-q"><div class="setup-q-num">Q2 · Track</div>' +
+    '<h3>Which language do you want to focus on?</h3><div class="setup-opts">';
+  TRACK_OPTIONS.forEach(function (o) {
+    var isSel = o.enabled && (track === o.id || (o.id === 'javascript' && !state.setup));
+    html += optButton('track', o, isSel, !o.enabled);
+  });
+  html += '</div><p class="setup-note">Right now everything is JavaScript-based — more tracks later.</p></div>';
+
+  // Q3
+  html += '<div class="setup-q"><div class="setup-q-num">Q3 · Goal</div>' +
+    '<h3>What are you hoping to build?</h3><div class="setup-opts">';
+  GOAL_OPTIONS.forEach(function (o) {
+    html += optButton('goal', o, goal === o.id, false);
+  });
+  html += '</div><p class="setup-note">Captured to shape what gets built next — lessons do not adapt to this yet.</p></div>';
+
+  // actions
+  html += '<div class="setup-actions">' +
+    '<button class="btn btn-primary" id="btnSetupGo"' +
+      (level ? '' : ' disabled') + '>[ LET&rsquo;S GO ]</button>' +
+    '<span class="setup-hint" id="setupHint">' +
+      (level ? '' : 'Pick an option in Q1 to continue.') +
+    '</span></div></div>';
+
+  el.innerHTML = html;
+  document.getElementById('practiceProgress').hidden = true;
+  show('screen-setup');
+}
+
+/* Toggle an option, save to state.setup (kept an object so future fields fit),
+   and update the [ LET'S GO ] button's enabled state. */
+function selectSetupOption(kind, value, buttonEl) {
+  if (!state.setup) state.setup = { level: null, track: 'javascript', goal: null };
+  state.setup[kind] = value;
+  saveState();
+  // toggle visual selection within this group
+  var group = buttonEl.parentNode;
+  var opts = group.querySelectorAll('[data-setup-opt="' + kind + '"]');
+  for (var i = 0; i < opts.length; i++) {
+    var isThis = opts[i] === buttonEl;
+    opts[i].classList.toggle('selected', isThis);
+    var mark = opts[i].querySelector('.so-mark');
+    if (mark) mark.textContent = isThis ? '[x]' : '[ ]';
+  }
+  var go = document.getElementById('btnSetupGo');
+  var hint = document.getElementById('setupHint');
+  if (kind === 'level') {
+    if (go) go.disabled = false;
+    if (hint) hint.textContent = '';
+  }
+}
+
+/* Route based on the recorded level — the actual working part of setup. */
+function finishSetup() {
+  var route = LEVEL_ROUTES[state.setup && state.setup.level] || LEVEL_ROUTES.basics;
+  if (route.view === 'learn') {
+    state.view = 'learn';
+    saveState();
+    syncChrome();
+    if (route.lessonId) renderLessonPage(route.lessonId);
+    else { renderLessonList(); show('screen-lessons'); }
+  } else {
+    enterPractice();
+  }
 }
 
 /* Coming back to Practice drops you where you were, not on the welcome screen. */
@@ -1558,6 +1706,15 @@ document.addEventListener('click', function (e) {
   var el;
 
   if (e.target.closest('#aboutLink')) { renderWelcome(); return; }
+  if (e.target.closest('#setupLink')) { renderSetup(); return; }
+
+  var setupBtn = e.target.closest('[data-setup-opt]');
+  if (setupBtn && !setupBtn.disabled) {
+    selectSetupOption(setupBtn.getAttribute('data-setup-opt'),
+                      setupBtn.getAttribute('data-setup-value'), setupBtn);
+    return;
+  }
+  if (e.target.closest('#btnSetupGo')) { finishSetup(); return; }
 
   if ((el = e.target.closest('.tab'))) {
     var v = el.getAttribute('data-view');
@@ -1710,6 +1867,11 @@ document.addEventListener('keydown', function (e) {
 buildLegend();
 updateProgress();
 syncChrome();
-if (firstVisit) renderWelcome();          // no saved progress -> intro first
+/* Boot ordering:
+   - no save at all      -> welcome, then setup (via its START button)
+   - save but no setup   -> setup (welcome was completed before this feature existed)
+   - normal returning    -> land in the app where they left off */
+if (firstVisit) renderWelcome();
+else if (!state.setup) renderSetup();
 else if (state.view === 'learn') enterLearn();
 else renderHome();

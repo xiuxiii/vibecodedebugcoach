@@ -66,13 +66,19 @@
   }
   .brand h1 .siren { color: var(--green); margin-right: 8px; font-weight: 400; }
   .brand .module { font-size: 0.75rem; color: var(--dim); letter-spacing: 0.04em; }
-  /* deliberately a small dim link, not a full button — a tertiary utility */
+  /* deliberately small dim links, not full buttons — tertiary utilities.
+     Both [ setup ] and [ about ] sit as a pair pushed to the right of the row. */
   .about-link {
-    margin-left: auto; background: none; border: none; padding: 2px 4px;
+    background: none; border: none; padding: 2px 4px;
     color: var(--dimmer); font-family: var(--mono); font-size: 0.72rem;
     letter-spacing: 0.04em; cursor: pointer; transition: color 0.12s;
   }
   .about-link:hover { color: var(--green); }
+  /* Wrapper so both links stay together and travel as one unit when the
+     header row wraps on narrow screens. */
+  .brand-links {
+    margin-left: auto; display: inline-flex; gap: 4px; flex-shrink: 0;
+  }
 
   /* ASCII progress meter */
   .progress-track { margin-top: 8px; }
@@ -303,6 +309,86 @@
   @media (max-width: 560px) {
     .welcome-brand { font-size: 1.4rem; }
     .welcome-lede { font-size: 1.05rem; }
+  }
+
+  /* ---------- Setup (three questions after welcome) ---------- */
+  .setup { padding: 34px 0 28px; }
+  .setup-head {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 8px;
+  }
+  .setup-title {
+    font-size: 1.5rem; line-height: 1.25; letter-spacing: -0.02em;
+    color: var(--heading); font-weight: 600; margin-bottom: 12px;
+  }
+  .setup-intro { color: var(--body); font-size: 0.95rem; line-height: 1.7; max-width: 60ch; }
+
+  .setup-q { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--border); }
+  .setup-q:first-of-type { border-top: none; padding-top: 4px; }
+  .setup-q-num {
+    display: inline-block; font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.14em; color: var(--green); margin-bottom: 6px;
+  }
+  .setup-q h3 {
+    font-size: 1.1rem; line-height: 1.35; letter-spacing: -0.01em;
+    color: var(--heading); font-weight: 600; margin-bottom: 14px;
+  }
+
+  /* option buttons — reuse the button system look, plus a wider tap surface
+     and left-anchored label since these read as multi-line choices */
+  .setup-opts { display: flex; flex-direction: column; gap: 8px; }
+  .setup-opt {
+    display: flex; align-items: flex-start; justify-content: flex-start; gap: 12px;
+    text-align: left; width: 100%;
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text); font-family: var(--sans); font-size: 0.92rem; line-height: 1.5;
+    padding: 12px 14px; cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .setup-opt:hover:not(:disabled) {
+    background: var(--green-bg); border-color: rgba(74, 222, 128, 0.45); color: var(--green);
+  }
+  .setup-opt:active:not(:disabled) { transform: translateY(1px); }
+  .setup-opt .so-mark {
+    flex: 0 0 auto; font-family: var(--mono); font-size: 0.82rem; padding-top: 1px;
+    color: var(--dimmer);
+  }
+  .setup-opt .so-body { flex: 1 1 auto; }
+  .setup-opt .so-sub {
+    display: block; color: var(--dim); font-size: 0.82rem; margin-top: 2px;
+  }
+  .setup-opt.selected {
+    background: var(--green-bg); border-color: var(--green); color: var(--green);
+  }
+  .setup-opt.selected .so-mark { color: var(--green); }
+  .setup-opt.selected .so-sub { color: rgba(74, 222, 128, 0.75); }
+
+  .setup-opt:disabled {
+    cursor: not-allowed; opacity: 0.5;
+    color: var(--dim); background: var(--bg-panel); border-color: var(--border);
+  }
+  .setup-opt:disabled:hover { background: var(--bg-panel); border-color: var(--border); color: var(--dim); }
+  .setup-opt .so-tag {
+    flex: 0 0 auto; font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.08em; color: var(--dimmer);
+    border: 1px solid var(--border); padding: 2px 7px; align-self: center;
+  }
+
+  .setup-note {
+    margin-top: 10px; color: var(--dim); font-size: 0.82rem; line-height: 1.6; max-width: 62ch;
+  }
+
+  .setup-actions {
+    margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .setup-hint { color: var(--dim); font-size: 0.82rem; }
+
+  @media (max-width: 560px) {
+    .setup-title { font-size: 1.3rem; }
+    .setup { padding: 24px 0 24px; }
+    .setup-actions .btn { width: 100%; }
+    .setup-hint { flex: 1 1 100%; text-align: center; }
   }
 
   /* ---------- Home ---------- */
@@ -718,7 +804,7 @@
     .brand { row-gap: 6px; column-gap: 10px; }
     .brand h1 { font-size: 0.82rem; }
     .brand .module { font-size: 0.7rem; }
-    .about-link { margin-left: auto; }        /* push it fully right on its row */
+    /* mobile row already handled by .brand-links flex-shrink: 0 wrapper above */
 
     /* tabs — side-by-side at equal width, real tap height, no mid-label wrap */
     .tabs { gap: 8px; margin-top: 14px; }
@@ -802,7 +888,10 @@
     <div class="brand">
       <h1><span class="siren">$</span>VIBE COACH</h1>
       <span class="module" id="moduleLabel">Module 1 · Reading Errors Without Panicking</span>
-      <button class="about-link" id="aboutLink">[ about ]</button>
+      <span class="brand-links">
+        <button class="about-link" id="setupLink">[ setup ]</button>
+        <button class="about-link" id="aboutLink">[ about ]</button>
+      </span>
     </div>
     <div class="tabs" role="tablist">
       <button class="tab" data-view="learn" role="tab">[ LEARN ]</button>
@@ -817,6 +906,7 @@
 
 <div class="wrap">
   <div class="screen" id="screen-welcome"></div>
+  <div class="screen" id="screen-setup"></div>
   <div class="screen" id="screen-home"></div>
   <div class="screen" id="screen-challenge"></div>
   <div class="screen" id="screen-summary"></div>
