@@ -706,14 +706,87 @@
   .reset-zone { margin-top: 30px; }
 
   /* ---------- Mobile ---------- */
+  /* ==========================================================================
+     MOBILE — <= 560px. Desktop is untouched; this block only refines the phone
+     layout. Goals: comfortable edge padding, real vertical rhythm, no code that
+     escapes its container, and tap targets sized like an app rather than a doc.
+     ========================================================================== */
   @media (max-width: 560px) {
-    .wrap { padding: 0 14px 56px; }
-    header { padding: 9px 14px 7px; }
-    .code-lines { font-size: 0.8rem; }
-    .console-row { font-size: 0.76rem; }
+    /* container + header — 16px edge padding, more air between chrome and content */
+    .wrap { padding: 0 16px 56px; }
+    header { padding: 12px 16px 10px; }
+    .brand { row-gap: 6px; column-gap: 10px; }
     .brand h1 { font-size: 0.82rem; }
     .brand .module { font-size: 0.7rem; }
+    .about-link { margin-left: auto; }        /* push it fully right on its row */
+
+    /* tabs — side-by-side at equal width, real tap height, no mid-label wrap */
+    .tabs { gap: 8px; margin-top: 14px; }
+    .tab { flex: 1 1 0; padding: 10px 8px; white-space: nowrap; }
+
+    /* progress bar sits under the tabs with breathing room */
+    #practiceProgress { margin-top: 10px; }
     .progress-fill { font-size: 0.72rem; }
+    .milestone { margin-top: 5px; line-height: 1.35; }
+
+    /* the fix for the overflow you flagged: a long quoted-string chip can wrap;
+       short identifier chips (const, .filter, response) stay in one piece. */
+    .ct.tok-str {
+      white-space: normal; overflow-wrap: anywhere; word-break: break-word;
+    }
+    /* belt-and-braces: any inline chip that gets very long can also wrap */
+    .ct { max-width: 100%; }
+
+    /* code blocks — horizontal scroll INSIDE the box, never past the viewport */
+    .code-lines { font-size: 0.8rem; }
+    .code-card, .code-scroll, .console-card { max-width: 100%; overflow-x: auto; }
+    .console-row { font-size: 0.76rem; }
+    .err-src { display: none; }               /* saves a whole row width */
+
+    /* challenge phase indicators — chip and re-read button breathe */
+    .ch-meta { flex-wrap: wrap; row-gap: 8px; }
+    .lesson-recap { margin-top: 4px; }
+
+    /* CHALLENGE NUMBER GRID — clean 9-wide grid, 36px tap targets, even gaps */
+    .dots {
+      display: grid; grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 6px; margin: 18px 0 6px;
+    }
+    .dot { min-width: 0; width: 100%; height: 36px; padding: 0; font-size: 0.72rem; }
+
+    /* PRIMARY SINGLETONS go full-width; ROW ACTIONS split evenly */
+    .welcome-actions .btn,
+    .lesson-actions .btn-lesson,
+    .checkpoint .btn,
+    #chActions.actions { display: flex; }
+    .welcome-actions .btn,
+    .lesson-actions .btn-lesson,
+    .checkpoint .btn { width: 100%; }
+    .actions { gap: 8px; flex-wrap: wrap; }
+    .actions .btn { flex: 1 1 0; min-width: 0; }
+
+    /* fix-stage rows — buttons split cleanly rather than wrap oddly */
+    .fix-help { gap: 8px; }
+    .fix-help .btn { flex: 1 1 0; min-width: 0; }
+    .run-row { gap: 10px; }
+    .run-row .btn-run, .run-row .btn { flex: 1 1 auto; }
+    .run-row .run-hint { flex: 1 1 100%; }    /* drop hint onto its own line */
+    .fix-editor-bar { flex-wrap: wrap; row-gap: 4px; }
+
+    /* coach + lesson cards — a little more internal padding so text does not
+       press against the border */
+    .lesson-card { padding: 18px 18px 20px; }
+    .hook { padding: 15px 16px; }
+    .checkpoint { padding: 20px 18px; }
+    .fix-hint, .pitfall, .symbol-breaks, .after-run { padding: 12px 14px; }
+
+    /* welcome — headline sizes tightened for narrow screens (kept from before) */
+    .welcome-brand { font-size: 1.4rem; }
+    .welcome-lede { font-size: 1.05rem; }
+    .welcome { padding: 32px 0 24px; }
+
+    /* stack lesson labels/values on their own lines when the fact-key would
+       eat half a narrow line */
     .analogy-row { flex-direction: column; }
     .analogy-row .ac:first-child { border-right: none; border-bottom: 1px solid var(--border); }
     .lesson-fact { flex-direction: column; gap: 1px; }
