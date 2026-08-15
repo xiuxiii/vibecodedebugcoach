@@ -879,6 +879,161 @@
     .lesson-fact .fact-key { flex: 0 0 auto; }
     .legend-sample { flex: 0 0 72px; }
   }
+
+  /* ==========================================================================
+     ROADMAP — the home page. 5 walls stacked, wall 1 clickable, walls 2-5
+     visibly disabled ("coming soon"). This is what the app opens to for anyone
+     who isn't a total beginner.
+     ========================================================================== */
+  .roadmap { padding: 34px 0 28px; }
+  .roadmap-head { margin-bottom: 8px; }
+  .roadmap-tag {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 8px;
+  }
+  .roadmap-title {
+    font-size: 1.6rem; line-height: 1.2; letter-spacing: -0.02em;
+    color: var(--heading); font-weight: 600; margin-bottom: 14px;
+  }
+  .roadmap-intro { color: var(--body); font-size: 0.94rem; line-height: 1.7; max-width: 62ch; }
+  .roadmap-intro + .roadmap-intro { margin-top: 10px; }
+
+  .roadmap-list {
+    margin-top: 28px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .wall-card {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    padding: 16px 18px; color: var(--text);
+    transition: border-color 0.12s ease, background 0.12s ease;
+  }
+  .wall-card.available:hover {
+    background: var(--green-bg); border-color: var(--green);
+  }
+  .wall-card-head {
+    display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .wall-num {
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em;
+    color: var(--green); font-weight: 500;
+  }
+  .wall-card.coming .wall-num { color: var(--dimmer); }
+  .wall-title {
+    font-size: 1.05rem; font-weight: 600; color: var(--heading);
+    letter-spacing: -0.01em; line-height: 1.35; flex: 1 1 auto;
+  }
+  .wall-card.coming .wall-title { color: var(--dim); }
+  .wall-status {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em;
+    color: var(--dimmer); border: 1px solid var(--border); padding: 2px 8px;
+  }
+  .wall-card.available .wall-status { color: var(--green); border-color: var(--green); }
+  .wall-blurb {
+    font-size: 0.86rem; line-height: 1.65; color: var(--body); max-width: 68ch;
+  }
+  .wall-card.coming { cursor: not-allowed; opacity: 0.65; }
+  .wall-card.coming:hover { background: var(--bg-panel); border-color: var(--border); }
+
+  .roadmap-foot {
+    margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .roadmap-foot-row {
+    display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;
+    font-size: 0.85rem; color: var(--body); line-height: 1.6;
+  }
+  .roadmap-foot-row .foot-tag {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em;
+    color: var(--dim); flex: 0 0 auto;
+  }
+
+  /* ==========================================================================
+     WALL DETAIL — one wall, rendered top to bottom.
+     ========================================================================== */
+  .wall { padding: 20px 0 40px; }
+  .wall-back { margin-top: 4px; }
+  .wall-header { margin-top: 18px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .wall-header .wall-tag {
+    font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.12em;
+    color: var(--green); margin-bottom: 6px;
+  }
+  .wall-header .wall-h1 {
+    font-size: 1.75rem; line-height: 1.2; letter-spacing: -0.02em;
+    color: var(--heading); font-weight: 600; margin-bottom: 10px;
+  }
+  .wall-header .wall-sub {
+    font-size: 0.92rem; line-height: 1.7; color: var(--body); max-width: 68ch;
+  }
+  @media (max-width: 560px) {
+    .wall-header .wall-h1 { font-size: 1.35rem; }
+  }
+
+  /* the ASCII flow diagram sits in its own dark panel and scrolls sideways
+     on narrow screens rather than deforming */
+  .wall-diagram {
+    margin-top: 26px; background: var(--bg-code); border: 1px solid var(--border);
+    padding: 14px 16px; overflow-x: auto;
+  }
+  .wall-diagram-title {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 10px;
+  }
+  .wall-diagram pre {
+    font-family: var(--mono); font-size: 0.78rem; line-height: 1.55;
+    color: var(--text); white-space: pre; margin: 0;
+  }
+  .wall-diagram pre .safe { color: var(--green); }
+  .wall-diagram pre .unsafe { color: var(--red); }
+  .wall-diagram pre .dim { color: var(--dimmer); }
+
+  /* env-var block: small named list with monospace names on the left */
+  .wall-env { margin-top: 26px; }
+  .wall-env-items { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .wall-env-item {
+    display: flex; gap: 14px; background: var(--bg-panel);
+    border: 1px solid var(--border); padding: 12px 14px;
+  }
+  .wall-env-item .we-name {
+    flex: 0 0 auto; font-family: var(--mono); font-size: 0.82rem; color: var(--amber);
+  }
+  .wall-env-item .we-desc {
+    flex: 1; font-size: 0.86rem; line-height: 1.6; color: var(--body); min-width: 0;
+  }
+  .wall-env-item .we-desc b { color: var(--text); font-weight: 600; }
+  @media (max-width: 560px) {
+    .wall-env-item { flex-direction: column; gap: 4px; }
+  }
+
+  /* "you got this wrong when..." — red-bordered symptoms list */
+  .wall-symptoms { margin-top: 26px; }
+  .wall-symptoms-items { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .wall-symptom {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-left: 2px solid var(--red); padding: 10px 14px;
+  }
+  .wall-symptom .ws-icon { flex: 0 0 auto; color: var(--red); font-weight: 700; }
+  .wall-symptom .ws-text { font-size: 0.85rem; line-height: 1.6; color: var(--body); }
+  .wall-symptom .ws-text b { color: var(--text); font-weight: 600; }
+
+  /* option-list section: labeled pros/cons rows for the hosting choices */
+  .wall-options { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .wall-option {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-left: 2px solid var(--green); padding: 12px 14px;
+  }
+  .wall-option .wo-name {
+    font-family: var(--mono); font-size: 0.82rem; color: var(--green);
+    margin-bottom: 4px;
+  }
+  .wall-option .wo-text { font-size: 0.86rem; line-height: 1.6; color: var(--body); }
+  .wall-option .wo-text b { color: var(--text); font-weight: 600; }
+
+  .wall-footer {
+    margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--border);
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
 </style>
 </head>
 <body>
@@ -887,17 +1042,15 @@
   <div class="header-inner">
     <div class="brand">
       <h1><span class="siren">$</span>VIBE COACH</h1>
-      <span class="module" id="moduleLabel">Module 1 · Reading Errors Without Panicking</span>
+      <span class="module" id="moduleLabel">Ship-first guide for vibecoders</span>
       <span class="brand-links">
+        <button class="about-link" id="basicsLink">[ basics ]</button>
+        <button class="about-link" id="warmupLink">[ warm-up ]</button>
         <button class="about-link" id="setupLink">[ setup ]</button>
         <button class="about-link" id="aboutLink">[ about ]</button>
       </span>
     </div>
-    <div class="tabs" role="tablist">
-      <button class="tab" data-view="learn" role="tab">[ LEARN ]</button>
-      <button class="tab" data-view="practice" role="tab">[ PRACTICE ]</button>
-    </div>
-    <div id="practiceProgress">
+    <div id="practiceProgress" hidden>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
       <div class="milestone" id="milestoneText"></div>
     </div>
@@ -907,6 +1060,8 @@
 <div class="wrap">
   <div class="screen" id="screen-welcome"></div>
   <div class="screen" id="screen-setup"></div>
+  <div class="screen" id="screen-roadmap"></div>
+  <div class="screen" id="screen-wall"></div>
   <div class="screen" id="screen-home"></div>
   <div class="screen" id="screen-challenge"></div>
   <div class="screen" id="screen-summary"></div>
@@ -927,7 +1082,3451 @@
   </div>
 </div>
 
-<script src="content.js"></script>
-<script src="app.js"></script>
+<script>
+/* Vibe Coach — content only: challenges, lessons, and the syntax-colour
+   legend. Loaded before app.js, which renders all of this. */
+'use strict';
+
+/* =====================================================================
+   CHALLENGE DATA — Module 1: Reading Errors Without Panicking
+   types: 'mc'   = multiple choice, "what does this error mean?"
+          'line' = click the line number that CAUSED the error
+          'exam' = free-text root cause + model answer + honest self-grade
+   ===================================================================== */
+var CHALLENGES = [
+
+  /* ---------------- Phase 1 (1-8): what is the error telling you? ---------------- */
+  {
+    id: 1, type: 'mc',
+    title: 'The property path that never was',
+    lesson: {
+      kind: 'TypeError',
+      where: 'Console tab',
+      text: "This is the single most common error you'll hit with AI-written code, and it always shows up in the Console tab in red. The wording sounds scary but it's saying something simple: \"you asked me for something inside a box, and that box isn't there.\" The key trick is to read the name in quotes at the end — that's what you were reaching FOR, which means the thing just before it in your code is the empty one. So when it says reading 'items', the problem isn't items; it's whatever you expected to be holding items."
+    },
+    filename: 'app.js',
+    code:
+"async function loadProducts() {\n" +
+"  const response = await fetch('/api/products');\n" +
+"  const data = await response.json();\n" +
+"  const items = data.data.items;\n" +
+"  items.forEach(function (p) { renderCard(p); });\n" +
+"}",
+    lineExplanations: [
+      'function defines a named, reusable block of steps — here one called "loadProducts". The async keyword in front marks it as allowed to pause and wait for slow work before finishing.',
+      'await pauses until the operation beside it finishes, then hands back its result instead of a claim ticket. Here it waits on "fetch" and const labels the reply "response" — a name fixed to that value.',
+      'The "json" method turns the body of a reply into usable data; it is slow itself, so await waits for it, and const labels the result "data".',
+      'A dot reaches into a value for the piece named on its right. This chains twice — into "data" for a piece also called "data", then into that for "items" — and const labels the end result "items".',
+      'The "forEach" method runs a function once for every item in a list. Here it calls "renderCard" on each entry of "items".',
+      'A closing curly brace ends the block it matches — here the body of the function above.'
+    ],
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'items')", src: 'app.js:4' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'The API request failed, so no data came back at all',
+      'The items array is empty, so there is nothing to loop over',
+      "data.data doesn't exist — the code is reaching into a property path the response never had",
+      'The JSON in the response was malformed and could not be parsed'
+    ],
+    correct: 2,
+    explanation: "The phrase \"reading 'items'\" means JavaScript tried to grab .items off something that was undefined — and that something is data.data. The request worked and the JSON parsed fine; the code just guessed the wrong shape (the products are probably at data.results or just data). AI assistants invent response shapes all the time — log the actual response and look at what's really there."
+  },
+
+  {
+    id: 2, type: 'mc',
+    title: 'A method the browser has never heard of',
+    lesson: {
+      kind: 'TypeError — "is not a function"',
+      where: 'Console tab',
+      text: "Here's a different flavor of the same red console error. \"Is not a function\" means you tried to DO something to a thing, and that thing has no idea how to do it. There are two reasons this happens: either you've got the wrong kind of thing, or the action you asked for simply doesn't exist. AI assistants are unusually good at inventing action names that sound completely real — so when the name in the error looks reasonable but the browser insists it isn't a function, take the browser's word for it."
+    },
+    filename: 'app.js',
+    code:
+"const button = document.querySelector('#save-btn');\n" +
+"button.addClickListener(function () {\n" +
+"  saveDraft();\n" +
+"});",
+    lineExplanations: [
+      'The "querySelector" method finds the first page element matching a selector, or null when none matches. const labels the result "button" — here the element with id "save-btn".',
+      'A dot calls a method that belongs to the value on its left. Here it calls "addClickListener" on "button", handing over a function to run each time the button is clicked.',
+      'Parentheses after a name call it — run it now. This runs "saveDraft", the step set to happen on each click.',
+      'These close the function handed over above and the call it sat inside.'
+    ],
+    error: { msg: 'Uncaught TypeError: button.addClickListener is not a function', src: 'app.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "The button doesn't exist in the HTML yet when this code runs",
+      "addClickListener isn't a real method — the browser has literally never heard of it",
+      'The saveDraft function has not been defined at this point',
+      'You cannot attach more than one click handler to the same button'
+    ],
+    correct: 1,
+    explanation: "\"X is not a function\" on a method name usually means that method simply doesn't exist on the object. The button was found just fine — but the AI invented addClickListener, which sounds right but isn't a thing. The real API is addEventListener('click', ...). Plausible-sounding-but-fake method names are one of the most common flavors of AI slop."
+  },
+
+  {
+    id: 3, type: 'mc',
+    title: 'The half-renamed variable',
+    lesson: {
+      kind: 'ReferenceError',
+      where: 'Console tab',
+      text: "A ReferenceError is a completely different beast from the errors you just saw, and the difference matters. The others meant \"this thing exists but it's empty.\" This one means \"I have never heard this name in my life.\" Nothing was ever labeled with that name anywhere the code can see. Nine times out of ten in AI-generated code, that's because something got renamed in one place and not another — so your fastest move is to search the file for the mystery name and see what it used to be called."
+    },
+    filename: 'profile.js',
+    code:
+"function displayProfile(profileData) {\n" +
+"  const name = profileData.name;\n" +
+"  document.querySelector('#username').textContent = name;\n" +
+"  document.querySelector('#bio').textContent = userData.bio;\n" +
+"}",
+    lineExplanations: [
+      'function defines a reusable block of steps under a name. The name in its parentheses, "profileData", is a parameter — a label for whatever value gets handed in when the function is called.',
+      'A dot reaches into a value for a named piece of it. This reads the "name" piece out of "profileData" and const labels it "name".',
+      'A single = assigns — it puts the value on the right into the target on the left. Here it sets the "textContent" (the visible text) of the element with id "username" to that name.',
+      'A dot reads the "bio" piece out of "userData", and = writes it into the "textContent" of the element with id "bio".',
+      'The closing brace ends the body of the function above.'
+    ],
+    error: { msg: 'Uncaught ReferenceError: userData is not defined', src: 'profile.js:4' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'userData has no value yet because the API has not responded',
+      'The .bio property is missing from the profile object',
+      'The function was called before it was defined',
+      "No variable named userData exists anywhere in scope — nothing was ever called that"
+    ],
+    correct: 3,
+    explanation: "A ReferenceError means the name itself doesn't exist — which is different from a variable that exists but happens to be empty. What happened here: the AI renamed the parameter to profileData but forgot to update one leftover spot that still says userData. Half-finished renames are classic slop from partial edits — search the file for the old name and you'll find the stragglers."
+  },
+
+  {
+    id: 4, type: 'mc',
+    title: 'Unexpected token \'<\'',
+    lesson: {
+      kind: 'SyntaxError while reading a server reply',
+      where: 'Console tab — then go straight to the Network tab',
+      text: "This error appears in the Console, but the Console is the wrong place to solve it. It means your code asked the server for data, expected a neat little data package back, and got handed something else entirely. The browser then choked while trying to unwrap it. The single most useful habit here: open the Network tab, click the request, and look at the Response — you'll see exactly what the server actually sent, which is usually nothing like what the code assumed."
+    },
+    filename: 'settings.js',
+    code:
+"fetch('/api/user/settings')\n" +
+"  .then(function (res) { return res.json(); })\n" +
+"  .then(function (settings) {\n" +
+"    applyTheme(settings.theme);\n" +
+"  });",
+    lineExplanations: [
+      '"fetch" starts a network request to a URL and hands back a promise — a claim ticket for a reply that arrives later. Here it requests "/api/user/settings".',
+      'The "then" method schedules a function to run once the promise settles, receiving its result. return hands a value back out — here the unpacked body from "res.json()", for the next step.',
+      'A second "then" runs after the first finishes, receiving what the first returned. It labels that value "settings".',
+      'Parentheses call "applyTheme", running it now, and a dot passes it the "theme" piece read out of "settings".',
+      'These close the second function and the chain of steps.'
+    ],
+    error: { msg: "Uncaught (in promise) SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON", src: 'settings.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "The server sent back an HTML page (probably a 404 or error page), not JSON",
+      "There is a stray < typo somewhere in this JavaScript file",
+      'The JSON response has a syntax error that the backend needs to fix',
+      'res.json() was called before the response finished arriving'
+    ],
+    correct: 0,
+    explanation: "That \"<!DOCTYPE\" in the error is the giveaway: the browser tried to parse a webpage as if it were JSON. Servers answer requests for missing URLs with an HTML error page, and this code trustingly fed that page into res.json(). The URL is probably wrong or the endpoint doesn't exist — open the Network tab and look at what actually came back."
+  },
+
+  {
+    id: 5, type: 'mc',
+    title: 'Filtering an IOU',
+    lesson: {
+      kind: 'TypeError caused by waiting (or not waiting)',
+      where: 'Console tab — often tagged "(in promise)"',
+      text: "Some things in code take time: fetching from a server, reading a file, anything that leaves the page. Instead of freezing everything, the browser hands you a claim ticket and lets your code keep running. You're supposed to redeem that ticket before using the goods — that's what the word await does. If you forget it, you end up holding the ticket and trying to use it as if it were the actual data, and the error you get names an action the ticket can't perform."
+    },
+    filename: 'scores.js',
+    code:
+"async function showTopScores() {\n" +
+"  const scores = fetchScores();\n" +
+"  const top = scores.filter(function (s) { return s.value > 90; });\n" +
+"  renderLeaderboard(top);\n" +
+"}",
+    lineExplanations: [
+      'async marks a function as allowed to pause and wait for slow work; function defines the reusable block itself, here "showTopScores".',
+      'Parentheses after a name call it — run it and collect what it hands back. const labels the result of "fetchScores" as "scores".',
+      'The "filter" method walks a list and keeps only the items whose test returns true, producing a new list. Here it keeps each score whose "value" is above 90, and const labels that list "top".',
+      'Parentheses call "renderLeaderboard", passing it "top" so the shortlist can be shown on the page.',
+      'The closing brace ends the body of the function above.'
+    ],
+    error: { msg: 'Uncaught (in promise) TypeError: scores.filter is not a function', src: 'scores.js:3' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'The scores array is empty, so there is nothing to filter',
+      'fetchScores returned a single object instead of an array',
+      "scores is a Promise — an IOU for data that hasn't arrived — because the await is missing",
+      'filter cannot be used inside an async function'
+    ],
+    correct: 2,
+    explanation: "Calling an async function without await hands you back a Promise — a \"your data is on the way\" ticket — instead of the data itself. Promises don't have .filter, so the code explodes. When you see \"X.filter/map/forEach is not a function\" right after calling something async, the missing word is almost always await."
+  },
+
+  {
+    id: 6, type: 'mc',
+    title: 'Talking to a page that isn\'t built yet',
+    lesson: {
+      kind: 'TypeError on null',
+      where: 'Console tab — cross-check in the Elements tab',
+      text: "When you go looking for something on the page and it isn't there, the browser doesn't complain — it just quietly hands back \"nothing\" and lets your code carry on. The complaint comes one step later, when you try to use that nothing. So an error mentioning null is really a message about a search that came up empty. Two things cause it: you searched for a name that doesn't match what's in the page, or you searched before the browser had finished building that part of the page."
+    },
+    filename: 'index.html + app.js',
+    code:
+"<!-- index.html -->\n" +
+"<head>\n" +
+"  <script src=\"app.js\"><\/script>\n" +
+"</head>\n" +
+"<body>\n" +
+"  <form id=\"signup-form\"> ... </form>\n" +
+"</body>\n" +
+"\n" +
+"// app.js\n" +
+"const form = document.getElementById('signup-form');\n" +
+"form.addEventListener('submit', handleSignup);",
+    lineExplanations: [
+      'An HTML comment, written between the arrows. The browser ignores it; here it just labels which file follows.',
+      'An HTML tag opens a section of the page. "head" is the setup area — it holds settings and scripts, nothing a visitor sees.',
+      'A script tag loads and runs a JavaScript file at the point where it sits. Its "src" attribute names the file, here "app.js".',
+      'A closing tag, written with a slash, ends the section its matching open tag began — here the "head".',
+      'The "body" tag opens the part of the page a visitor actually sees.',
+      'A form element, given an id of "signup-form". An id is a unique label, so code can find this exact element later.',
+      'A closing tag ends the "body" section.',
+      'A blank line. It separates the page markup above from the JavaScript below and has no effect.',
+      'A // comment runs to the end of its line and is ignored when the code runs. Here it notes the lines below live in "app.js".',
+      'The "getElementById" method searches the whole page for the element with a given id, handing back that element or null when none carries it. const labels the result "form".',
+      'The "addEventListener" method attaches a function to an element so it runs on a named event. Here "handleSignup" is set to run when "form" fires its "submit".'
+    ],
+    error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')", src: 'app.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "The id 'signup-form' has a typo in it somewhere",
+      "The script runs in <head>, before the form exists on the page — so getElementById found nothing",
+      'handleSignup has not been defined yet when the listener is attached',
+      'addEventListener does not work on form elements, only buttons'
+    ],
+    correct: 1,
+    explanation: "null here means getElementById came back empty-handed. The id matches perfectly — the problem is timing. The script loaded inside <head> and ran immediately, while the browser hadn't yet built the form further down the page. Move the script tag to the end of <body>, or add the defer attribute, and the exact same code works."
+  },
+
+  {
+    id: 7, type: 'mc',
+    title: 'The cart that became "[object Object]"',
+    lesson: {
+      kind: 'SyntaxError from saved data',
+      where: 'Console tab — inspect the saved value under Application → Local Storage',
+      text: "Browsers can remember things between visits, but that memory only holds plain text. If you hand it something structured — a shopping cart, a list, a settings object — it doesn't refuse; it flattens it into a useless scrap of text and stores that instead. Nothing goes wrong at that moment, which is what makes this one nasty. The error only appears much later, when you try to unpack what you saved and find gibberish where your data should be."
+    },
+    filename: 'cart.js',
+    code:
+"const cart = { items: [], total: 0 };\n" +
+"localStorage.setItem('cart', cart);\n" +
+"\n" +
+"// ...later, on page load:\n" +
+"const saved = JSON.parse(localStorage.getItem('cart'));\n" +
+"restoreCart(saved);",
+    lineExplanations: [
+      'Curly braces here build an object — a bundle of named pieces. const labels it "cart", holding an empty list "items" and a "total" of 0.',
+      'The "setItem" method saves a value in storage in the browser under a name, to survive between visits. Here it stores "cart" under the name "cart".',
+      'A blank line, separating the saving above from the loading below.',
+      'A // comment, ignored by the code. It notes the lines below run on a later visit.',
+      'The "getItem" method reads back the value stored under a name. "JSON.parse" then turns stored text into usable data, and const labels the result "saved".',
+      'Parentheses call "restoreCart", passing "saved" so the cart can be put back on screen.'
+    ],
+    error: { msg: "Uncaught SyntaxError: Unexpected token 'o', \"[object Obj\"... is not valid JSON", src: 'cart.js:5' },
+    question: 'What is this error actually telling you?',
+    options: [
+      'The cart object was too large to fit in localStorage',
+      'JSON.parse cannot handle objects that contain arrays',
+      "The 'cart' key does not exist in localStorage yet",
+      "localStorage saved the literal text \"[object Object]\" because the object was never turned into JSON first"
+    ],
+    correct: 3,
+    explanation: "localStorage can only store strings. Handed a raw object, it silently converts it to the useless text \"[object Object]\" — and later, JSON.parse chokes on that text (the 'o' in the error is object's own 'o'). Save with localStorage.setItem('cart', JSON.stringify(cart)) and the round-trip works. Silent conversion + loud crash later is a classic pairing."
+  },
+
+  {
+    id: 8, type: 'mc',
+    title: 'The thing that looks like an array',
+    lesson: {
+      kind: 'TypeError — "is not a function"',
+      where: 'Console tab',
+      text: "When you grab a group of elements from the page, what you get back isn't always a proper list — sometimes it's a lookalike that holds the same items but can't do all the same tricks. It counts, and you can pull items out by position, but the convenient \"do this to every item\" shortcut may be missing. The error looks identical to a made-up method name, so you have to ask a second question: is this action fake, or is it real but unavailable on this particular kind of thing? Here, it's real — just not on that."
+    },
+    filename: 'gallery.js',
+    code:
+"const cards = document.getElementsByClassName('card');\n" +
+"cards.forEach(function (card) {\n" +
+"  card.classList.add('visible');\n" +
+"});",
+    lineExplanations: [
+      'The "getElementsByClassName" method collects every element carrying a given CSS class into one group. const labels that group "cards" — here everything with the class "card".',
+      'The "forEach" method runs a function once for each item in a list, handing it that item. Here each entry of "cards" is taken in turn as "card".',
+      '"classList" is the set of CSS classes on an element, and its "add" method puts a new one on. Here it adds "visible" to each "card".',
+      'These close the function and the loop it belongs to.'
+    ],
+    error: { msg: 'Uncaught TypeError: cards.forEach is not a function', src: 'gallery.js:2' },
+    question: 'What is this error actually telling you?',
+    options: [
+      "getElementsByClassName returns a collection that looks like an array but isn't one — it has no forEach",
+      "No elements with class 'card' exist, so cards is undefined",
+      'classList.add cannot be called from inside a loop',
+      'forEach only works on arrays created with square brackets in your own code'
+    ],
+    correct: 0,
+    explanation: "getElementsByClassName returns an HTMLCollection — an \"array-like\" object you can index into, but which is missing real array methods like forEach. (Note: even with zero matching elements you'd get an empty collection, not this error.) Use document.querySelectorAll instead — its result does have forEach — or spread the collection into a real array first."
+  },
+
+  /* ---------------- Phase 2 (9-12): which line CAUSED it? ---------------- */
+  {
+    id: 9, type: 'line',
+    title: 'The crash site vs. the crime scene',
+    lesson: {
+      kind: 'New skill: tracing backwards',
+      where: 'Console tab — the line number on the right',
+      text: "You can read errors now. This next stretch is about a harder question: which line do you actually go fix? Every console error points at a line number, and beginners treat that as the answer — but it's only where the damage surfaced. Bad values travel: a line can quietly produce something empty or wrong, and the crash happens later, wherever that value finally gets used. So read the flagged line, find the thing that was empty, then walk backwards to wherever it came from."
+    },
+    filename: 'signup.js',
+    code:
+"// HTML has: <input id=\"email-input\" type=\"email\">\n" +
+"const field = document.getElementById('emailInput');\n" +
+"const btn = document.getElementById('submit-btn');\n" +
+"btn.addEventListener('click', function () {\n" +
+"  const email = field.value.trim();\n" +
+"  sendWelcome(email);\n" +
+"});",
+    lineExplanations: [
+      'A // comment, ignored when the code runs. It shows the real page has an input whose id is "email-input".',
+      'The "getElementById" method searches the page for the element with an exact id, handing back that element or null when none matches. const labels the result "field", searching for id "emailInput".',
+      'Another "getElementById" search, this time for the id "submit-btn", labelled "btn" with const.',
+      'The "addEventListener" method attaches a function to run on a named event. Here the function below runs each time "btn" fires a "click".',
+      'A dot reaches into a value for a piece of it. This reads the "value" (the typed text) of "field", then the "trim" method removes stray spaces from the ends; const labels the result "email".',
+      'Parentheses call "sendWelcome", passing it "email".',
+      'These close the click handler function.'
+    ],
+    error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'value')", src: 'signup.js:5' },
+    question: 'The console says it blew up at line 5 — but which line actually planted the bomb? Tap a line number.',
+    correctLine: 2,
+    explanation: "Line 5 is just where the body was found. The real crime happened on line 2: it asked for the id 'emailInput', but the HTML says 'email-input' — so getElementById quietly returned null, which sat there harmlessly until line 5 touched it. The line in the error message is where things surfaced, not always where they started."
+  },
+
+  {
+    id: 10, type: 'line',
+    title: 'The bill that came to $42.510',
+    lesson: {
+      kind: 'TypeError from a value quietly changing type',
+      where: 'Console tab',
+      text: "Anything a user types into a box arrives as text, even when it's obviously a number — \"10\" is not 10. This matters because the plus sign does two completely different jobs: it adds numbers, and it glues text together. Mix a number with text and it picks gluing, silently, with no complaint. You get a nonsense value that looks almost right, and it doesn't blow up until some later line tries to treat it as a number again."
+    },
+    filename: 'checkout.js',
+    code:
+"const priceEl = document.querySelector('#price');\n" +
+"const tipInput = document.querySelector('#tip');\n" +
+"const bill = 42.50;\n" +
+"const total = bill + tipInput.value;\n" +
+"priceEl.textContent = '$' + total.toFixed(2);",
+    lineExplanations: [
+      'The "querySelector" method finds the first page element matching a selector. const labels it "priceEl" — here the element with id "price", where the total will show.',
+      'Another "querySelector", labelled "tipInput" — the box with id "tip" where the customer types a tip.',
+      'const labels a fixed value with a name. Here the number 42.50 is labelled "bill".',
+      'The + operator adds two numbers, or joins two pieces of text end to end, depending on what it is given. Here it combines "bill" with the "value" of "tipInput", and const labels the result "total".',
+      'The "toFixed" method rounds a number to a set number of decimal places, handing back text. Here = writes a "$" joined to that rounded "total" into the "textContent" of "priceEl".'
+    ],
+    error: { msg: 'Uncaught TypeError: total.toFixed is not a function', src: 'checkout.js:5' },
+    question: 'The error is thrown at line 5 — which line actually caused it? Tap a line number.',
+    correctLine: 4,
+    explanation: "Every input's .value is text, even when it looks like a number. On line 4, + saw a number and a string and chose gluing over adding: 42.5 + \"10\" became the string \"42.510\". Strings don't have .toFixed, so line 5 detonated. Fix the cause, not the crash site: convert first with Number(tipInput.value)."
+  },
+
+  {
+    id: 11, type: 'line',
+    title: 'Hey, undefined!',
+    lesson: {
+      kind: 'TypeError from a missing wait',
+      where: 'Console tab — note the "(in promise)" tag',
+      text: "You met the claim-ticket idea back in challenge 5. Now you're tracing it to its source. A forgotten wait doesn't cause trouble on the line where it happens — that line looks perfectly fine and runs without complaint. Instead it hands a ticket to everything downstream, and the crash lands on whichever line first tries to use the data for real. When you see \"(in promise)\" on an error, start scanning upward for a call that should have been waited on."
+    },
+    filename: 'greet.js',
+    code:
+"async function greetUser() {\n" +
+"  const user = getCurrentUser();\n" +
+"  const banner = document.querySelector('#banner');\n" +
+"  const first = user.name.split(' ')[0];\n" +
+"  banner.textContent = 'Hey, ' + first + '!';\n" +
+"}",
+    lineExplanations: [
+      'async marks a function as able to pause for slow work; function defines the block, here "greetUser".',
+      'Parentheses after a name call it and collect what it returns. const labels the result of "getCurrentUser" as "user".',
+      'The "querySelector" method finds the first element matching a selector; const labels it "banner", here the element with id "banner".',
+      'A dot reads a piece of a value; the "split" method cuts a string into a list wherever a separator appears; and [0] takes the first item of a list. Here it reads "name" from "user", splits it on spaces, and keeps the first piece as "first".',
+      'The + operator joins text end to end, and = writes the result in. Here it builds a greeting around "first" and sets it as the "textContent" of "banner".',
+      'The closing brace ends the body of the function above.'
+    ],
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'split')", src: 'greet.js:4' },
+    question: 'The crash happens at line 4 — which line is actually to blame? Tap a line number.',
+    correctLine: 2,
+    explanation: "Line 2 calls an async function without await, so user is a Promise — an IOU — not an actual user. A Promise has no .name, so user.name is undefined, and line 4 dies trying to .split() it. One missing word on line 2 (await) and everything downstream of it is haunted. This exact shape — missing await up top, crash further down — is everywhere in AI-generated code."
+  },
+
+  {
+    id: 12, type: 'line',
+    title: 'The wrapper property that was never there',
+    lesson: {
+      kind: 'TypeError from an imagined data shape',
+      where: 'Console tab — confirm the real shape in the Network tab',
+      text: "Different servers wrap their answers differently: some hand you the list directly, others tuck it inside a labeled box first. An AI assistant can't know which one yours does, so it guesses — confidently, and often wrong. The tell is an error naming a label you've never actually seen in the real response. When that happens, the guilty line isn't where it crashed; it's wherever the code first reached for that imagined label."
+    },
+    filename: 'comments.js',
+    code:
+"async function loadComments() {\n" +
+"  const res = await fetch('/api/comments');\n" +
+"  const data = await res.json();\n" +
+"  const list = data.comments;\n" +
+"  list.forEach(addComment);\n" +
+"}",
+    lineExplanations: [
+      'async marks a function as able to pause for slow work; function names the block "loadComments".',
+      'await pauses until the operation beside it finishes and hands back its result. Here it waits for "fetch" to reach "/api/comments" and const labels the reply "res".',
+      'The "json" method turns the body of a reply into usable data — a slow step, so await waits for it — and const labels the result "data".',
+      'A dot reaches into a value for a named piece. Here it reads a piece called "comments" out of "data" and labels it "list".',
+      'The "forEach" method runs a function once per item in a list. Here it calls "addComment" on every entry of "list".',
+      'The closing brace ends the body of the function above.'
+    ],
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'forEach')", src: 'comments.js:5' },
+    question: 'This API returns a plain array of comments, like [ {...}, {...} ]. The error fires at line 5 — which line caused it? Tap a line number.',
+    correctLine: 4,
+    explanation: "The API hands back the array directly, but line 4 confidently reaches for data.comments — a wrapper property the AI imagined. That gives undefined, which line 5 then tries to loop over. When an error names a property you never see in the actual response, the bug is wherever the code invented that property, not where it crashed."
+  },
+
+  /* ---------------- Phase 3 (16-18): PREDICT THE OUTPUT ----------------
+     Commit to an answer, then the app really executes the snippet and shows
+     what came back. Ids are 16-18 because they were added after the exams;
+     position in this array is what sets the running order. -------------- */
+  {
+    id: 16, type: 'predict',
+    title: 'Same symbol, two jobs',
+    lesson: {
+      kind: 'New skill: predicting output',
+      where: 'Console tab',
+      text: "Reading an error is reacting. Predicting output is the thing that stops you needing to. From here on you say what the code will print before you run it, then watch it actually run. Get it wrong and you learn far more than by getting it right — the gap between what you expected and what happened is exactly where a wrong mental model shows itself."
+    },
+    filename: 'predict.js',
+    code:
+      "console.log(1 + '1');\n" +
+      "console.log('3' * 2);",
+    lineExplanations: [
+      'console.log prints a value to the console. The + operator inside adds two numbers or joins two texts end to end — here it is handed the number 1 and the text "1".',
+      'The * operator multiplies. Unlike +, it only ever does maths, so it first turns any text it is given into a number — here the text "3" and the number 2.'
+    ],
+    question: 'What does this print? Commit to an answer, then run it.',
+    options: ['2 then 6', '11 then 6', '11 then 32', 'It throws — you cannot mix text and numbers'],
+    correct: 1,
+    expected: ['11', '6'],
+    explanation: "Plus is the odd one out. Given a number and some text it gives up on maths and glues them together, so 1 + '1' becomes \"11\". Every other maths symbol has no gluing behaviour to fall back on, so * quietly converts the text to a number and really multiplies: '3' * 2 is 6. This is why a total can come out as \"42.510\" instead of 52.50 — one stray + on text."
+  },
+
+  {
+    id: 17, type: 'predict',
+    title: 'Missing, and missing one level deeper',
+    lesson: {
+      kind: 'undefined vs. a thrown error',
+      where: 'Console tab',
+      text: 'Asking an object for something it does not have is not an error. You get back undefined, quietly, and the code carries on. It only becomes an error when you then ask undefined for something. Those are two different moments, and telling them apart is what makes the very first challenge in this module obvious rather than mysterious.'
+    },
+    filename: 'predict.js',
+    code:
+      "const user = { name: 'Sam' };\n" +
+      "console.log(user.age);\n" +
+      "console.log(user.age.length);",
+    lineExplanations: [
+      'Curly braces build an object — a bundle of named pieces. const labels it "user", holding a single piece "name" set to the text "Sam".',
+      'A dot reaches into an object for a named piece, handing back undefined when no such piece is there. Here it reads "age" from "user" and prints whatever comes back.',
+      'Chaining another dot reads a piece of that result. Here it asks the "age" value for its "length" before printing.'
+    ],
+    question: 'What does this print? Commit to an answer, then run it.',
+    options: [
+      'undefined, then an error about reading length of undefined',
+      'null, then 0',
+      'An error on the first log — there is no age',
+      'undefined, then undefined'
+    ],
+    correct: 0,
+    expected: ['undefined'],
+    explanation: "Line 2 is perfectly legal. There is no age, so you get undefined and nothing complains. Line 3 is where it dies, because undefined has no .length to give. That is the exact two-step behind \"Cannot read properties of undefined\" — a harmless miss on one line, then a crash on the next line that touched the result."
+  },
+
+  {
+    id: 18, type: 'predict',
+    title: 'The IOU, printed',
+    lesson: {
+      kind: 'What an un-awaited call really returns',
+      where: 'Console tab',
+      text: 'You have met the claim-ticket idea twice now. This time you see the ticket itself. An async function always hands back a promise, even when its body just returns a plain number — and printing that promise shows you something that is very obviously not your data.'
+    },
+    filename: 'predict.js',
+    code:
+      "async function getCount() {\n" +
+      "  return 1;\n" +
+      "}\n" +
+      "\n" +
+      "console.log(getCount());",
+    lineExplanations: [
+      'async marks a function so that calling it always hands back a promise — a claim ticket — rather than a plain value. function names the block "getCount".',
+      'return hands a value back out to whoever called the function and stops it there. Here it returns the number 1.',
+      'The closing brace ends the body of the function above.',
+      'A blank line, with no effect.',
+      'Parentheses call "getCount" and console.log prints what comes back. There is no await here, so what prints is whatever the call hands back directly.'
+    ],
+    question: 'What does this print? Commit to an answer, then run it.',
+    options: ['1', 'Promise {<pending>}', '[object Promise]', 'It throws — getCount was never awaited'],
+    correct: 1,
+    expected: ['Promise {<pending>}'],
+    explanation: "The body returns 1, but the async marker wraps it, so what comes out is the promise rather than the number. Chrome prints it as Promise {<pending>} — pending because the value is not ready at the instant you logged it. Nothing throws here, which is why a missing await so often surfaces later and somewhere else, as .filter is not a function or reading a property of undefined."
+  },
+
+  /* ---------------- Phase 4 (13-15): FINAL EXAM ---------------- */
+  {
+    id: 13, type: 'exam',
+    title: 'Final exam 1 of 3',
+    lesson: {
+      kind: 'Final exam — no options to pick from',
+      where: 'Console tab',
+      text: "Last stretch, and the training wheels come off: no choices, you just explain what went wrong in your own words. That's the real skill — being able to say why out loud is what separates \"I pasted a fix\" from \"I understood it.\" This one involves asking a server for something, and there's a step people miss constantly. Getting a reply and reading a reply are two separate actions; a sealed envelope is not a letter."
+    },
+    filename: 'weather.js',
+    code:
+"async function loadWeather() {\n" +
+"  const data = await fetch('/api/weather?city=austin');\n" +
+"  const temp = data.current.temp_f;\n" +
+"  document.querySelector('#temp').textContent = temp + '\\u00b0F';\n" +
+"}",
+    lineExplanations: [
+      'async marks a function as able to pause for slow work; function names the block "loadWeather".',
+      'await pauses until the operation beside it finishes and hands back its result. Here it waits on "fetch" for the weather URL and const labels what comes back "data".',
+      'A dot reaches into a value for a named piece, and chains. Here it reads "current" out of "data", then "temp_f" out of that, labelling the result "temp".',
+      'A single = writes the value on its right into the target on its left. Here it sets the "textContent" of the element with id "temp" to "temp" joined with a degree symbol.',
+      'The closing brace ends the body of the function above.'
+    ],
+    error: { msg: "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'temp_f')", src: 'weather.js:3' },
+    question: 'In your own words: what is the ROOT CAUSE of this error? (Not the fix — the why.)',
+    modelAnswer: "fetch doesn't give you the data — it gives you a Response object (status code, headers, and so on). The actual JSON body needs a second step: await data.json(). Since a Response object has no .current property, that comes back undefined, and reading .temp_f off undefined is the crash. The await IS there, which makes this sneaky — the code awaited the envelope but never opened it.",
+    explanation: "If your answer mentioned that fetch returns a Response (not the parsed data) and that the .json() step is missing, you nailed it.",
+    fix: {
+      intro: 'Now make it actually run. The weather service returns { current: { temp_f: 88 } }. Edit the code until the console prints 88°F.',
+      env: ['fetch'],
+      seed: { responses: { '/api/weather': { current: { temp_f: 88 } } } },
+      broken:
+        'async function loadWeather() {\n' +
+        "  const data = await fetch('/api/weather?city=austin');\n" +
+        '  const temp = data.current.temp_f;\n' +
+        "  console.log(temp + '°F');\n" +
+        '}\n' +
+        '\n' +
+        'await loadWeather();',
+      expect: ['88°F'],
+      hints: [
+        'Run it first. The error names the property it could not read — work backwards from there.',
+        'fetch hands you an envelope, not the letter. What is in "data" right now is the Response, which has no .current on it.',
+        'Opening the envelope is its own step, and it also has to be waited for: const data = await res.json();'
+      ],
+      solution:
+        'async function loadWeather() {\n' +
+        "  const res = await fetch('/api/weather?city=austin');\n" +
+        '  const data = await res.json();\n' +
+        '  const temp = data.current.temp_f;\n' +
+        "  console.log(temp + '°F');\n" +
+        '}\n' +
+        '\n' +
+        'await loadWeather();'
+    }
+  },
+
+  {
+    id: 14, type: 'exam',
+    title: 'Final exam 2 of 3',
+    lesson: {
+      kind: 'Final exam — the "works on my machine" class of bug',
+      where: "Console tab — but only on someone else's computer",
+      text: "This one's a category worth knowing, because it's invisible to the person who wrote it. Code that reads saved data works perfectly for you — you've used the app, so there's data sitting there. A brand-new visitor arrives with nothing saved, hits the same line, and it falls apart. Whenever something breaks only for new users, ask what the code assumes already exists."
+    },
+    filename: 'todos.js',
+    code:
+"function addTodo(text) {\n" +
+"  const saved = localStorage.getItem('todos');\n" +
+"  const todos = JSON.parse(saved);\n" +
+"  todos.push({ text: text, done: false });\n" +
+"  localStorage.setItem('todos', JSON.stringify(todos));\n" +
+"}",
+    lineExplanations: [
+      'function defines a reusable block; the name in its parentheses, "text", is a parameter — a label for the value handed in when the function is called.',
+      'The "getItem" method reads back the value stored in the browser under a name, or null when nothing is stored there. const labels the result "saved", reading the name "todos".',
+      '"JSON.parse" turns stored text back into usable data — a list or object. const labels the result "todos".',
+      'The "push" method adds one new item onto the end of a list. Here it adds an object with a "text" and a "done" flag onto "todos".',
+      '"JSON.stringify" turns data into text so it can be stored, and the "setItem" method saves that text under a name. Here it stores "todos" back under "todos".',
+      'The closing brace ends the body of the function above.'
+    ],
+    error: { msg: "Uncaught TypeError: Cannot read properties of null (reading 'push')", src: 'todos.js:4' },
+    question: 'This works fine on your machine, but crashes for every brand-new visitor. What is the ROOT CAUSE?',
+    modelAnswer: "On a first visit, nothing is saved yet — so localStorage.getItem returns null, JSON.parse(null) comes out as null too, and you can't push onto null. The code silently assumed saved data always exists, which was true on the developer's machine (where old data was lying around) and false for everyone else. The fix is a fallback for the empty case: JSON.parse(saved) || [].",
+    explanation: "If your answer covered the empty first-visit case — getItem returning null and the code assuming data always exists — you got the core of it. \"Works for me, breaks for new users\" is almost always a hidden assumption about existing state.",
+    fix: {
+      intro: 'Now make it work for a brand-new visitor. Storage starts completely empty here, exactly like a first visit. Edit the code until the console prints 1.',
+      env: ['storage'],
+      seed: { storage: {} },
+      broken:
+        'function addTodo(text) {\n' +
+        "  const saved = localStorage.getItem('todos');\n" +
+        '  const todos = JSON.parse(saved);\n' +
+        '  todos.push({ text: text, done: false });\n' +
+        "  localStorage.setItem('todos', JSON.stringify(todos));\n" +
+        '  return todos;\n' +
+        '}\n' +
+        '\n' +
+        "console.log(addTodo('buy milk').length);",
+      expect: ['1'],
+      hints: [
+        'Nothing has ever been saved here, so think about what getItem hands back when the key does not exist.',
+        'It returns null — and JSON.parse(null) is still null. You cannot push onto null.',
+        'Give it something to fall back to when there is nothing saved: JSON.parse(saved) || []'
+      ],
+      solution:
+        'function addTodo(text) {\n' +
+        "  const saved = localStorage.getItem('todos');\n" +
+        '  const todos = JSON.parse(saved) || [];\n' +
+        '  todos.push({ text: text, done: false });\n' +
+        "  localStorage.setItem('todos', JSON.stringify(todos));\n" +
+        '  return todos;\n' +
+        '}\n' +
+        '\n' +
+        "console.log(addTodo('buy milk').length);"
+    }
+  },
+
+  {
+    id: 15, type: 'exam',
+    title: 'Final exam 3 of 3',
+    lesson: {
+      kind: 'Final exam — timing',
+      where: 'Console tab',
+      text: "The last one is the boss fight of this module: nothing here is misspelled, misnamed, or invented, and the server works fine. The bug is purely about when things happen. Slow work gets started and set aside, and your code sails right past it to the next line without pausing. Read this one in order of time, not in order of lines on the screen — ask what has actually finished by the moment each line runs."
+    },
+    filename: 'dashboard.js',
+    code:
+"function loadDashboard() {\n" +
+"  let stats;\n" +
+"  fetch('/api/stats')\n" +
+"    .then(function (res) { return res.json(); })\n" +
+"    .then(function (json) { stats = json; });\n" +
+"  renderCards(stats.widgets);\n" +
+"}",
+    lineExplanations: [
+      'function defines the reusable block, here "loadDashboard".',
+      'let makes a variable whose value can be set and swapped later. Here "stats" starts out empty, holding undefined until something is put in it.',
+      '"fetch" starts a network request and hands back a promise — a claim ticket for a reply that arrives later, not the reply itself.',
+      'The "then" method schedules a function to run once the promise settles, receiving its result. return here hands back the unpacked body from "res.json()", for the next step.',
+      'A second "then" runs after the first, and a single = assigns — here it puts the unpacked result into "stats".',
+      'Parentheses call "renderCards" now, passing the "widgets" piece read from "stats".',
+      'The closing brace ends the body of the function above.'
+    ],
+    error: { msg: "Uncaught TypeError: Cannot read properties of undefined (reading 'widgets')", src: 'dashboard.js:6' },
+    question: 'The fetch URL is correct and the API works. What is the ROOT CAUSE of this crash?',
+    modelAnswer: "This is a timing bug. fetch starts a request and moves on immediately — the .then callbacks only run later, when the response arrives. But line 6 runs right away, while stats is still undefined. The code starts a job and instantly tries to use its result, without waiting. The fix is to only use stats where the waiting happens: move renderCards inside the .then, or rewrite with await so the function genuinely pauses until the data exists.",
+    explanation: "If your answer said the render runs before the fetch finishes — that the code doesn't wait for the async work — you've got the mental model that untangles most vibe-code bugs.",
+    fix: {
+      intro: 'Last one. The stats endpoint returns { widgets: [3 items] }. Edit the code until the console prints 3 — the count has to be read after the data has actually arrived.',
+      env: ['fetch'],
+      seed: { responses: { '/api/stats': { widgets: ['a', 'b', 'c'] } } },
+      broken:
+        'async function loadDashboard() {\n' +
+        '  let stats;\n' +
+        "  fetch('/api/stats')\n" +
+        '    .then(function (res) { return res.json(); })\n' +
+        '    .then(function (json) { stats = json; });\n' +
+        '  console.log(stats.widgets.length);\n' +
+        '}\n' +
+        '\n' +
+        'await loadDashboard();',
+      expect: ['3'],
+      hints: [
+        'Nothing here is misspelled and the endpoint works. Ask instead: at the moment that last line runs, has the data arrived yet?',
+        'It has not. fetch starts the request and the code sails straight past it — the .then callbacks run later.',
+        'Either move the logging inside the final .then, or drop the chain entirely: const res = await fetch(...); const stats = await res.json();'
+      ],
+      solution:
+        'async function loadDashboard() {\n' +
+        "  const res = await fetch('/api/stats');\n" +
+        '  const stats = await res.json();\n' +
+        '  console.log(stats.widgets.length);\n' +
+        '}\n' +
+        '\n' +
+        'await loadDashboard();'
+    }
+  }
+];
+
+/* =====================================================================
+   LESSONS — the Learn tab. Same shape as CHALLENGES: adding a lesson is
+   appending to this array. Sections are rendered by type, so a new lesson
+   can mix and match the section kinds below without new code.
+
+   Section types: hook | prose | analogy | demo | variations | pitfalls | checkpoint
+
+   A demo's annotations are given as {line, match}: the renderer finds that
+   snippet of text on that line and wraps it in a colored highlight.
+   ===================================================================== */
+var LESSONS = [
+  {
+    id: 'code-101',
+    title: 'What is code, actually?',
+    blurb: 'Start here if you have never written a line. What running code means, what the console is, and why an error is just the computer telling you something.',
+    minutes: 5,
+    sections: [
+
+      { type: 'hook', text: 'Nothing here assumes you know anything. By the end of this page you will have run five small pieces of code yourself and seen exactly what each one did.' },
+
+      {
+        type: 'step',
+        label: 'Step 1',
+        heading: 'What "running" code means',
+        paragraphs: [
+          'Code is a list of written instructions. <strong>Running</strong> it means the computer starts at the top, does what that line says, then moves to the next one until it runs out of lines.',
+          'Until you run it, code is just text sitting there doing nothing.'
+        ],
+        code: "console.log('hi');",
+        filename: 'try-it.js',
+        fallbackOutput: ['hi'],
+        afterRun: 'That is the entire idea. One line, read and carried out exactly as written. The computer did not decide anything — the line said to write out "hi", so it wrote out "hi".'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 2',
+        heading: 'What the console is',
+        paragraphs: [
+          'The <strong>console</strong> is a plain text panel built into every browser — closer to a text conversation than anything else, where you send instructions and it sends short replies back.',
+          'It has two jobs: showing anything your code deliberately writes out, and showing errors when something goes wrong. The instruction <strong>console.log</strong> means what it says — log this to the console.'
+        ],
+        code:
+          "console.log('This message came from the code.');\n" +
+          "console.log('Each log gets its own line.');",
+        filename: 'try-it.js',
+        fallbackOutput: ['This message came from the code.', 'Each log gets its own line.'],
+        afterRun: 'Two instructions, two replies, in the order they were written. This is how you check what your code is really doing: you ask it to write something out, and you read what comes back.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 3',
+        heading: 'What a variable is',
+        paragraphs: [
+          'A <strong>variable</strong> is a labelled box. You put a value into it, give the box a name, and from then on you can refer to that value by name instead of writing it out again.',
+          'Line 1 below puts the text Sam into a box labelled name, and line 2 asks for whatever is in that box.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "console.log(name);",
+        filename: 'try-it.js',
+        fallbackOutput: ['Sam'],
+        afterRun: 'Look closely at line 2: there are no quotes around name. That matters. Without quotes it means "the box called name, whatever is in it". With quotes it would have written out the literal word name instead.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 4',
+        heading: 'Text and numbers are different things',
+        paragraphs: [
+          "Quotes are how you mark something as text.",
+          "<strong>'Sam'</strong> with quotes is text; <strong>42</strong> without quotes is a number the computer can count with. This matters because the + sign does two completely different jobs depending on what it is handed."
+        ],
+        code:
+          "console.log('Sam' + '!');\n" +
+          "console.log(5 + 3);\n" +
+          "console.log('5' + '3');",
+        filename: 'try-it.js',
+        predict: {
+          question: 'Before you press Run — what do these three lines print?',
+          options: ['Sam! / 8 / 8', 'Sam! / 8 / 53', 'Sam! / 53 / 53', 'Sam! / 8 / an error'],
+          correct: 1
+        },
+        fallbackOutput: ['Sam!', '8', '53'],
+        afterRun: 'Same + sign, three different outcomes. Between text it glues the pieces together. Between numbers it adds them. The third line is the one that catches people out: "5" and "3" look like numbers, but the quotes make them text, so they get glued into 53 instead of added into 8.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 5',
+        heading: 'What an error looks like',
+        paragraphs: [
+          'This code is broken on purpose. The box is called <strong>name</strong>, but line 2 asks for <strong>nam</strong> — a name that was never used for anything.',
+          'Run it and watch what appears in the console.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "console.log(nam);",
+        filename: 'try-it.js',
+        fallbackOutput: [{ text: 'Uncaught ReferenceError: nam is not defined', type: 'error' }],
+        afterRun: 'Red does not mean you broke something, and nothing is wrong with your computer. That line is the computer telling you, as precisely as it can, that you asked for nam and it has never heard of it. An error always names the thing it could not do — which is why reading one beats guessing at it.'
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Read a line of code and say what will happen when it runs.',
+          'Say what the console is, and what console.log puts there.',
+          'Recognise an error when you see one, and say what it is complaining about.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'Lesson complete',
+        undoLabel: '[ MARK INCOMPLETE ]'
+      }
+    ]
+  },
+
+  {
+    id: 'symbols-101',
+    title: 'Reading the symbols: punctuation in code',
+    blurb: 'Parentheses, brackets, dots, equals signs — what every piece of code punctuation actually means, and what breaks when it is missing or wrong.',
+    minutes: 7,
+    sections: [
+
+      { type: 'hook', text: 'You do not need to memorize any of this. Read it once, then refer back whenever a symbol confuses you in Practice — each mark below is its own small entry you can jump to.' },
+
+      {
+        type: 'symbol',
+        symbol: '( )',
+        name: 'parentheses',
+        paragraphs: [
+          'Parentheses do two different jobs, and telling them apart is most of the battle. Right after a function’s name as you <strong>call</strong> it, they mean “run this now,” and whatever sits inside is what you hand over. After a function’s name as you <strong>define</strong> it, they instead list the names of the inputs it expects.',
+          'Same symbol, two roles: on the last line below the parentheses run <strong>greet</strong>; on the first line they hold what greet takes in.'
+        ],
+        code:
+          "function greet(name) {\n" +
+          "  return 'Hi, ' + name;\n" +
+          "}\n" +
+          "\n" +
+          "greet('Sam');",
+        breaks: 'Leave the parentheses off when calling — just <strong>greet</strong> instead of <strong>greet()</strong> — and nothing runs. You get a reference to the function itself rather than its result, which is a common reason “nothing happens.”'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '{ }',
+        name: 'curly braces',
+        paragraphs: [
+          'Curly braces fence off a block of code that belongs together. Everything between the opening <strong>{</strong> and the closing <strong>}</strong> is the body — the steps inside a function, or what should happen inside an <strong>if</strong>.',
+          'Read them as “all of this, as one group.”'
+        ],
+        code:
+          "if (score > 90) {\n" +
+          "  console.log('top marks');\n" +
+          "}",
+        breaks: 'Drop the closing <strong>}</strong> and everything after it gets swallowed into the block, usually ending in an <strong>Unexpected end of input</strong> error — the browser reached the end of the file still waiting for the brace that never came.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '[ ]',
+        name: 'square brackets',
+        paragraphs: [
+          'Square brackets have two closely related uses. Wrapping a comma-separated run of things makes a <strong>list</strong> (an array). Putting a number in brackets after a list <strong>reaches into it</strong> and pulls out the item at that position.',
+          'Counting starts at zero, so <strong>colors[0]</strong> is the first item — ‘red’ here — and colors[1] is the second.'
+        ],
+        code:
+          "const colors = ['red', 'green', 'blue'];\n" +
+          "console.log(colors[0]);",
+        breaks: 'Ask for a position that is not there, like colors[9] in a three-item list, and you get <strong>undefined</strong> — which then breaks the moment you try to read a property off it.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: ';',
+        name: 'semicolon',
+        paragraphs: [
+          'A semicolon marks the end of one instruction, the way a full stop ends a sentence. JavaScript can usually work out where a statement ends on its own, so semicolons are optional — but they make the boundary explicit.',
+          'One statement, one semicolon.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "console.log(name);",
+        breaks: 'You will rarely see an error from a <em>missing</em> semicolon. The real trap is the opposite — a stray semicolon in the wrong spot, like right after an <strong>if</strong> condition, quietly ends the statement early and changes what the code does.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: ',',
+        name: 'comma',
+        paragraphs: [
+          'Commas separate things in a row — the items in a list, or the several inputs handed to a function. Each comma simply says “and here is the next one.”'
+        ],
+        code:
+          "greet('Sam', 'hello');\n" +
+          "const nums = [1, 2, 3];",
+        breaks: 'Miss a comma between two items and they run together into one broken thing; add one where none belongs and some environments choke on it. When a list or a call “looks right” but errors, a comma is often why.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '.',
+        name: 'dot · the important one',
+        paragraphs: [
+          'The dot means “reach into this thing and grab a piece of it.” <strong>user.name</strong> takes the name out of user; <strong>scores.filter</strong> reaches for the filter tool that lives on scores. Read the dot as an apostrophe-s: “user’s name.”',
+          'This is the single most important symbol for reading AI-generated code, because most of its bugs are a wrong path of dots. When an error says <strong>cannot read properties of undefined (reading ‘name’)</strong>, it is telling you the thing immediately to the <strong>left</strong> of that last dot was empty.'
+        ],
+        code:
+          "const user = { name: 'Sam', age: 30 };\n" +
+          "console.log(user.name);\n" +
+          "scores.filter(isHigh);",
+        breaks: 'Follow a dot off something that is not there and you hit the most common error in this whole app. <strong>user.address.city</strong> throws the instant address turns out to be missing — you cannot reach into nothing.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '=  ==  ===',
+        name: 'assign vs. compare',
+        paragraphs: [
+          'One equals sign <strong>assigns</strong>: it puts the value on the right into the name on the left. Two or three equals signs <strong>compare</strong>: they ask whether two values are the same and answer true or false. (Three is the stricter, safer check — prefer it.)',
+          'Read <strong>=</strong> as “becomes” and <strong>===</strong> as “is equal to.”'
+        ],
+        code:
+          "let x = 5;      // assign: put 5 into x\n" +
+          "x === 5;        // compare: is x equal to 5?",
+        breaks: 'Writing <strong>if (x = 5)</strong> when you meant <strong>if (x === 5)</strong> is a classic bug: instead of checking x, you overwrite it with 5, and the <strong>if</strong> then runs almost every time. One character, completely different behaviour.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: '=>',
+        name: 'arrow',
+        paragraphs: [
+          'The arrow is a shorter way to write a function. Both lines below define the same thing: something that takes <strong>n</strong> and gives back n times two. The inputs sit to the <strong>left</strong> of the arrow; what it produces is on the <strong>right</strong>.',
+          'When you meet <strong>=&gt;</strong> in AI code, read it as “…becomes…”: <strong>n =&gt; n * 2</strong> is “n becomes n times two.”'
+        ],
+        code:
+          "function double(n) { return n * 2; }\n" +
+          "\n" +
+          "const double = n => n * 2;",
+        breaks: 'Nothing breaks — it is purely shorthand. It is worth knowing only so the arrow stops looking like a foreign symbol: it is the word <strong>function</strong> in disguise.'
+      },
+
+      {
+        type: 'symbol',
+        symbol: "'  \"  `",
+        name: 'quotes',
+        paragraphs: [
+          'All three mark <strong>text</strong> (a string). Single and double quotes are interchangeable — pick one and stay consistent. Backticks do everything the others do plus one extra trick: inside them, <strong>${ }</strong> drops a variable straight into the text.',
+          'So <strong>`Hi, ${name}!`</strong> with name set to Sam produces “Hi, Sam!” — no gluing with + required.'
+        ],
+        code:
+          "const a = 'single';\n" +
+          "const b = \"double\";\n" +
+          "const c = `Hi, ${name}!`;",
+        breaks: 'The quotes must match: open with <strong>‘</strong> and you have to close with <strong>‘</strong>. Mixing them, or forgetting to close one, gives an <strong>Unterminated string</strong> error — the browser kept reading, hunting for the closing quote that never arrived.'
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Look at a line of code and name what each bracket, dot, and equals sign is doing.',
+          'Tell an assignment (=) apart from a comparison (===) at a glance.',
+          'Trace a chain of dots and say which part would be empty when it errors.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'Lesson complete',
+        undoLabel: '[ MARK INCOMPLETE ]'
+      }
+    ]
+  },
+
+  {
+    id: 'objects-101',
+    title: 'Objects and arrays: how code holds data',
+    blurb: 'The single most useful concept for reading real AI-generated code. Almost every bug involves reaching into data shaped differently than expected — this is the reading skill for that.',
+    minutes: 7,
+    sections: [
+
+      { type: 'hook', text: 'This is the concept you need most for reading real code. Almost every bug in Practice will involve reaching into data that is shaped differently than expected — this lesson is where you learn to trace those paths.' },
+
+      {
+        type: 'step',
+        label: 'Step 1',
+        heading: 'Why grouped data exists',
+        paragraphs: [
+          'One variable holds one value. That is fine for a single number, but real programs deal with lots of related values at once — a user has a name, an age, an email.',
+          'Rather than juggle three loose variables that only you know belong together, you group them. The example below shows both, so the difference is on screen.'
+        ],
+        code:
+          "const name = 'Sam';\n" +
+          "const age = 16;\n" +
+          "const email = 'sam@example.com';\n" +
+          "console.log(name, age, email);\n" +
+          "\n" +
+          "const user = { name: 'Sam', age: 16, email: 'sam@example.com' };\n" +
+          "console.log(user);",
+        filename: 'try-it.js',
+        fallbackOutput: [
+          'Sam 16 sam@example.com',
+          '{"name":"Sam","age":16,"email":"sam@example.com"}'
+        ],
+        afterRun: 'Same three pieces of information, held two ways. The bottom form is a single named thing that carries all three together — which means you can pass it around, store it, or read from it as one value.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 2',
+        heading: 'Arrays — an ordered list',
+        paragraphs: [
+          'The square brackets you met in the symbols lesson do two jobs, and both show up here. Wrapping a comma-separated run of values in <strong>[ ]</strong> makes an <strong>array</strong> — an ordered list. Writing <strong>[N]</strong> after a list reaches in and pulls out the item at position N.',
+          'Positions start at 0, not 1. So in the list below, <strong>"scores[0]"</strong> is the first score and <strong>"scores.length"</strong> is how many scores there are.'
+        ],
+        code:
+          "const scores = [90, 85, 70];\n" +
+          "console.log(scores[0]);\n" +
+          "console.log(scores[2]);\n" +
+          "console.log(scores.length);",
+        filename: 'try-it.js',
+        fallbackOutput: ['90', '70', '3'],
+        afterRun: 'The order is what makes it a list. If someone rearranged the scores, "scores[0]" would still give you the first one — whichever score that is now.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 3',
+        heading: 'Objects — labelled data',
+        paragraphs: [
+          'The curly braces you saw around <strong>"user"</strong> in step 1 make an <strong>object</strong> — grouped data where every piece has a name. Each named piece is written <strong>key: value</strong>, and the commas separate them.',
+          'The dot you met in the symbols lesson is how you reach in. <strong>"user.name"</strong> reads the piece labelled <strong>"name"</strong>, and <strong>"user.age"</strong> reads the piece labelled <strong>"age"</strong>.'
+        ],
+        code:
+          "const user = { name: 'Sam', age: 16 };\n" +
+          "console.log(user.name);\n" +
+          "console.log(user.age);",
+        filename: 'try-it.js',
+        fallbackOutput: ['Sam', '16'],
+        afterRun: 'Unlike an array, an object has no order — you reach in by name, not by position. That is the whole difference: square brackets make a list you index by number, curly braces make a bundle you index by label.'
+      },
+
+      {
+        type: 'step',
+        label: 'Step 4',
+        heading: 'Nesting — the reading skill',
+        paragraphs: [
+          'This is the important one. Real data is almost always <strong>nested</strong> — an object holds an array, which holds more objects. Reading it is a walk left to right, one step at a time.',
+          'Trace <strong>"data.results[0].title"</strong> below: start at <strong>"data"</strong>, reach into <strong>"results"</strong> (a list), grab item 0 (an object), reach into <strong>"title"</strong>. That is one path, four steps.'
+        ],
+        code:
+          "const data = {\n" +
+          "  results: [\n" +
+          "    { title: 'First post' },\n" +
+          "    { title: 'Second post' }\n" +
+          "  ]\n" +
+          "};\n" +
+          "\n" +
+          "console.log(data.results[0].title);\n" +
+          "console.log(data.results[1].title);\n" +
+          "console.log(data.results.length);",
+        filename: 'try-it.js',
+        fallbackOutput: ['First post', 'Second post', '2'],
+        afterRun: 'Every dot and every pair of square brackets is one step deeper. Read a path like "a.b[0].c" the same way, left to right, and you can predict what will come out before you run it.'
+      },
+
+      {
+        type: 'prose',
+        label: 'Where this bites',
+        heading: 'Why this breaks AI-generated code',
+        paragraphs: [
+          'When an AI assistant writes code that reads data from a server, it does not actually know the shape of that data. It <strong>guesses</strong> — and it guesses confidently, in a way that reads as certain.',
+          'That is why you will meet code that writes <strong>"response.data.items"</strong> when the real reply is shaped as <strong>"response.results"</strong>, or reads <strong>"data.comments"</strong> when the API just hands back an array. The path in the code and the path through the real data disagree, and the error is always the same shape: <strong>"cannot read properties of undefined"</strong>, naming the piece the code reached for after the wrong step.',
+          'You have now seen the two containers and the two ways to reach in. Every one of those bugs is a mis-typed path — and now you can trace it.'
+        ]
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Look at a pair of square brackets or a pair of curly braces in code and say which one it is and how you would read from it.',
+          'Trace a path like "data.results[0].title" step by step and say what comes out at each dot and bracket.',
+          'Recognise a "wrong-path" bug when you see one — an error naming a piece that was never in the real data.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'Lesson complete',
+        undoLabel: '[ MARK INCOMPLETE ]'
+      }
+    ]
+  },
+
+  {
+    id: 'functions-101',
+    title: 'What is a JavaScript function?',
+    blurb: 'The one idea that unlocks most AI-generated bugs. Recipes, ingredients, and the difference between writing one down and actually cooking it.',
+    minutes: 6,
+    sections: [
+
+      { type: 'hook', text: 'Almost every bug you will ever hit involves a function doing something you did not expect. Learn to read one properly and most AI slop stops being mysterious — it turns into a short list of places to look.' },
+
+      {
+        type: 'prose',
+        label: 'The idea',
+        heading: 'A function is a recipe',
+        paragraphs: [
+          'You write a recipe down once, give it a name, and from then on you can cook it as many times as you like without writing it out again. That is the whole point of a function.',
+          'A recipe has three moving parts, and so does a function. It has a <strong>name</strong> — what you call it when you want it. It has <strong>ingredients</strong>, the information you hand it, which programmers call the <strong>inputs</strong>. And it has <strong>steps</strong>, the instructions it actually follows, which sit inside the curly brackets and are called the <strong>body</strong>.',
+          'Most recipes also produce something: the finished dish. In code that finished dish is called the <strong>return value</strong> — the answer the function hands back to whoever asked for it.',
+          'One more thing, and it is the one that trips people up. There are two separate moments. Writing the recipe down is <strong>defining</strong> the function — nothing happens yet, it is just words on a page. Actually cooking it is <strong>calling</strong> the function — that is the moment the steps run and a dish comes out. Hold onto that gap; a surprising number of bugs live in it.'
+        ]
+      },
+
+      {
+        type: 'analogy',
+        label: 'Side by side',
+        heading: 'The same thing, in two languages',
+        head: ['In a kitchen', 'In code'],
+        rows: [
+          ['The name of the recipe', 'The name of the function — how you ask for it later'],
+          ['The ingredients you hand the cook', 'The inputs — information the function needs to do its job'],
+          ['The steps you follow', 'The body — the instructions that actually run'],
+          ['The finished dish', 'The return value — what comes back out to you']
+        ]
+      },
+
+      {
+        type: 'demo',
+        label: 'See it run',
+        heading: 'One real function, start to finish',
+        intro: 'Here is a complete, working function. Read it once, then press Run and watch what comes out.',
+        code:
+          'function greet(name) {\n' +
+          '  return \'Hello, \' + name + \'!\';\n' +
+          '}\n' +
+          '\n' +
+          'console.log(greet(\'Sam\'));',
+        filename: 'example.js',
+        annotations: [
+          { line: 1, match: 'greet', title: 'The name',
+            text: 'What this recipe is called. Nothing happens because of this line alone — you are just writing the recipe down under a name so you can ask for it later.' },
+          { line: 1, match: 'name', title: 'The input',
+            text: 'A blank space in the recipe. Whatever you hand in gets called "name" for as long as the steps are running.' },
+          { line: 2, match: "return 'Hello, ' + name + '!';", title: 'The body',
+            text: 'The actual steps. This one glues "Hello, " onto whatever came in, and the word return means "this is the finished dish, hand it back".' },
+          { line: 5, match: "greet('Sam')", title: 'The call',
+            text: 'Here is where it finally cooks. You ask for the recipe by name and hand it one ingredient, the text "Sam".' }
+        ],
+        afterRun: 'That line in the console is the finished dish. The function took "Sam" in, built a new piece of text out of it, and handed it back — and console.log printed whatever came back.',
+        fallbackOutput: ['Hello, Sam!']
+      },
+
+      {
+        type: 'variations',
+        label: 'Variations',
+        heading: 'The same idea, three more ways',
+        intro: 'Functions differ mostly in what they take in and what they do inside. Nothing else about the shape changes.',
+        items: [
+          {
+            tag: 'no inputs',
+            title: 'A recipe that needs nothing',
+            code:
+              'function sayHi() {\n' +
+              '  return \'Hi there!\';\n' +
+              '}\n' +
+              '\n' +
+              'console.log(sayHi());',
+            note: 'What changed: the brackets are empty, because this recipe needs no ingredients. You still have to write the brackets both times, though — and you still have to ask for it. Even a function that takes nothing in has to be called before anything happens.',
+            fallbackOutput: ['Hi there!']
+          },
+          {
+            tag: 'two inputs',
+            title: 'A recipe with two ingredients',
+            code:
+              'function fullName(first, last) {\n' +
+              '  return first + \' \' + last;\n' +
+              '}\n' +
+              '\n' +
+              'console.log(fullName(\'Ada\', \'Lovelace\'));',
+            note: 'What changed: two inputs now, separated by a comma. The order is the whole agreement — the first thing you hand over becomes "first", the second becomes "last". Swap them at the call and you get "Lovelace Ada" with no complaint from anyone.',
+            fallbackOutput: ['Ada Lovelace']
+          },
+          {
+            tag: 'several steps',
+            title: 'A recipe that does some maths',
+            code:
+              'function totalWithTip(bill, tipPercent) {\n' +
+              '  const tip = bill * (tipPercent / 100);\n' +
+              '  return bill + tip;\n' +
+              '}\n' +
+              '\n' +
+              'console.log(totalWithTip(40, 15));',
+            predict: {
+              question: 'Before you run it — a bill of 40 with a 15% tip. What prints?',
+              options: ['46', '6', '55', 'undefined — "tip" is never returned'],
+              correct: 0
+            },
+            note: 'What changed: more than one step, and a temporary holder called "tip" that exists only while the recipe is running. The kitchen is private — nothing outside this function can see "tip". Only the thing you return ever comes back out.',
+            fallbackOutput: ['46']
+          }
+        ]
+      },
+
+      {
+        type: 'pitfalls',
+        label: 'What goes wrong',
+        heading: 'How functions break in AI-generated code',
+        items: [
+          { bold: 'Called before it exists', rest: '— the code asks for a recipe that has not been written down yet.' },
+          { bold: 'The wrong number of ingredients', rest: '— the recipe expects two, gets one, and the missing one quietly turns into undefined.' },
+          { bold: 'A name that was never real', rest: '— the AI confidently calls a function that nobody ever wrote.' }
+        ],
+        note: 'You will meet all three over in Practice. For now, just knowing these patterns exist is enough.'
+      },
+
+      {
+        type: 'checkpoint',
+        heading: 'You should now be able to…',
+        abilities: [
+          'Point at any function in a code snippet and say what it is called, what it takes in, and what it hands back.',
+          'Tell the difference between a function being written down and a function actually running.',
+          'Explain why the insides of a function are private, and why only the returned value comes back out.'
+        ],
+        buttonLabel: 'I get it',
+        doneLabel: 'Lesson complete',
+        undoLabel: 'Actually, let me read that again'
+      }
+    ]
+  }
+];
+
+/* ---------------------------------------------------------------------
+   Syntax highlighting + the plain-English meaning of every color.
+   Every token is tagged with data-tok so it can explain itself on
+   hover (desktop) or tap (touch).
+   ------------------------------------------------------------------ */
+var TOK_INFO = {
+  kw:   { label: 'Keyword',   sample: 'const',      color: '#fbbf24',
+          text: 'This is a JavaScript keyword — a built-in command the language understands.' },
+  str:  { label: 'String',    sample: "'hello'",    color: '#4ade80',
+          text: 'This is text data, wrapped in quotes.' },
+  num:  { label: 'Number',    sample: '42.50',      color: '#7ab3d5',
+          text: 'A numeric value.' },
+  fn:   { label: 'Function',  sample: 'fetch()',    color: '#6ee7b7',
+          text: 'This is a function being called or defined.' },
+  'var':{ label: 'Variable',  sample: 'response',   color: '#d4d4d4',
+          text: 'A named container holding a value.' },
+  prop: { label: 'Property',  sample: '.items',     color: '#c78e3f',
+          text: 'Accessing a piece of data on an object.' },
+  com:  { label: 'Comment',   sample: '// note',    color: '#6b7280',
+          text: 'A note for humans, ignored by the code.' },
+  tag:  { label: 'HTML tag',  sample: '&lt;form&gt;', color: '#a3be5c',
+          text: 'An HTML tag — one of the building blocks of the page.' },
+  attr: { label: 'HTML attribute', sample: 'id=',   color: '#5eaab0',
+          text: 'An HTML attribute — a setting attached to a page element.' }
+};
+
+
+/* Vibe Coach — engine: state, rendering, the highlighter and the code runner.
+   Depends on CHALLENGES / LESSONS / TOK_INFO from content.js. */
+'use strict';
+
+/* =====================================================================
+   STATE — persisted to localStorage. No streaks, no decay, no guilt.
+   ===================================================================== */
+var STORAGE_KEY = 'vibeCoachProgress';
+var LEGACY_STORAGE_KEY = 'slopPatrolProgress';  // app's former name; adopted once on load
+
+/* True only when there is no saved progress at all — a genuine first visit.
+   Set inside loadState(); drives whether the welcome screen shows on boot.
+   Declared before the loadState() call below so its assignment is not clobbered. */
+var firstVisit = false;
+
+var state = loadState();
+
+function defaultState() {
+  return {
+    version: 1,
+    started: false,
+    current: 0,            // array index, derived at load time from currentId
+    currentId: null,       // the durable pointer: challenge ids never shift
+    done: {},              // id -> true, for answered mc/line challenges
+    examGrades: {},        // id -> 'got' | 'missed' (self-graded written stage)
+    fixes: {},             // id -> true once the user's own code actually passes
+    assisted: {},          // id -> true if the solution was revealed rather than solved
+    attempted: {},         // id -> true once the lesson card has been dismissed
+    view: 'practice',      // which tab is open: 'learn' | 'practice'
+    lessonsDone: {},       // lesson id -> true, self-assessed
+    /* setup: null on a genuine first visit — the setup screen shows and Q1 routes
+       where the app opens. On existing saves it stays null (they were never asked)
+       or holds { level, track, goal } once completed. */
+    setup: null,
+    lastSeen: null
+  };
+}
+
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    // Progress saved under the old app name carries over on first load, so the
+    // rename doesn't look like a wipe. Copy the value to the new key *before*
+    // dropping the old one, so an interruption mid-migration can't lose data —
+    // and so the new key exists even if the user never triggers another save.
+    if (!raw) {
+      var legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (legacy) {
+        raw = legacy;
+        try {
+          localStorage.setItem(STORAGE_KEY, legacy);
+          localStorage.removeItem(LEGACY_STORAGE_KEY);
+        } catch (e) { /* private mode: still works for this session */ }
+      }
+    }
+    if (!raw) { firstVisit = true; return defaultState(); }
+    var parsed = JSON.parse(raw);
+    if (!parsed || parsed.version !== 1) { firstVisit = true; return defaultState(); }
+    // Saved before a later feature existed: keep the progress, add the field.
+    if (!parsed.attempted) parsed.attempted = {};
+    if (!parsed.lessonsDone) parsed.lessonsDone = {};
+    if (!parsed.fixes) parsed.fixes = {};
+    if (!parsed.assisted) parsed.assisted = {};
+    if (!parsed.view) parsed.view = 'practice';
+    /* setup was added later — a legacy save is treated as "did not go through
+       setup"; they should not be routed back into a wizard against their will.
+       So mark it as an implicit acknowledgment rather than null. Users can still
+       reopen [ setup ] anytime to adjust and record answers. */
+    if (parsed.setup === undefined) {
+      parsed.setup = { level: 'legacy', track: 'javascript', goal: null };
+    }
+
+    // Saves written before ids were stored used a bare array index. Back then the
+    // array was ids 1..15 in order, so index i meant id i+1 — remap once, then
+    // resolve whatever id we have back to its current position.
+    var wantId = parsed.currentId;
+    if (wantId === undefined || wantId === null) wantId = (parsed.current || 0) + 1;
+    for (var i = 0; i < CHALLENGES.length; i++) {
+      if (CHALLENGES[i].id === wantId) { parsed.current = i; break; }
+    }
+    parsed.currentId = wantId;
+    return parsed;
+  } catch (e) {
+    return defaultState();
+  }
+}
+
+function saveState() {
+  state.lastSeen = Date.now();
+  // Record where the user is by challenge id. Storing only the array index
+  // breaks the moment a challenge is inserted anywhere before it.
+  state.currentId = CHALLENGES[state.current] ? CHALLENGES[state.current].id : null;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) { /* private mode etc. — app still works for this session */ }
+}
+
+/* Has the user already been through this challenge once? Progress saved before
+   lesson cards existed has no `attempted` marks, so treat any answer as one. */
+function hasAttempted(ch) {
+  return !!(state.attempted[ch.id] || state.done[ch.id] || state.examGrades[ch.id]);
+}
+
+function isChallengeDone(ch) {
+  if (ch.type === 'predict') return !!state.done[ch.id];
+  if (ch.type === 'exam') {
+    // Two stages: the written root cause, then code that actually runs.
+    var explained = state.examGrades[ch.id] === 'got';
+    return ch.fix ? (explained && !!state.fixes[ch.id]) : explained;
+  }
+  return !!state.done[ch.id];
+}
+
+function completedCount() {
+  var n = 0;
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    if (isChallengeDone(CHALLENGES[i])) n++;
+  }
+  return n;
+}
+
+function phaseDone(type) {
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    if (CHALLENGES[i].type === type && !isChallengeDone(CHALLENGES[i])) return false;
+  }
+  return true;
+}
+
+/* Every exam has its written stage graded 'got' (the fix stage may still be open). */
+function examsExplained() {
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    var ch = CHALLENGES[i];
+    if (ch.type === 'exam' && state.examGrades[ch.id] !== 'got') return false;
+  }
+  return true;
+}
+
+function moduleComplete() {
+  return phaseDone('mc') && phaseDone('line') && phaseDone('predict') && phaseDone('exam');
+}
+
+/* Highest challenge index the user has reached (for nav locking) */
+function maxReached() {
+  var idx = 0;
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    var ch = CHALLENGES[i];
+    var attempted = ch.type === 'exam' ? !!state.examGrades[ch.id] : !!state.done[ch.id];
+    if (attempted) idx = i + 1;
+  }
+  return Math.max(idx, state.current);
+}
+
+/* =====================================================================
+   PROGRESS BAR + MILESTONES
+   ===================================================================== */
+/* [####______] 40% — a meter made of characters, not pixels. */
+function asciiBar(pct) {
+  var total = 20;
+  var filled = Math.round((pct / 100) * total);
+  var bar = '';
+  for (var i = 0; i < total; i++) bar += (i < filled ? '\u2588' : '\u2591');
+  return '[' + bar + '] ' + pct + '%';
+}
+
+function updateProgress() {
+  var pct = Math.round((completedCount() / CHALLENGES.length) * 100);
+  var fill = document.getElementById('progressFill');
+  fill.textContent = asciiBar(pct);
+  fill.classList.toggle('complete', moduleComplete());
+
+  var mEl = document.getElementById('milestoneText');
+  var achieved = true;
+  var text;
+  if (moduleComplete()) {
+    text = '[x] You can fix what you diagnosed — Module 1 complete';
+  } else if (phaseDone('mc') && phaseDone('line') && examsExplained()) {
+    text = '[x] You can diagnose root causes cold — now make the code run';
+  } else if (phaseDone('mc') && phaseDone('line') && phaseDone('predict')) {
+    text = '[x] You can predict what code will do — final exam in progress';
+  } else if (phaseDone('mc') && phaseDone('line')) {
+    text = '[x] You can locate which line broke — now: say what code will print';
+  } else if (phaseDone('mc')) {
+    text = '[x] You can read a console error — now: find the guilty line';
+  } else {
+    achieved = false;
+    text = 'First skill: reading what the console is actually telling you';
+  }
+  mEl.textContent = text;
+  mEl.classList.toggle('achieved', achieved);
+}
+
+/* =====================================================================
+   RENDER HELPERS
+   ===================================================================== */
+function esc(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* ---------------------------------------------------------------------
+   codeify — turn code terms inside a prose string into inline mono tokens
+   coloured from the SAME .tok-* palette the code blocks use, so an
+   explanation's "const" looks like the const in the snippet above it.
+
+   Recognises, conservatively (only real code terms, never plain words):
+     - a small set of unambiguous keywords  -> .tok-kw
+     - "quoted" identifiers                 -> .tok-fn (known calls) or .tok-var
+     - "quoted" literals / paths / values   -> .tok-str (quotes kept)
+     - .method() and .property mentions     -> .tok-fn / .tok-prop
+
+   It is HTML-aware: it only touches text between tags, so authored markup
+   in lesson prose (<strong>, backtick examples, ${ }) passes through
+   untouched.
+   ------------------------------------------------------------------ */
+var CT_KW = /\b(?:const|let|var|function|return|async|await)\b/;
+/* names that appear as calls in the code — coloured like functions */
+var CT_FN = {};
+(function () {
+  var fns = ('fetch filter map forEach json then push trim split getItem setItem ' +
+    'getElementById querySelector getElementsByClassName addEventListener toFixed ' +
+    'add parse stringify log fetchScores renderLeaderboard renderCard renderCards ' +
+    'saveDraft applyTheme restoreCart sendWelcome addComment getCurrentUser getCount ' +
+    'handleSignup loadProducts loadWeather loadComments loadDashboard addTodo ' +
+    'displayProfile greetUser showTopScores').split(' ');
+  for (var i = 0; i < fns.length; i++) CT_FN[fns[i]] = true;
+})();
+
+function ctSpan(kind, inner) { return '<code class="ct tok-' + kind + '">' + inner + '</code>'; }
+
+function ctQuoted(inner) {
+  // inner is already HTML-escaped. Plain identifier -> var/fn (no quotes);
+  // anything with spaces/slashes/dots/digits/symbols -> string literal (keep quotes).
+  if (/^[A-Za-z_$][\w$]*$/.test(inner)) {
+    return ctSpan(CT_FN[inner] ? 'fn' : 'var', inner);
+  }
+  return ctSpan('str', '"' + inner + '"');
+}
+
+/* one left-to-right pass over already-HTML-safe text (escaped, or authored
+   with entities); replacements are never re-scanned, so inserted spans cannot
+   be re-matched */
+function ctColorizeSafe(s) {
+  return s.replace(
+    /"([^"<>]+)"|\b(?:const|let|var|function|return|async|await)\b|\.([A-Za-z_$][\w$]*)(\(\))?/g,
+    function (m, quoted, dotName, call) {
+      if (quoted !== undefined) return ctQuoted(quoted);
+      if (dotName !== undefined) return ctSpan(call ? 'fn' : 'prop', '.' + dotName + (call || ''));
+      return CT_KW.test(m) ? ctSpan('kw', m) : m;   // keyword alternative
+    });
+}
+
+/* codeify: a RAW prose string (plain text that may contain literal < > &,
+   e.g. an explanation mentioning <head>). Escape it whole, then colorize. */
+function codeify(text) { return ctColorizeSafe(esc(text)); }
+
+/* codeifyHTML: an AUTHORED prose string that already contains intended markup
+   (<strong>) and entities (&gt;, ${ }). Keep the tags and entities as-is;
+   colorize only the text between tags, without re-escaping. */
+function codeifyHTML(html) {
+  return String(html).replace(/(<[^>]*>)|([^<]+)/g, function (m, tag, text) {
+    return tag ? tag : ctColorizeSafe(text);
+  });
+}
+
+
+function tok(kind, inner) {
+  return '<span class="tok-' + kind + '" data-tok="' + kind + '">' + inner + '</span>';
+}
+
+/* Inside an HTML tag: first name is the tag, the rest are attributes. */
+function highlightTag(tagText) {
+  var firstName = true;
+  var inner = tagText.replace(/(&[a-z]+;)|("[^"]*"|'[^']*')|([a-zA-Z_$][\w$-]*)/g,
+    function (m, entity, str, name) {
+      if (entity) return entity;              // leave &lt; / &gt; alone
+      if (str) return tok('str', str);
+      if (firstName) { firstName = false; return tok('tag', name); }
+      return tok('attr', name);
+    });
+  return '<span class="tok-tag" data-tok="tag">' + inner + '</span>';
+}
+
+var KEYWORDS = 'const|let|var|function|return|async|await|if|else|for|of|in|new|true|false|null|undefined|this';
+
+/* Lesson code can carry invisible annotation markers (see renderAnnotated).
+   They sit between tokens, so the "is this followed by a (" lookaheads have
+   to see straight through them. */
+var MARK = '[\\u0010-\\u0015]';
+
+/* Order matters: earlier alternatives win at any given position. */
+var HL_RE = new RegExp(
+  '(\\/\\/[^\\n]*|&lt;!--[^\\n]*)' +                  // 1 comment
+  '|(&lt;\\/?[a-zA-Z][^&]*&gt;)' +                    // 2 html tag
+  '|(\'(?:[^\'\\\\]|\\\\.)*\'|"(?:[^"\\\\]|\\\\.)*"|`(?:[^`\\\\]|\\\\.)*`)' + // 3 string (incl. backtick)
+  '|(&[a-z]+;)' +                                     // 4 stray entity
+  '|\\.([a-zA-Z_$][\\w$]*)(?=' + MARK + '*\\s*\\()' + // 5 method call
+  '|\\.([a-zA-Z_$][\\w$]*)' +                         // 6 property
+  '|\\b(' + KEYWORDS + ')\\b' +                       // 7 keyword
+  '|\\b(\\d+(?:\\.\\d+)?)\\b' +                       // 8 number
+  '|\\b([a-zA-Z_$][\\w$]*)(?=' + MARK + '*\\s*\\()' + // 9 function
+  '|\\b([a-zA-Z_$][\\w$]*)\\b',                       // 10 variable
+  'g');
+
+/* Single-pass highlighter (input is already HTML-escaped). */
+function highlight(escapedLine) {
+  return escapedLine.replace(HL_RE,
+    function (m, com, tagText, str, entity, method, prop, kw, num, fn, name) {
+      if (com) return tok('com', com);
+      if (tagText) return highlightTag(tagText);
+      if (str) return tok('str', str);
+      if (entity) return entity;
+      if (method) return '.' + tok('fn', method);
+      if (prop) return '.' + tok('prop', prop);
+      if (kw) return tok('kw', kw);
+      if (num) return tok('num', num);
+      if (fn) return tok('fn', fn);
+      if (name) return tok('var', name);
+      return m;
+    });
+}
+
+function renderCodeCard(ch, clickableLines) {
+  var lines = ch.code.split('\n');
+  var html = '<div class="code-card">';
+  html += '<div class="filename"><span>' + esc(ch.filename) + '</span>' +
+          '<button class="legend-btn" data-legend="1" aria-label="What do the colors mean?" ' +
+          'title="What do the colors mean?">[?]</button></div>';
+  html += '<div class="code-scroll"><div class="code-lines">';
+  for (var i = 0; i < lines.length; i++) {
+    var n = i + 1;
+    var cls = clickableLines ? 'code-line clickable' : 'code-line';
+    html += '<div class="' + cls + '" data-line="' + n + '">' +
+            '<span class="ln">' + n + '</span>' +
+            '<span class="lc">' + (highlight(esc(lines[i])) || ' ') + '</span>' +
+            '</div>';
+  }
+  html += '</div></div></div>';
+  return html;
+}
+
+/* Collapsed by default: what each line of the snippet is doing, in plain
+   English. Deliberately neutral — it describes, it doesn't point at the bug. */
+function renderExplainer(ch) {
+  if (!ch.lineExplanations) return '';
+  var lines = ch.code.split('\n');
+  var html = '<div class="explainer">' +
+             '<button class="explainer-toggle" data-explain="1" aria-expanded="false">' +
+               '<span class="caret">[+]</span>' +
+               '<span class="toggle-label">Explain line by line</span>' +
+             '</button>' +
+             '<div class="explainer-body" hidden>';
+  for (var i = 0; i < lines.length; i++) {
+    var codeHtml = lines[i].trim() === ''
+      ? '<span class="exp-blank">(blank line)</span>'
+      : highlight(esc(lines[i]));
+    html += '<div class="exp-item">' +
+              '<div class="exp-code"><span class="exp-ln">Line ' + (i + 1) + ':</span> ' + codeHtml + '</div>' +
+              '<div class="exp-text"><span class="exp-arrow">-&gt;</span>' +
+                '<span>' + codeify(ch.lineExplanations[i] || '') + '</span></div>' +
+            '</div>';
+  }
+  return html + '</div></div>';
+}
+
+function renderConsoleCard(ch) {
+  return '' +
+  '<div class="console-card">' +
+    '<div class="console-tab"><span>Elements</span><span class="tab-active">Console</span><span>Network</span><span>Sources</span></div>' +
+    '<div class="console-row">' +
+      '<span class="err-icon">✕</span>' +
+      '<span class="err-msg">' + esc(ch.error.msg) + '</span>' +
+      '<span class="err-src">' + esc(ch.error.src) + '</span>' +
+    '</div>' +
+    '<div class="console-cursor">\u258a</div>' +
+  '</div>';
+}
+
+function renderDots(currentIdx) {
+  var reach = maxReached();
+  var html = '<div class="dots">';
+  for (var i = 0; i < CHALLENGES.length; i++) {
+    var ch = CHALLENGES[i];
+    var cls = 'dot';
+    if (isChallengeDone(ch)) cls += ' done';
+    else if (ch.type === 'exam' && state.examGrades[ch.id] === 'missed') cls += ' missed';
+    if (i === currentIdx) cls += ' current';
+    var locked = i > reach;
+    if (locked) cls += ' locked';
+    html += '<button class="' + cls + '" ' + (locked ? 'disabled' : '') +
+            ' data-jump="' + i + '">' + (i + 1) + '</button>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function show(screenId) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* =====================================================================
+   HOME SCREEN
+   ===================================================================== */
+function renderHome() {
+  var el = document.getElementById('screen-home');
+  var html = '<div class="home">';
+  if (moduleComplete()) {
+    renderSummary();
+    show('screen-summary');
+    return;
+  }
+  if (state.started) {
+    html += '<div class="big-icon">$ ./vibe-coach --warmup --resume</div>';
+    html += '<h2>Welcome back to the warm-up</h2>';
+    html += '<div class="welcome-back">You’re on drill <strong>' +
+            (state.current + 1) + ' of ' + CHALLENGES.length +
+            '</strong>. No streaks, no penalties — just pick up where you left off.</div>';
+    html += '<div class="actions" style="justify-content:center">' +
+            '<button class="btn btn-primary" id="btnContinue">[ CONTINUE ]</button></div>';
+  } else {
+    html += '<div class="big-icon">$ ./vibe-coach --warmup</div>';
+    html += '<h2>Warm-up: reading errors without panicking</h2>';
+    html += '<p>Optional. 18 short drills built from real AI slop — hallucinated methods, invented response shapes, half-renamed variables, missing awaits.</p>';
+    html += '<p>You’ll learn to read the error, find the guilty line, and diagnose root causes cold. Sharp error-reading is what every wall on the roadmap eventually asks of you.</p>';
+    html += '<div class="actions" style="justify-content:center;margin-top:24px">' +
+            '<button class="btn btn-primary" id="btnContinue">[ START WARM-UP ]</button></div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+  document.getElementById('btnContinue').addEventListener('click', function () {
+    state.started = true;
+    saveState();
+    renderChallenge(state.current);
+    show('screen-challenge');
+  });
+  show('screen-home');
+}
+
+/* =====================================================================
+   CHALLENGE SCREEN
+   ===================================================================== */
+function phaseLabel(ch) {
+  if (ch.type === 'mc') return 'READ THE ERROR';
+  if (ch.type === 'line') return 'FIND THE LINE';
+  if (ch.type === 'predict') return 'PREDICT THE OUTPUT';
+  return 'FINAL EXAM';
+}
+
+/* Entry point: coach talks first, unless this challenge has been seen before. */
+function renderChallenge(idx) {
+  var ch = CHALLENGES[idx];
+  if (ch.lesson && !hasAttempted(ch)) renderLesson(idx);
+  else renderDrill(idx);
+}
+
+/* ---------- the lesson card, before the drill ---------- */
+function renderLesson(idx) {
+  var ch = CHALLENGES[idx];
+  state.current = idx;
+  saveState();
+  updateProgress();
+
+  var seenBefore = hasAttempted(ch);
+  var el = document.getElementById('screen-challenge');
+  var html = renderDots(idx);
+  html += '<div class="ch-meta"><span>challenge ' + (idx + 1) + ' / ' + CHALLENGES.length + '</span>' +
+          '<span class="ch-phase' + (ch.type === 'exam' ? ' exam' : '') + '">' + phaseLabel(ch) + '</span></div>';
+  html += '<div class="lesson-wrap"><div class="lesson-card">';
+  html += '<div class="lesson-coach"><span class="coach-dot">//</span><span>Before the drill</span></div>';
+  html += '<div class="lesson-facts">' +
+            '<div class="lesson-fact"><span class="fact-key">Error type</span>' +
+              '<span class="fact-val">' + esc(ch.lesson.kind) + '</span></div>' +
+            '<div class="lesson-fact"><span class="fact-key">Look in</span>' +
+              '<span class="fact-val">' + esc(ch.lesson.where) + '</span></div>' +
+          '</div>';
+  html += '<div class="lesson-text">' + codeify(ch.lesson.text) + '</div>';
+  html += '<div class="lesson-actions"><button class="btn-lesson" id="btnGotIt">' +
+          '[ GOT IT — SHOW CHALLENGE ]</button>';
+  html += '<div class="lesson-skip-note">' + (seenBefore
+            ? 'You’ve seen this one before — the card won’t interrupt you again.'
+            : 'You’ll only see this card once. Retries jump straight to the challenge.') +
+          '</div></div>';
+  html += '</div></div>';
+  el.innerHTML = html;
+
+  wireDots(el);
+  document.getElementById('btnGotIt').addEventListener('click', function () {
+    state.attempted[ch.id] = true;
+    saveState();
+    renderDrill(idx);
+    window.scrollTo(0, 0);
+  });
+  show('screen-challenge');
+}
+
+function wireDots(el) {
+  var dots = el.querySelectorAll('[data-jump]');
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].addEventListener('click', function () {
+      renderChallenge(parseInt(this.getAttribute('data-jump'), 10));
+    });
+  }
+}
+
+function renderDrill(idx) {
+  var ch = CHALLENGES[idx];
+  state.current = idx;
+  state.attempted[ch.id] = true;
+  saveState();
+  updateProgress();
+
+  var el = document.getElementById('screen-challenge');
+  var html = renderDots(idx);
+  html += '<div class="ch-meta"><span>challenge ' + (idx + 1) + ' / ' + CHALLENGES.length + '</span>' +
+          '<span class="ch-phase' + (ch.type === 'exam' ? ' exam' : '') + '">' + phaseLabel(ch) + '</span></div>';
+  if (ch.lesson) html += '<button class="lesson-recap" id="btnRecap">[ RE-READ LESSON ]</button>';
+  html += '<div class="ch-title">' + esc(ch.title) + '</div>';
+  html += renderCodeCard(ch, ch.type === 'line' && !state.done[ch.id]);
+  html += renderExplainer(ch);
+  if (ch.error) html += renderConsoleCard(ch);
+  html += '<div class="question">' + esc(ch.question) + '</div>';
+  html += '<div id="interaction"></div>';
+  html += '<div id="feedback" class="feedback"></div>';
+  html += '<div id="chActions" class="actions"></div>';
+  el.innerHTML = html;
+
+  wireDots(el);
+  var recap = document.getElementById('btnRecap');
+  if (recap) recap.addEventListener('click', function () { renderLesson(idx); });
+
+  if (ch.type === 'mc') setupMC(ch, idx);
+  else if (ch.type === 'line') setupLine(ch, idx);
+  else if (ch.type === 'predict') setupPredict(ch, idx);
+  else setupExam(ch, idx);
+}
+
+var CHEERS = ['CORRECT', 'CORRECT — that is the one', 'CORRECT — good read', 'CORRECT', 'CORRECT — exact'];
+
+function showExplanation(ch, cheer) {
+  var fb = document.getElementById('feedback');
+  var html = '';
+  if (cheer) {
+    html += '<div class="correct-banner"><span>[ OK ]</span><span>' +
+            CHEERS[Math.floor(Math.random() * CHEERS.length)] + '</span></div>';
+  }
+  html += '<div class="explain"><span class="explain-label">WHY THIS HAPPENS</span>' +
+          codeify(ch.explanation) + '</div>';
+  fb.innerHTML = html;
+}
+
+function showNextButton(idx) {
+  var act = document.getElementById('chActions');
+  var last = idx === CHALLENGES.length - 1;
+  act.innerHTML = '<button class="btn btn-primary" id="btnNext">' +
+                  (last ? '[ FINISH ]' : '[ NEXT ]') + '</button>';
+  document.getElementById('btnNext').addEventListener('click', function () {
+    if (last) {
+      state.current = CHALLENGES.length - 1;
+      saveState();
+      renderSummary();
+      show('screen-summary');
+    } else {
+      renderChallenge(idx + 1);
+    }
+  });
+}
+
+/* ---------- multiple choice ---------- */
+/* ---------- predict the output ----------
+   Pick what you think it prints, then the app really runs it and shows what
+   came back. The answer is settled by execution, not by the option key. */
+function setupPredict(ch, idx) {
+  var box = document.getElementById('interaction');
+  var answered = !!state.done[ch.id];
+
+  var html = '<div class="options">';
+  for (var i = 0; i < ch.options.length; i++) {
+    var cls = 'opt' + (answered && i === ch.correct ? ' right' : '');
+    html += '<button class="' + cls + '" data-opt="' + i + '" ' +
+            (answered ? 'disabled' : '') + '>' + esc(ch.options[i]) + '</button>';
+  }
+  html += '</div><div class="try-again-note" id="tryNote"></div>' +
+          '<div id="predictRun"></div>';
+  box.innerHTML = html;
+
+  function reveal(picked) {
+    var host = document.getElementById('predictRun');
+    host.innerHTML = '<div class="run-row"><span class="run-hint">running it for real…</span></div>';
+    runSandboxed(ch.code, ch.env, ch.seed).then(function (res) {
+      var matched = outputMatches(res.output, ch.expected);
+      host.innerHTML =
+        '<div class="predict-actual"><div class="sec-label">WHAT IT ACTUALLY PRINTED</div>' +
+        renderMiniConsole(res.output) + '</div>' +
+        (matched ? '' : '<div class="fix-verdict fail">[ !! ] the executed output did not ' +
+                        'match the expected answer — that is a bug in this challenge, not in you</div>');
+      if (picked) showExplanation(ch, true);
+      else showExplanation(ch, false);
+      showNextButton(idx);
+    });
+  }
+
+  if (answered) { reveal(false); return; }
+
+  var opts = box.querySelectorAll('.opt');
+  for (var j = 0; j < opts.length; j++) {
+    opts[j].addEventListener('click', function () {
+      var pick = parseInt(this.getAttribute('data-opt'), 10);
+      if (pick === ch.correct) {
+        state.done[ch.id] = true;
+        saveState();
+        updateProgress();
+        for (var k = 0; k < opts.length; k++) opts[k].disabled = true;
+        this.classList.add('right');
+        this.classList.remove('wrong');
+        document.getElementById('tryNote').textContent = '';
+        reveal(true);
+      } else {
+        this.classList.add('wrong');
+        this.disabled = true;
+        document.getElementById('tryNote').textContent =
+          'INCORRECT — think it through once more, then pick again. Retries are free.';
+      }
+    });
+  }
+}
+
+function setupMC(ch, idx) {
+  var box = document.getElementById('interaction');
+  var answered = !!state.done[ch.id];
+  var html = '<div class="options">';
+  for (var i = 0; i < ch.options.length; i++) {
+    var cls = 'opt' + (answered && i === ch.correct ? ' right' : '');
+    html += '<button class="' + cls + '" data-opt="' + i + '" ' +
+            (answered ? 'disabled' : '') + '>' + esc(ch.options[i]) + '</button>';
+  }
+  html += '</div><div class="try-again-note" id="tryNote"></div>';
+  box.innerHTML = html;
+
+  if (answered) {
+    showExplanation(ch, false);
+    showNextButton(idx);
+    return;
+  }
+
+  var opts = box.querySelectorAll('.opt');
+  for (var j = 0; j < opts.length; j++) {
+    opts[j].addEventListener('click', function () {
+      var pick = parseInt(this.getAttribute('data-opt'), 10);
+      if (pick === ch.correct) {
+        state.done[ch.id] = true;
+        saveState();
+        updateProgress();
+        for (var k = 0; k < opts.length; k++) opts[k].disabled = true;
+        this.classList.add('right');
+        this.classList.remove('wrong');
+        document.getElementById('tryNote').textContent = '';
+        showExplanation(ch, true);
+        showNextButton(idx);
+      } else {
+        this.classList.add('wrong');
+        this.disabled = true;
+        document.getElementById('tryNote').textContent =
+          'INCORRECT — re-read the error and try again. Retries are free.';
+      }
+    });
+  }
+}
+
+/* ---------- click-the-line ---------- */
+function setupLine(ch, idx) {
+  var answered = !!state.done[ch.id];
+  var box = document.getElementById('interaction');
+  box.innerHTML = '<div class="try-again-note" id="tryNote"></div>';
+
+  var lineEls = document.querySelectorAll('#screen-challenge .code-line');
+
+  if (answered) {
+    for (var i = 0; i < lineEls.length; i++) {
+      if (parseInt(lineEls[i].getAttribute('data-line'), 10) === ch.correctLine) {
+        lineEls[i].classList.add('reveal-right');
+      }
+    }
+    showExplanation(ch, false);
+    showNextButton(idx);
+    return;
+  }
+
+  for (var j = 0; j < lineEls.length; j++) {
+    lineEls[j].addEventListener('click', function () {
+      if (state.done[ch.id]) return;
+      var pick = parseInt(this.getAttribute('data-line'), 10);
+      if (pick === ch.correctLine) {
+        state.done[ch.id] = true;
+        saveState();
+        updateProgress();
+        this.classList.remove('picked-wrong');
+        this.classList.add('picked-right');
+        for (var k = 0; k < lineEls.length; k++) {
+          lineEls[k].classList.remove('clickable');
+          if (lineEls[k] !== this) lineEls[k].classList.remove('picked-wrong');
+        }
+        document.getElementById('tryNote').textContent = '';
+        showExplanation(ch, true);
+        showNextButton(idx);
+      } else {
+        this.classList.add('picked-wrong');
+        var self = this;
+        setTimeout(function () { self.classList.remove('picked-wrong'); }, 700);
+        document.getElementById('tryNote').textContent =
+          'INCORRECT — where it crashed and where it broke can be different lines.';
+      }
+    });
+  }
+}
+
+/* ---------- final exam ---------- */
+/* =====================================================================
+   FIX STAGE — the second half of a final exam. You explained the bug;
+   now edit the code until it genuinely runs. Verified by execution, not
+   by self-assessment.
+   ===================================================================== */
+function renderFixStage(ch) {
+  var passed = !!state.fixes[ch.id];
+  var assisted = !!state.assisted[ch.id];
+
+  var html = '<div class="fix-stage">' +
+    '<div class="sec-label">STAGE 2 — MAKE IT RUN</div>' +
+    '<p class="fix-intro">' + esc(ch.fix.intro) + '</p>';
+
+  if (passed) {
+    html += '<div class="fix-verdict pass">[ PASS ] your code produced the expected output' +
+            (assisted ? ' — with the solution shown' : '') + '</div>';
+  }
+
+  html += '<div class="fix-editor-wrap">' +
+            '<div class="fix-editor-bar"><span>fix.js</span>' +
+              '<span class="fix-expect">expects: ' + esc(ch.fix.expect.join(' / ')) + '</span></div>' +
+            '<textarea class="fix-editor" id="fixCode" spellcheck="false" ' +
+              'aria-label="Editable code">' + esc(ch.fix.broken) + '</textarea>' +
+          '</div>' +
+          '<div class="run-row">' +
+            '<button class="btn-run" id="fixRun">[ RUN ]</button>' +
+            '<button class="btn btn-ghost" id="fixReset">[ RESET CODE ]</button>' +
+            '<span class="run-hint" id="fixHintLine">not run yet</span>' +
+          '</div>' +
+          '<div class="mini-console" id="fixConsole" hidden></div>' +
+          '<div id="fixVerdict"></div>' +
+          '<div class="fix-help">' +
+            '<button class="btn btn-ghost" id="fixHintBtn">[ HINT ]</button>' +
+            '<button class="btn btn-ghost" id="fixSolBtn">[ SHOW SOLUTION ]</button>' +
+          '</div>' +
+          '<div class="fix-hints" id="fixHints"></div>';
+  return html + '</div>';
+}
+
+function wireFixStage(ch, idx) {
+  var editor = document.getElementById('fixCode');
+  var hintsShown = 0;
+
+  function verdict(html) { document.getElementById('fixVerdict').innerHTML = html; }
+
+  document.getElementById('fixRun').addEventListener('click', function () {
+    var code = editor.value;
+    // Clear the previous result first — leaving a stale PASS/FAIL on screen
+    // while the next run is in flight reads as the new answer.
+    verdict('');
+    document.getElementById('fixConsole').hidden = true;
+    document.getElementById('fixHintLine').textContent = 'running…';
+    runSandboxed(code, ch.fix.env, ch.fix.seed).then(function (res) {
+      var con = document.getElementById('fixConsole');
+      con.innerHTML = renderMiniConsole(res.output);
+      con.hidden = false;
+      document.getElementById('fixHintLine').textContent = 'your code, actually executed';
+
+      if (outputMatches(res.output, ch.fix.expect)) {
+        state.fixes[ch.id] = true;
+        saveState();
+        updateProgress();
+        verdict('<div class="fix-verdict pass">[ PASS ] that is the expected output' +
+                (state.assisted[ch.id] ? ' — solution was shown' : '') + '</div>');
+      } else {
+        var got = [];
+        for (var i = 0; i < res.output.length; i++) {
+          if (res.output[i].type === 'log') got.push(res.output[i].text);
+        }
+        verdict('<div class="fix-verdict fail">[ FAIL ] not there yet</div>' +
+                '<div class="fix-diff">' +
+                  '<div class="fix-diff-row"><span class="fdk">expected</span>' +
+                    '<span class="fdv ok">' + esc(ch.fix.expect.join('\n') || '(nothing)') + '</span></div>' +
+                  '<div class="fix-diff-row"><span class="fdk">yours</span>' +
+                    '<span class="fdv no">' + esc(got.join('\n') ||
+                      (res.threw ? '(threw before printing anything)' : '(nothing printed)')) + '</span></div>' +
+                '</div>');
+      }
+    });
+  });
+
+  document.getElementById('fixReset').addEventListener('click', function () {
+    editor.value = ch.fix.broken;
+    document.getElementById('fixConsole').hidden = true;
+    verdict('');
+    document.getElementById('fixHintLine').textContent = 'back to the broken version';
+  });
+
+  document.getElementById('fixHintBtn').addEventListener('click', function () {
+    if (hintsShown >= ch.fix.hints.length) return;
+    var box = document.getElementById('fixHints');
+    box.innerHTML += '<div class="fix-hint"><span class="fh-n">hint ' + (hintsShown + 1) + '</span>' +
+                     esc(ch.fix.hints[hintsShown]) + '</div>';
+    hintsShown++;
+    if (hintsShown >= ch.fix.hints.length) this.disabled = true;
+  });
+
+  document.getElementById('fixSolBtn').addEventListener('click', function () {
+    editor.value = ch.fix.solution;
+    state.assisted[ch.id] = true;
+    saveState();
+    this.disabled = true;
+    verdict('<div class="fix-verdict assisted">[ -- ] solution loaded into the editor. ' +
+            'Run it to see it work, then hit RESET CODE and try it yourself.</div>');
+  });
+}
+
+function setupExam(ch, idx) {
+  var box = document.getElementById('interaction');
+  var grade = state.examGrades[ch.id];
+
+  if (grade) {
+    var html = '<div class="model-answer"><span class="ma-label">MODEL ANSWER</span>' +
+               codeify(ch.modelAnswer) + '</div>';
+    html += '<div class="explain" style="margin-top:12px"><span class="explain-label">' +
+            (grade === 'got' ? '[ OK ] EXPLAINED' : '[ -- ] MARKED AS MISSED') +
+            '</span>' + codeify(ch.explanation) + '</div>';
+    if (ch.fix) html += renderFixStage(ch);
+    box.innerHTML = html;
+    if (ch.fix) wireFixStage(ch, idx);
+    var act = document.getElementById('chActions');
+    var last = idx === CHALLENGES.length - 1;
+    act.innerHTML =
+      '<button class="btn btn-ghost" id="btnRetry">[ RETRY ]</button>' +
+      '<button class="btn btn-primary" id="btnNext">' + (last ? '[ FINISH ]' : '[ NEXT ]') + '</button>';
+    document.getElementById('btnRetry').addEventListener('click', function () {
+      delete state.examGrades[ch.id];
+      saveState();
+      renderChallenge(idx);
+    });
+    document.getElementById('btnNext').addEventListener('click', function () {
+      if (last) { renderSummary(); show('screen-summary'); }
+      else renderChallenge(idx + 1);
+    });
+    return;
+  }
+
+  box.innerHTML =
+    '<textarea class="exam-input" id="examText" placeholder="Type your explanation of the root cause. A couple of sentences in plain English is perfect."></textarea>' +
+    '<div class="actions"><button class="btn btn-primary" id="btnReveal">[ REVEAL MODEL ANSWER ]</button></div>' +
+    '<div id="examReveal"></div>';
+
+  document.getElementById('btnReveal').addEventListener('click', function () {
+    var userText = document.getElementById('examText').value.trim();
+    document.getElementById('examText').disabled = true;
+    this.style.display = 'none';
+
+    var html = '<div class="model-answer"><span class="ma-label">MODEL ANSWER</span>' +
+               codeify(ch.modelAnswer) + '</div>';
+    if (userText) {
+      html += '<div class="your-answer"><strong>Your answer:</strong>\n' + esc(userText) + '</div>';
+    }
+    html += '<div class="self-grade"><p>Compare against the model answer: did you land the same root cause? ' +
+            'Marking it missed costs nothing — it queues a free retry.</p>' +
+            '<div class="grade-btns">' +
+            '<button class="btn btn-green" id="btnGot">[ I GOT IT ]</button>' +
+            '<button class="btn btn-ghost" id="btnMissed">[ I MISSED IT ]</button>' +
+            '</div></div>';
+    document.getElementById('examReveal').innerHTML = html;
+
+    document.getElementById('btnGot').addEventListener('click', function () {
+      state.examGrades[ch.id] = 'got';
+      saveState();
+      updateProgress();
+      renderChallenge(idx);
+    });
+    document.getElementById('btnMissed').addEventListener('click', function () {
+      state.examGrades[ch.id] = 'missed';
+      saveState();
+      updateProgress();
+      renderChallenge(idx);
+    });
+  });
+}
+
+/* =====================================================================
+   SUMMARY SCREEN
+   ===================================================================== */
+function renderSummary() {
+  updateProgress();
+  var el = document.getElementById('screen-summary');
+  var exams = CHALLENGES.filter(function (c) { return c.type === 'exam'; });
+  var gotAll = moduleComplete();
+
+  var html = '<div class="summary">';
+  if (gotAll) {
+    html += '<div class="big-icon">[ MODULE 1 : COMPLETE ]</div>';
+    html += '<h2>Module 1 complete</h2>';
+    html += '<p>You read the errors. You found the lines. You diagnosed root causes cold — and graded yourself honestly doing it.</p>';
+    html += '<p>Next time your AI assistant ships you slop, the console is a map, not a threat.</p>';
+  } else {
+    html += '<div class="big-icon">[ MODULE 1 : IN PROGRESS ]</div>';
+    html += '<h2>Almost there</h2>';
+    html += '<p>Module 1 is complete when all three final-exam challenges are honestly self-graded “I got it”. Retries are free and expected — that’s how the mental model sets.</p>';
+  }
+
+  html += '<div class="exam-status">';
+  for (var i = 0; i < exams.length; i++) {
+    var ex = exams[i];
+    var g = state.examGrades[ex.id];
+    var statusHtml = g === 'got'
+      ? '<span class="ok">[ OK ]</span>'
+      : (g === 'missed' ? '<span class="nope">[ -- ] RETRY</span>' : '<span class="nope">[ ?? ] NOT GRADED</span>');
+    var exIdx = CHALLENGES.indexOf(ex);
+    html += '<div class="row"><span>Exam: ' + esc(ex.filename) + '</span>' + statusHtml +
+            '<button class="btn btn-ghost" style="padding:6px 12px;font-size:0.78rem" data-goto="' + exIdx + '">' +
+            (g === 'got' ? '[ REVIEW ]' : '[ RETRY ]') + '</button></div>';
+  }
+  html += '</div>';
+
+  html += '<div class="actions" style="justify-content:center">' +
+          '<button class="btn btn-ghost" id="btnReviewAll">[ REVIEW ALL ]</button></div>';
+  html += '<div class="reset-zone"><button class="reset-link" id="btnReset">[ RESET PROGRESS ]</button></div>';
+  html += '</div>';
+  el.innerHTML = html;
+
+  var gotos = el.querySelectorAll('[data-goto]');
+  for (var j = 0; j < gotos.length; j++) {
+    gotos[j].addEventListener('click', function () {
+      var idx = parseInt(this.getAttribute('data-goto'), 10);
+      if (state.examGrades[CHALLENGES[idx].id] === 'missed') {
+        delete state.examGrades[CHALLENGES[idx].id];
+        saveState();
+      }
+      renderChallenge(idx);
+      show('screen-challenge');
+    });
+  }
+  document.getElementById('btnReviewAll').addEventListener('click', function () {
+    renderChallenge(0);
+    show('screen-challenge');
+  });
+  document.getElementById('btnReset').addEventListener('click', function () {
+    if (confirm('Wipe all Vibe Coach progress and start fresh?')) {
+      state = defaultState();
+      saveState();
+      updateProgress();
+      syncChrome();
+      renderHome();
+    }
+  });
+}
+
+/* =====================================================================
+   LEARN — lesson list and lesson pages.
+   Sections render by type, so a new lesson is data only: add it to
+   LESSONS and it appears in the list with no code changes.
+   ===================================================================== */
+var RUNNABLES = {};                                    // run key -> snippet
+var LPREDICTS = {};                                    // run key -> lesson predict block
+/* Invisible control characters used only while building a lesson code block:
+   they mark where a highlight starts and ends. Written with fromCharCode so
+   they stay visible and editable in this source file. */
+var M_OPEN = [String.fromCharCode(17), String.fromCharCode(18),
+              String.fromCharCode(19), String.fromCharCode(20)];
+var M_CLOSE = String.fromCharCode(16);
+
+function lessonDone(l) { return !!state.lessonsDone[l.id]; }
+
+function findLesson(id) {
+  for (var i = 0; i < LESSONS.length; i++) if (LESSONS[i].id === id) return LESSONS[i];
+  return null;
+}
+
+/* ---------- code blocks inside lessons ---------- */
+
+/* Wrap each annotation's target text in an invisible marker, highlight the
+   line as usual, then swap the markers for colored spans. Markers are
+   non-word characters, so they never split a token in the highlighter. */
+function renderLessonCode(code, filename, annotations) {
+  var lines = code.split('\n');
+  var html = '<div class="code-card">';
+  if (filename) {
+    html += '<div class="filename"><span>' + esc(filename) + '</span>' +
+            '<button class="legend-btn" data-legend="1" aria-label="What do the colors mean?" ' +
+            'title="What do the colors mean?">[?]</button></div>';
+  }
+  html += '<div class="code-scroll"><div class="code-lines">';
+  for (var i = 0; i < lines.length; i++) {
+    var escaped = esc(lines[i]);
+    if (annotations) {
+      for (var a = 0; a < annotations.length && a < M_OPEN.length; a++) {
+        var an = annotations[a];
+        if (an.line !== i + 1) continue;
+        var needle = esc(an.match);
+        var at = escaped.indexOf(needle);
+        if (at === -1) continue;
+        escaped = escaped.slice(0, at) + M_OPEN[a] + needle + M_CLOSE +
+                  escaped.slice(at + needle.length);
+      }
+    }
+    var lineHtml = swapMarkers(highlight(escaped));
+    html += '<div class="code-line"><span class="ln">' + (i + 1) + '</span>' +
+            '<span class="lc">' + (lineHtml || ' ') + '</span></div>';
+  }
+  return html + '</div></div></div>';
+}
+
+function swapMarkers(s) {
+  for (var a = 0; a < M_OPEN.length; a++) {
+    s = s.split(M_OPEN[a]).join('<span class="anno anno-' + a + '"><sup>' + (a + 1) + '</sup>');
+  }
+  return s.split(M_CLOSE).join('</span>');
+}
+
+function renderAnnoKey(annotations) {
+  var html = '<div class="anno-key">';
+  for (var i = 0; i < annotations.length; i++) {
+    html += '<div class="anno-item"><span class="anno-num n' + i + '">' + (i + 1) + '</span>' +
+              '<span class="at"><b>' + esc(annotations[i].title) + '</b> — ' +
+              codeify(annotations[i].text) + '</span></div>';
+  }
+  return html + '</div>';
+}
+
+/* ---------- actually running the snippets ---------- */
+function formatLogValue(v) {
+  if (typeof v === 'string') return v;
+  // JSON.stringify flattens a promise to "{}", which hides the whole point when
+  // the lesson is about un-awaited calls. Chrome prints Promise {<pending>}.
+  if (v && typeof v.then === 'function') return 'Promise {<pending>}';
+  if (typeof v === 'number' || typeof v === 'boolean' || v === null) return String(v);
+  if (v === undefined) return 'undefined';
+  try { return JSON.stringify(v); } catch (e) { return String(v); }
+}
+
+/* Output lines are { text, type } where type is 'log' or 'error'. Authored
+   fallbacks may be plain strings, which mean 'log'. */
+function normalizeOutput(arr) {
+  var out = [];
+  for (var i = 0; i < (arr || []).length; i++) {
+    var v = arr[i];
+    out.push(typeof v === 'string' ? { text: v, type: 'log' }
+                                   : { text: v.text, type: v.type || 'log' });
+  }
+  return out;
+}
+
+function runSnippet(code, fallback) {
+  var out = [];
+  var fakeConsole = { log: function () {
+    var parts = [];
+    for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
+    out.push({ text: parts.join(' '), type: 'log' });
+  } };
+
+  var fn;
+  try {
+    fn = new Function('console', code);
+  } catch (e) {
+    // Somewhere that blocks Function() entirely; show the known-good output.
+    var fb = normalizeOutput(fallback);
+    return fb.length ? fb : [{ text: '(could not run here)', type: 'log' }];
+  }
+
+  try {
+    fn(fakeConsole);
+  } catch (err) {
+    // A snippet that throws on purpose lands here — report it like DevTools does.
+    out.push({ text: 'Uncaught ' + (err.name || 'Error') + ': ' + err.message, type: 'error' });
+  }
+  return out.length ? out : [{ text: '(nothing was printed)', type: 'log' }];
+}
+
+/* =====================================================================
+   SANDBOX — runs the user's own edited code for the fix challenges.
+
+   runSnippet above is synchronous, which is fine for the lesson demos but
+   cannot execute anything with await or fetch — and those are exactly the
+   bugs worth practising. This runner wraps the code in an async IIFE (so
+   top-level await works) and injects fake versions of whatever the browser
+   APIs the challenge needs. Nothing here touches the real page or network.
+   ===================================================================== */
+
+/* A stand-in Response, so res.json() behaves like the real thing. */
+function fakeResponse(payload, status) {
+  return {
+    ok: (status || 200) < 400,
+    status: status || 200,
+    json: function () { return Promise.resolve(payload); },
+    text: function () { return Promise.resolve(JSON.stringify(payload)); }
+  };
+}
+
+/* Minimal element good enough for the DOM-flavoured challenges. */
+function fakeElement(id) {
+  return {
+    id: id, textContent: '', value: '', innerHTML: '',
+    classList: { add: function () {}, remove: function () {}, toggle: function () {} },
+    addEventListener: function (evt, fn) { if (typeof fn === 'function') this['on' + evt] = fn; },
+    appendChild: function () {}, setAttribute: function () {}, focus: function () {}
+  };
+}
+
+/* env: which globals the challenge asks for. seed: canned data for them. */
+function buildSandbox(env, seed, out) {
+  seed = seed || {};
+  var api = {
+    console: {
+      log: function () {
+        var parts = [];
+        for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
+        out.push({ text: parts.join(' '), type: 'log' });
+      },
+      error: function () {
+        var parts = [];
+        for (var i = 0; i < arguments.length; i++) parts.push(formatLogValue(arguments[i]));
+        out.push({ text: parts.join(' '), type: 'error' });
+      }
+    }
+  };
+  var wants = env || [];
+
+  if (wants.indexOf('fetch') !== -1) {
+    // seed.responses maps a url substring -> payload (or { payload, status }).
+    api.fetch = function (url) {
+      var table = seed.responses || {};
+      for (var key in table) {
+        if (Object.prototype.hasOwnProperty.call(table, key) && String(url).indexOf(key) !== -1) {
+          var hit = table[key];
+          var body = (hit && hit.payload !== undefined) ? hit.payload : hit;
+          return Promise.resolve(fakeResponse(body, hit && hit.status));
+        }
+      }
+      return Promise.resolve(fakeResponse({ error: 'not found' }, 404));
+    };
+  }
+
+  if (wants.indexOf('dom') !== -1) {
+    var nodes = {};
+    var lookup = function (key) {
+      key = String(key).replace(/^[#.]/, '');
+      if (!nodes[key]) nodes[key] = fakeElement(key);
+      return (seed.missing || []).indexOf(key) !== -1 ? null : nodes[key];
+    };
+    api.document = {
+      getElementById: lookup,
+      querySelector: lookup,
+      querySelectorAll: function () { return []; },
+      getElementsByClassName: function () { return []; },
+      addEventListener: function () {}
+    };
+  }
+
+  if (wants.indexOf('storage') !== -1) {
+    var store = {};
+    for (var k in (seed.storage || {})) {
+      if (Object.prototype.hasOwnProperty.call(seed.storage, k)) store[k] = seed.storage[k];
+    }
+    api.localStorage = {
+      getItem: function (key) {
+        return Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null;
+      },
+      setItem: function (key, val) { store[key] = String(val); },
+      removeItem: function (key) { delete store[key]; }
+    };
+  }
+  return api;
+}
+
+/* Browser globals a snippet must never reach by accident. Anything the
+   challenge did not ask for is shadowed with undefined, so a challenge that
+   forgets to declare `dom` fails loudly instead of quietly driving the real
+   page. This is for predictable behaviour, not security — a determined
+   escape is always possible, and the only code running here is the user's own. */
+var SHADOWED_GLOBALS = [
+  'fetch', 'document', 'localStorage', 'sessionStorage', 'XMLHttpRequest',
+  'window', 'globalThis', 'self', 'top', 'parent', 'frames', 'location',
+  'navigator', 'alert', 'confirm', 'prompt', 'indexedDB', 'WebSocket',
+  'importScripts', 'open', 'postMessage'
+  // NB: 'eval' and 'arguments' are illegal as strict-mode parameter names, so
+  // they cannot be shadowed. Direct eval inherits this scope anyway, meaning
+  // eval('document') still sees the shadowed undefined.
+];
+
+/* Best-effort capture of rejections that surface after the snippet returns.
+   Note: Chrome does NOT dispatch unhandledrejection (or error) to page listeners
+   for code compiled via the Function constructor — it reports those straight to
+   DevTools — so a promise the snippet starts and never awaits cannot be caught
+   here. That case is handled instead by the explicit "nothing was printed"
+   diagnostic below, which names the usual cause. */
+var sandboxOut = null;
+window.addEventListener('unhandledrejection', function (e) {
+  if (!sandboxOut) return;
+  var err = e.reason;
+  sandboxOut.push({
+    text: 'Uncaught (in promise) ' + ((err && err.name) || 'Error') +
+          ': ' + ((err && err.message) || String(err)),
+    type: 'error'
+  });
+  e.preventDefault();
+});
+
+/* Resolves to { output, threw }. Never rejects — a thrown error is a result. */
+function runSandboxed(code, env, seed) {
+  var out = [];
+  var api = buildSandbox(env, seed, out);
+  var names = [], values = [];
+  for (var i = 0; i < SHADOWED_GLOBALS.length; i++) {
+    var g = SHADOWED_GLOBALS[i];
+    if (!Object.prototype.hasOwnProperty.call(api, g)) { names.push(g); values.push(undefined); }
+  }
+  for (var n in api) {
+    if (Object.prototype.hasOwnProperty.call(api, n)) { names.push(n); values.push(api[n]); }
+  }
+
+  var fn;
+  try {
+    // The async wrapper is what lets a challenge's own `await` work.
+    fn = Function.apply(null, names.concat(
+      '"use strict"; return (async function () {\n' + code + '\n})();'));
+  } catch (err) {
+    out.push({ text: 'Uncaught SyntaxError: ' + err.message, type: 'error' });
+    return Promise.resolve({ output: out, threw: true });
+  }
+
+  var settled;
+  sandboxOut = out;
+  try {
+    settled = Promise.resolve(fn.apply(null, values));
+  } catch (err) {
+    settled = Promise.reject(err);
+  }
+
+  var threw = false;
+  return settled.catch(function (err) {
+    threw = true;
+    out.push({
+      text: 'Uncaught ' + ((err && err.name) || 'Error') + ': ' + ((err && err.message) || String(err)),
+      type: 'error'
+    });
+  }).then(function () {
+    // Chrome reports an unhandled rejection a couple of task hops after the
+    // snippet returns (measured just under 1ms), so a setTimeout(0) or two loses
+    // the race. Wait a short fixed grace instead — imperceptible on a button
+    // press, and if it ever were missed the error just falls back to the real
+    // console rather than breaking anything.
+    return new Promise(function (done) { setTimeout(done, 30); });
+  }).then(function () {
+    sandboxOut = null;
+    for (var i = 0; i < out.length; i++) if (out[i].type === 'error') threw = true;
+    if (!out.length) {
+      // Silence almost always means async work was started and never awaited:
+      // the snippet returned before anything could print.
+      out.push({ text: '(nothing reached the console — if this code starts async ' +
+                       'work, check that every call to it is awaited)', type: 'log' });
+    }
+    return { output: out, threw: threw };
+  });
+}
+
+/* Output matches when the printed log lines equal the expected ones. */
+function outputMatches(output, expected) {
+  var got = [];
+  for (var i = 0; i < output.length; i++) {
+    if (output[i].type === 'log') got.push(output[i].text.trim());
+  }
+  var want = (expected || []).map(function (s) { return String(s).trim(); });
+  if (got.length !== want.length) return false;
+  for (var j = 0; j < want.length; j++) if (got[j] !== want[j]) return false;
+  return true;
+}
+
+/* Optional "say what it prints before you run it" gate above a lesson snippet.
+   Deliberately only on a couple of steps — prompting on every re-read nags. */
+function renderPredictGate(key, predict) {
+  if (!predict) return '';
+  var html = '<div class="lpredict" id="lp-' + key + '">' +
+               '<div class="sec-label">PREDICT FIRST</div>' +
+               '<p class="lp-q">' + esc(predict.question) + '</p>' +
+               '<div class="options">';
+  for (var i = 0; i < predict.options.length; i++) {
+    html += '<button class="opt" data-lpredict="' + key + '" data-lp-opt="' + i + '">' +
+            esc(predict.options[i]) + '</button>';
+  }
+  return html + '</div><div class="lp-note" id="lpnote-' + key + '"></div></div>';
+}
+
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest && e.target.closest('[data-lpredict]');
+  if (!btn) return;
+  var key = btn.getAttribute('data-lpredict');
+  var predict = LPREDICTS[key];
+  if (!predict) return;
+  var pick = parseInt(btn.getAttribute('data-lp-opt'), 10);
+  var wrap = document.getElementById('lp-' + key);
+  var opts = wrap.querySelectorAll('.opt');
+  for (var i = 0; i < opts.length; i++) {
+    opts[i].disabled = true;
+    if (i === predict.correct) opts[i].classList.add('right');
+  }
+  if (pick !== predict.correct) btn.classList.add('wrong');
+  document.getElementById('lpnote-' + key).textContent = pick === predict.correct
+    ? 'Now run it and confirm.'
+    : 'Run it and see what actually comes back — that gap is the useful bit.';
+});
+
+function renderRunRow(key, code, fallback, afterRun) {
+  RUNNABLES[key] = { code: code, fallback: fallback };
+  var html = '<div class="run-row">' +
+               '<button class="btn-run" data-run="' + key + '">[ RUN ]</button>' +
+               '<span class="run-hint" id="hint-' + key + '">not run yet</span>' +
+             '</div>' +
+             '<div class="mini-console" id="con-' + key + '" hidden></div>';
+  if (afterRun) {
+    html += '<div class="after-run" id="after-' + key + '" hidden>' + codeify(afterRun) + '</div>';
+  }
+  return html;
+}
+
+function renderMiniConsole(lines) {
+  var html = '<div class="console-card">' +
+    '<div class="console-tab"><span>Elements</span><span class="tab-active">Console</span>' +
+    '<span>Network</span><span>Sources</span></div>';
+  for (var i = 0; i < lines.length; i++) {
+    if (lines[i].type === 'error') {
+      html += '<div class="console-row"><span class="err-icon">✕</span>' +
+              '<span class="err-msg">' + esc(lines[i].text) + '</span></div>';
+    } else {
+      html += '<div class="console-row console-log"><span class="log-icon">&gt;</span>' +
+              '<span class="err-msg">' + esc(lines[i].text) + '</span></div>';
+    }
+  }
+  return html + '<div class="console-cursor">\u258a</div></div>';
+}
+
+/* ---------- section renderers, keyed by section.type ---------- */
+function secHead(sec) {
+  var html = '';
+  if (sec.label) html += '<div class="sec-label">' + esc(sec.label) + '</div>';
+  if (sec.heading) html += '<h3>' + esc(sec.heading) + '</h3>';
+  return html;
+}
+
+var SECTION_RENDERERS = {
+
+  hook: function (sec) {
+    return '<div class="hook"><p>' + codeify(sec.text) + '</p></div>';
+  },
+
+  /* paragraphs are authored markup — <strong> is allowed on purpose */
+  prose: function (sec) {
+    var html = '<div class="sec">' + secHead(sec);
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + codeifyHTML(sec.paragraphs[i]) + '</p>';
+    return html + '</div>';
+  },
+
+  /* one punctuation mark, shown large, with a plain-English read and a
+     "here is what breaks" note. paragraphs/breaks are authored markup. */
+  symbol: function (sec) {
+    var html = '<div class="sec symbol-sec">' +
+      '<div class="symbol-head">' +
+        '<span class="symbol-glyph">' + esc(sec.symbol) + '</span>' +
+        '<span class="symbol-name">' + esc(sec.name) + '</span>' +
+      '</div>';
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + codeifyHTML(sec.paragraphs[i]) + '</p>';
+    if (sec.code) html += renderLessonCode(sec.code, null, null);
+    if (sec.breaks) {
+      html += '<div class="symbol-breaks"><span class="sb-label">MISSING OR WRONG</span>' +
+              codeifyHTML(sec.breaks) + '</div>';
+    }
+    return html + '</div>';
+  },
+
+  analogy: function (sec) {
+    var html = '<div class="sec">' + secHead(sec) + '<div class="analogy">' +
+               '<div class="analogy-row head"><span class="ac">' + esc(sec.head[0]) + '</span>' +
+               '<span class="ac">' + esc(sec.head[1]) + '</span></div>';
+    for (var i = 0; i < sec.rows.length; i++) {
+      html += '<div class="analogy-row"><span class="ac">' + codeify(sec.rows[i][0]) + '</span>' +
+              '<span class="ac">' + codeify(sec.rows[i][1]) + '</span></div>';
+    }
+    return html + '</div></div>';
+  },
+
+  /* intro -> code -> Run -> console. The workhorse of a beginner lesson. */
+  step: function (sec, lesson, idx) {
+    var key = lesson.id + '-step' + idx;
+    var html = '<div class="sec">' + secHead(sec);
+    for (var i = 0; i < sec.paragraphs.length; i++) html += '<p>' + codeifyHTML(sec.paragraphs[i]) + '</p>';
+    html += renderLessonCode(sec.code, sec.filename || null, null);
+    if (sec.predict) { LPREDICTS[key] = sec.predict; html += renderPredictGate(key, sec.predict); }
+    html += renderRunRow(key, sec.code, sec.fallbackOutput, sec.afterRun);
+    return html + '</div>';
+  },
+
+  demo: function (sec, lesson, idx) {
+    var key = lesson.id + '-demo' + idx;
+    var html = '<div class="sec">' + secHead(sec) + '<p>' + codeify(sec.intro) + '</p>';
+    html += renderLessonCode(sec.code, sec.filename, sec.annotations);
+    html += renderAnnoKey(sec.annotations);
+    html += renderRunRow(key, sec.code, sec.fallbackOutput, sec.afterRun);
+    return html + '</div>';
+  },
+
+  variations: function (sec, lesson, idx) {
+    var html = '<div class="sec">' + secHead(sec) + '<p>' + codeify(sec.intro) + '</p>';
+    for (var i = 0; i < sec.items.length; i++) {
+      var item = sec.items[i];
+      var key = lesson.id + '-var' + idx + '-' + i;
+      html += '<div class="variation">' +
+                '<div class="var-head">' + esc(item.title) +
+                  '<span class="var-tag">' + esc(item.tag) + '</span></div>' +
+                renderLessonCode(item.code, null, null) +
+                (item.predict ? (LPREDICTS[key] = item.predict, renderPredictGate(key, item.predict)) : '') +
+                renderRunRow(key, item.code, item.fallbackOutput, null) +
+                '<div class="var-note">' + codeify(item.note) + '</div>' +
+              '</div>';
+    }
+    return html + '</div>';
+  },
+
+  pitfalls: function (sec) {
+    var html = '<div class="sec">' + secHead(sec) + '<div class="pitfalls">';
+    for (var i = 0; i < sec.items.length; i++) {
+      html += '<div class="pitfall"><span class="pf-icon">!</span>' +
+                '<span class="pf-text"><b>' + esc(sec.items[i].bold) + '</b> ' +
+                codeify(sec.items[i].rest) + '</span></div>';
+    }
+    html += '</div>';
+    if (sec.note) html += '<div class="pitfalls-note">' + codeify(sec.note) + '</div>';
+    return html + '</div>';
+  },
+
+  checkpoint: function (sec, lesson) {
+    var done = lessonDone(lesson);
+    var html = '<div class="checkpoint"><h3>' + esc(sec.heading) + '</h3><div class="abilities">';
+    for (var i = 0; i < sec.abilities.length; i++) {
+      html += '<div class="ability"><span class="ab-tick">-</span><span>' +
+              codeify(sec.abilities[i]) + '</span></div>';
+    }
+    html += '</div>';
+    if (done) {
+      html += '<div class="done-state"><span>[ OK ]</span><span>' + esc(sec.doneLabel) + '</span></div>' +
+              '<button class="undo-link" data-lesson-undo="' + esc(lesson.id) + '">' +
+                esc(sec.undoLabel) + '</button>' +
+              '<div class="next-step">Ready to try it on real broken code? ' +
+                '<button data-goto-practice="1">[ GO TO PRACTICE ]</button></div>';
+    } else {
+      html += '<button class="btn btn-green" data-lesson-done="' + esc(lesson.id) + '">' +
+              esc(sec.buttonLabel) + '</button>';
+    }
+    return html + '</div>';
+  }
+};
+
+/* ---------- screens ---------- */
+function renderLessonList() {
+  var done = 0;
+  for (var i = 0; i < LESSONS.length; i++) if (lessonDone(LESSONS[i])) done++;
+
+  var html = '<div class="lessons-head"><h2>Basics primer</h2>' +
+    '<p>Four short reads that cover the words and shapes the walls take for granted. ' +
+    'Read one whenever the code on a wall page starts to feel opaque — nothing here is ' +
+    'required, nothing is locked.</p>' +
+    '<span class="lessons-count">' + done + ' of ' + LESSONS.length + ' read</span></div>' +
+    '<div class="lesson-list">';
+
+  for (var j = 0; j < LESSONS.length; j++) {
+    var l = LESSONS[j];
+    var isDone = lessonDone(l);
+    html += '<button class="lesson-item' + (isDone ? ' done' : '') + '" data-lesson="' + esc(l.id) + '">' +
+              '<span class="lesson-check">' + (isDone ? '[x]' : '[' + (j + 1) + ']') + '</span>' +
+              '<span class="lc-body">' +
+                '<span class="lc-title">' + esc(l.title) + '</span>' +
+                '<span class="lc-blurb">' + esc(l.blurb) + '</span>' +
+                '<span class="lc-meta">' + (isDone ? '[x] COMPLETED' : l.minutes + ' MIN READ') + '</span>' +
+              '</span></button>';
+  }
+  document.getElementById('screen-lessons').innerHTML = html + '</div>';
+}
+
+function renderLessonPage(id) {
+  var lesson = findLesson(id);
+  if (!lesson) { renderLessonList(); show('screen-lessons'); return; }
+  RUNNABLES = {};
+  LPREDICTS = {};
+
+  var html = '<button class="back-link" data-back-to-lessons="1">[ BACK TO LESSONS ]</button>' +
+             '<h1 class="lesson-title">' + esc(lesson.title) + '</h1>' +
+             '<div class="lesson-sub">' + lesson.minutes + ' min read' +
+             (lessonDone(lesson) ? ' · [x] completed' : '') + '</div>';
+
+  for (var i = 0; i < lesson.sections.length; i++) {
+    var sec = lesson.sections[i];
+    var render = SECTION_RENDERERS[sec.type];
+    if (render) html += render(sec, lesson, i);
+  }
+  document.getElementById('screen-lesson').innerHTML = html;
+  show('screen-lesson');
+}
+
+/* ---------- tabs ---------- */
+/* Header chrome — the module label and the warm-up progress bar. Both change
+   with the current view; there are no tabs anymore. The progress bar only
+   shows when the warm-up view is active. */
+function syncChrome() {
+  var LABELS = {
+    roadmap: 'Ship-first guide for vibecoders',
+    basics:  'Basics primer · four short reads',
+    warmup:  'Warm-up · reading errors without panicking',
+    lesson:  'Basics primer'
+  };
+  document.getElementById('practiceProgress').hidden = state.view !== 'warmup';
+  document.getElementById('moduleLabel').textContent =
+    LABELS[state.view] || 'Ship-first guide for vibecoders';
+}
+
+/* Legacy shim: old paths (some test suites, old boot code) called enterLearn.
+   Route it through the new basics entry so nothing breaks. */
+function enterLearn() { enterBasics(); }
+
+/* First-run intro (also reachable anytime via the header "[ about ]" link).
+   Sits in front of the app; it changes nothing until the user acts. */
+function renderWelcome() {
+  var el = document.getElementById('screen-welcome');
+  el.innerHTML =
+    '<div class="welcome">' +
+      '<div class="welcome-brand"><span class="siren">$</span>VIBE COACH</div>' +
+      '<p class="welcome-lede">A ship-first guide for vibecoders — the walls you actually ' +
+        'hit when trying to deploy the thing your AI built you.</p>' +
+      '<p class="welcome-real">This is not a "learn to code" course. It is a map of the ' +
+        'specific problems every vibecoder runs into somewhere between "works on my laptop" ' +
+        'and "someone else can use this." Each wall is a mental model, a working example, and ' +
+        'the shape of the mistake so you can spot it.</p>' +
+      '<div class="welcome-paths">' +
+        '<div class="welcome-path"><span class="wp-tag">[ ROADMAP ]</span>' +
+          '<span class="wp-text">Five walls, in the order most people hit them. ' +
+          'Wall 1 (Where does the API key go?) is fully built; the rest are coming.</span></div>' +
+        '<div class="welcome-path"><span class="wp-tag">[ BASICS ]</span>' +
+          '<span class="wp-text">Optional primer if the code snippets are opaque. ' +
+          'Four short reads: what code is, symbols, data shapes, functions.</span></div>' +
+        '<div class="welcome-path"><span class="wp-tag">[ WARM-UP ]</span>' +
+          '<span class="wp-text">Optional drills where you read broken AI code and find ' +
+          'what is wrong. Sharpens error-reading before you hit the walls for real.</span></div>' +
+      '</div>' +
+      '<div class="welcome-actions">' +
+        '<button class="btn btn-primary" id="btnStartLearning">[ START ]</button></div>' +
+    '</div>';
+  document.getElementById('btnStartLearning').addEventListener('click', renderSetup);
+  document.getElementById('practiceProgress').hidden = true;
+  show('screen-welcome');
+}
+
+/* =====================================================================
+   SETUP — three questions after welcome, shown once on first visit and
+   reopenable from the header. Only Q1 changes routing; Q2 and Q3 are
+   captured honestly for future use (no fake personalization).
+   ===================================================================== */
+
+/* Q1 answer -> where the app should open. Beginners land on the basics primer;
+   everyone else lands on the roadmap of walls (the main experience). */
+var LEVEL_ROUTES = {
+  beginner: { screen: 'basics' },
+  basics:   { screen: 'roadmap' },
+  reader:   { screen: 'roadmap' }
+};
+
+var LEVEL_OPTIONS = [
+  { id: 'beginner', label: "Total beginner — I don't really know what code is" },
+  { id: 'basics',   label: 'I know the basics — variables, functions, that kind of thing' },
+  { id: 'reader',   label: "I can read code okay, I just can't get my stuff shipped" }
+];
+
+/* Q2 is now "what are you trying to ship" — captured for future personalization
+   but does not change routing today. Honest framing per the brief. */
+var SHIP_OPTIONS = [
+  { id: 'landing',   label: 'A landing page or marketing site' },
+  { id: 'ai-wrapper', label: 'An AI wrapper (chat, generator, agent on top of an API)' },
+  { id: 'webapp',    label: 'A small web app with users and data' },
+  { id: 'unsure',    label: 'Not sure yet — just building things' }
+];
+
+/* Q3 stays: what is currently blocking you. Optional, honest. */
+var BLOCKER_OPTIONS = [
+  { id: 'apikey',  label: 'Where secrets and API keys go safely' },
+  { id: 'db',      label: 'Where user data lives and comes back from' },
+  { id: 'auth',    label: 'Login / who is allowed to do what' },
+  { id: 'deploy',  label: "Getting it deployed somewhere that isn't localhost" },
+  { id: 'errors',  label: 'Reading errors when something breaks' },
+  { id: 'unsure',  label: 'Not sure — everything at once' }
+];
+
+function renderSetup() {
+  var el = document.getElementById('screen-setup');
+  var s = state.setup || {};
+  var level  = s.level && LEVEL_ROUTES[s.level] ? s.level : null;
+  var ship   = s.ship || null;
+  var blocker = s.blocker || null;
+
+  function optButton(kind, opt, selected, disabled) {
+    var mark = selected ? '[x]' : '[ ]';
+    var cls = 'setup-opt' + (selected ? ' selected' : '');
+    var attrs = 'data-setup-opt="' + kind + '" data-setup-value="' + opt.id + '"';
+    if (disabled) attrs += ' disabled';
+    var tag = opt.tag ? '<span class="so-tag">' + esc(opt.tag) + '</span>' : '';
+    return '<button class="' + cls + '" ' + attrs + '>' +
+      '<span class="so-mark">' + mark + '</span>' +
+      '<span class="so-body">' + esc(opt.label) + '</span>' + tag +
+    '</button>';
+  }
+
+  var html = '<div class="setup">' +
+    '<div class="setup-head">Quick setup</div>' +
+    '<div class="setup-title">Three quick questions</div>' +
+    '<p class="setup-intro">Only Q1 changes where the app opens today. Q2 and Q3 are ' +
+      'honestly captured for what gets built next — no fake personalization.</p>';
+
+  // Q1 — routes
+  html += '<div class="setup-q"><div class="setup-q-num">Q1 · Starting point</div>' +
+    '<h3>How much code do you already know?</h3><div class="setup-opts">';
+  LEVEL_OPTIONS.forEach(function (o) {
+    html += optButton('level', o, level === o.id, false);
+  });
+  html += '</div><p class="setup-note">Beginner opens the basics primer. The other two open the roadmap of walls.</p></div>';
+
+  // Q2 — shipping intent
+  html += '<div class="setup-q"><div class="setup-q-num">Q2 · What you’re shipping</div>' +
+    '<h3>What are you trying to build and get out the door?</h3><div class="setup-opts">';
+  SHIP_OPTIONS.forEach(function (o) {
+    html += optButton('ship', o, ship === o.id, false);
+  });
+  html += '</div><p class="setup-note">Captured so future walls can be ordered around what you actually need first.</p></div>';
+
+  // Q3 — current blocker
+  html += '<div class="setup-q"><div class="setup-q-num">Q3 · What’s in the way right now</div>' +
+    '<h3>Which of these is currently blocking you?</h3><div class="setup-opts">';
+  BLOCKER_OPTIONS.forEach(function (o) {
+    html += optButton('blocker', o, blocker === o.id, false);
+  });
+  html += '</div><p class="setup-note">Every option here is a wall on the roadmap. Only Wall 1 is fully built today.</p></div>';
+
+  // actions
+  html += '<div class="setup-actions">' +
+    '<button class="btn btn-primary" id="btnSetupGo"' +
+      (level ? '' : ' disabled') + '>[ LET&rsquo;S GO ]</button>' +
+    '<span class="setup-hint" id="setupHint">' +
+      (level ? '' : 'Pick an option in Q1 to continue.') +
+    '</span></div></div>';
+
+  el.innerHTML = html;
+  document.getElementById('practiceProgress').hidden = true;
+  show('screen-setup');
+}
+
+/* Toggle an option, save to state.setup (kept an object so future fields fit),
+   and update the [ LET'S GO ] button's enabled state. */
+function selectSetupOption(kind, value, buttonEl) {
+  if (!state.setup) state.setup = { level: null, ship: null, blocker: null };
+  state.setup[kind] = value;
+  saveState();
+  // toggle visual selection within this group
+  var group = buttonEl.parentNode;
+  var opts = group.querySelectorAll('[data-setup-opt="' + kind + '"]');
+  for (var i = 0; i < opts.length; i++) {
+    var isThis = opts[i] === buttonEl;
+    opts[i].classList.toggle('selected', isThis);
+    var mark = opts[i].querySelector('.so-mark');
+    if (mark) mark.textContent = isThis ? '[x]' : '[ ]';
+  }
+  var go = document.getElementById('btnSetupGo');
+  var hint = document.getElementById('setupHint');
+  if (kind === 'level') {
+    if (go) go.disabled = false;
+    if (hint) hint.textContent = '';
+  }
+}
+
+/* Route based on the recorded level — beginners get the basics primer,
+   everyone else lands on the roadmap of walls. */
+function finishSetup() {
+  var route = LEVEL_ROUTES[state.setup && state.setup.level] || LEVEL_ROUTES.basics;
+  state.view = route.screen;
+  saveState();
+  syncChrome();
+  if (route.screen === 'basics') { renderLessonList(); show('screen-lessons'); }
+  else { renderRoadmap(); }
+}
+
+/* Coming back to the warm-up drops you where you left them off. */
+function enterPractice() {
+  state.view = 'warmup';
+  saveState();
+  syncChrome();
+  if (moduleComplete()) { renderSummary(); show('screen-summary'); }
+  else if (state.started) { renderChallenge(state.current); show('screen-challenge'); }
+  else renderHome();
+}
+
+function enterRoadmap() {
+  state.view = 'roadmap';
+  saveState();
+  syncChrome();
+  renderRoadmap();
+}
+
+function enterBasics() {
+  state.view = 'basics';
+  saveState();
+  syncChrome();
+  renderLessonList();
+  show('screen-lessons');
+}
+
+document.addEventListener('click', function (e) {
+  if (!e.target.closest) return;
+  var el;
+
+  if (e.target.closest('#aboutLink')) { renderWelcome(); return; }
+  if (e.target.closest('#setupLink')) { renderSetup(); return; }
+
+  var setupBtn = e.target.closest('[data-setup-opt]');
+  if (setupBtn && !setupBtn.disabled) {
+    selectSetupOption(setupBtn.getAttribute('data-setup-opt'),
+                      setupBtn.getAttribute('data-setup-value'), setupBtn);
+    return;
+  }
+  if (e.target.closest('#btnSetupGo')) { finishSetup(); return; }
+
+  /* new header links */
+  if (e.target.closest('#basicsLink')) { enterBasics(); return; }
+  if (e.target.closest('#warmupLink')) { enterPractice(); return; }
+  if (e.target.closest('#roadmapLink') || e.target.closest('[data-goto-roadmap]')) {
+    enterRoadmap(); return;
+  }
+
+  /* roadmap wall cards */
+  if ((el = e.target.closest('[data-wall]'))) {
+    var wallId = el.getAttribute('data-wall');
+    var wall = findWall(wallId);
+    if (wall && wall.status !== 'coming') renderWall(wallId);
+    return;
+  }
+
+  if ((el = e.target.closest('[data-lesson]'))) {
+    renderLessonPage(el.getAttribute('data-lesson'));
+    return;
+  }
+  if (e.target.closest('[data-back-to-lessons]')) {
+    renderLessonList();
+    show('screen-lessons');
+    return;
+  }
+  if ((el = e.target.closest('[data-lesson-done]'))) {
+    state.lessonsDone[el.getAttribute('data-lesson-done')] = true;
+    saveState();
+    renderLessonPage(el.getAttribute('data-lesson-done'));
+    return;
+  }
+  if ((el = e.target.closest('[data-lesson-undo]'))) {
+    delete state.lessonsDone[el.getAttribute('data-lesson-undo')];
+    saveState();
+    renderLessonPage(el.getAttribute('data-lesson-undo'));
+    return;
+  }
+  if (e.target.closest('[data-goto-practice]')) enterPractice();
+});
+
+/* run buttons inside lessons */
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest && e.target.closest('[data-run]');
+  if (!btn) return;
+  var key = btn.getAttribute('data-run');
+  var entry = RUNNABLES[key];
+  if (!entry) return;
+
+  var lines = runSnippet(entry.code, entry.fallback);
+  var con = document.getElementById('con-' + key);
+  con.innerHTML = renderMiniConsole(lines);
+  con.hidden = false;
+
+  var hint = document.getElementById('hint-' + key);
+  if (hint) hint.textContent = 'executed — live output below';
+  var after = document.getElementById('after-' + key);
+  if (after) after.hidden = false;
+  btn.textContent = '[ RUN AGAIN ]';
+});
+
+/* =====================================================================
+   TOKEN TOOLTIPS + COLOR LEGEND
+   Hover explains a token on desktop; tap does it on touch screens.
+   ===================================================================== */
+var tipEl = document.getElementById('tokTip');
+var backdropEl = document.getElementById('legendBackdrop');
+var canHover = !!(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+
+function closestTok(node) {
+  return node && node.closest ? node.closest('[data-tok]') : null;
+}
+
+function showTip(target) {
+  var info = TOK_INFO[target.getAttribute('data-tok')];
+  if (!info) return;
+  tipEl.innerHTML = '<span class="tip-label" style="color:' + info.color + '">' +
+                    info.label + '</span>' + esc(info.text);
+  tipEl.classList.add('visible');
+
+  // Measure, then place above the token — flipping below if there's no room.
+  var r = target.getBoundingClientRect();
+  var tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+  var left = r.left + r.width / 2 - tw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  var top = r.top - th - 8;
+  if (top < 8) top = r.bottom + 8;
+  tipEl.style.left = left + 'px';
+  tipEl.style.top = top + 'px';
+}
+
+function hideTip() { tipEl.classList.remove('visible'); }
+
+document.addEventListener('mouseover', function (e) {
+  if (!canHover) return;
+  var t = closestTok(e.target);
+  if (t) showTip(t);
+});
+document.addEventListener('mouseout', function (e) {
+  if (!canHover) return;
+  if (closestTok(e.target)) hideTip();
+});
+
+/* Tap: explain the token — unless this line is a pickable answer, where the
+   tap belongs to the challenge. Tapping anywhere else dismisses. */
+document.addEventListener('click', function (e) {
+  var t = closestTok(e.target);
+  var inPickableLine = e.target.closest && e.target.closest('.code-line.clickable');
+  if (t && !inPickableLine) showTip(t);
+  else hideTip();
+});
+window.addEventListener('scroll', hideTip, true);
+window.addEventListener('resize', hideTip);
+
+function buildLegend() {
+  var order = ['kw', 'str', 'num', 'fn', 'var', 'prop', 'com', 'tag', 'attr'];
+  var html = '';
+  for (var i = 0; i < order.length; i++) {
+    var info = TOK_INFO[order[i]];
+    html += '<div class="legend-row">' +
+              '<span class="legend-sample" style="color:' + info.color + '">' + info.sample + '</span>' +
+              '<span class="legend-desc"><strong>' + info.label + '</strong>' + esc(info.text) + '</span>' +
+            '</div>';
+  }
+  document.getElementById('legendRows').innerHTML = html;
+  document.getElementById('legendHint').textContent = canHover
+    ? 'Tip: hover any colored word in the code to get just that one explained.'
+    : 'Tip: tap any colored word in the code to get just that one explained.';
+}
+
+function openLegend() { hideTip(); backdropEl.classList.add('open'); }
+function closeLegend() { backdropEl.classList.remove('open'); }
+
+document.addEventListener('click', function (e) {
+  if (e.target.closest && e.target.closest('[data-legend]')) openLegend();
+});
+
+/* ---------- line-by-line explainer toggle ---------- */
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest && e.target.closest('[data-explain]');
+  if (!btn) return;
+  var body = btn.parentNode.querySelector('.explainer-body');
+  var isOpen = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+  body.hidden = isOpen;
+  btn.querySelector('.toggle-label').textContent =
+    isOpen ? 'Explain line by line' : 'Hide line-by-line';
+  btn.querySelector('.caret').textContent = isOpen ? '[+]' : '[-]';
+});
+document.getElementById('legendClose').addEventListener('click', closeLegend);
+backdropEl.addEventListener('click', function (e) {
+  if (e.target === backdropEl) closeLegend();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') { closeLegend(); hideTip(); }
+});
+
+/* =====================================================================
+   ROADMAP OF WALLS — the main experience.
+
+   The five walls are the recurring problems every vibecoder runs into while
+   trying to ship. Wall 1 is fully built; walls 2-5 are visibly present but
+   disabled ("coming soon") so the shape of the whole map is legible from
+   day one.
+
+   A wall's `sections` array is a small, hand-rolled section grammar. It is
+   deliberately NOT the same as LESSONS' SECTION_RENDERERS above — a wall is
+   a specific document (framing → mental model → diagram → options → env →
+   symptoms), not a general lesson, and mixing the two would make each less
+   clear. `renderWall` below walks these types.
+   ===================================================================== */
+var WALLS = [
+  {
+    id: 'api-key',
+    number: 1,
+    status: 'built',
+    title: 'Where does the API key go?',
+    blurb: 'You paste an OpenAI key into a fetch call, it works locally, you deploy — and now every visitor can lift the key from their browser and spend your money. This is the single most common shipping-breaking mistake, and it exists because the AI that wrote your code never told you where secrets are safe.',
+    sections: [
+      {
+        type: 'hook',
+        text: 'Your first working AI app looked like this: a fetch to api.openai.com, a Bearer token in the headers, some UI around it. It worked on your laptop, you pushed it to Vercel or Netlify, you sent the link to a friend. A day later your OpenAI dashboard shows requests from countries you have never been to and a bill four figures deep. The key was never hidden — it was in every visitor\'s browser, one DevTools tab away.'
+      },
+      {
+        type: 'prose',
+        heading: 'The trap',
+        paragraphs: [
+          'The code an AI assistant writes for you almost always calls the paid API <b>directly from the browser</b>. It looks harmless: a fetch, a header, a response. The header carries your key. The browser sends that header on every request.',
+          'The browser is not a place secrets can live. Anything the browser needs to send to a server is also visible to whoever is holding the browser. Open DevTools, click Network, click a request, look at the request headers — the key is right there in plain text. There is no configuration, no minification, no framework flag that hides it. If the browser calls the paid API, the paid API\'s key is public.',
+          'This does not fail with a red error. It fails silently, with a bill.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'Client vs. server — the mental model',
+        paragraphs: [
+          'Every app has two halves. The <b>client</b> is code that runs in the visitor\'s browser: HTML, CSS, JavaScript in the page. The <b>server</b> is code that runs on a machine you control: the visitor never sees this code and cannot inspect it.',
+          'Secrets belong on the server. The pattern is: the browser talks to <b>your</b> server; <b>your</b> server talks to the paid API. The key sits on your server, gets added to the outgoing request there, and the visitor\'s browser never sees it.',
+          'Modern frameworks blur the line on purpose. In Next.js, a file with the word "route" in its path runs on the server; a component with "use client" at the top runs in the browser. In SvelteKit, a "+server.ts" file is server-only. If you cannot answer <b>where does this file run</b> for every file that touches your key, the key is not safe yet.'
+        ]
+      },
+      {
+        type: 'diagram',
+        title: 'Two shapes of the same app',
+        ascii:
+          '  UNSAFE — key exposed                     SAFE — key hidden on server\n' +
+          '  ────────────────────                     ──────────────────────────\n' +
+          '\n' +
+          '   ┌──────────┐                             ┌──────────┐\n' +
+          '   │ browser  │                             │ browser  │\n' +
+          '   └────┬─────┘                             └────┬─────┘\n' +
+          '        │  fetch(api.openai.com)                 │  fetch("/api/chat")\n' +
+          '        │  Authorization: sk-...  <LEAKED>       │  (no key in this request)\n' +
+          '        ▼                                        ▼\n' +
+          '   ┌──────────┐                             ┌───────────────┐\n' +
+          '   │  OpenAI  │                             │  YOUR SERVER  │  <key lives here>\n' +
+          '   └──────────┘                             └───────┬───────┘\n' +
+          '                                                    │  fetch(api.openai.com)\n' +
+          '                                                    │  Authorization: sk-...\n' +
+          '                                                    ▼\n' +
+          '                                             ┌──────────┐\n' +
+          '                                             │  OpenAI  │\n' +
+          '                                             └──────────┘\n',
+        note: 'Left: browser calls the paid API directly, key is in every request header. Right: browser calls your own server route, which then calls the paid API with the key attached server-side.'
+      },
+      {
+        type: 'prose',
+        heading: 'Where the key can actually live safely',
+        paragraphs: [
+          'To hide the key you need a place to run server code. Pure "static hosting" (S3 buckets, plain GitHub Pages, plain Netlify sites with no functions) cannot do this — there is no server to hide anything on. What you need is <b>serverless functions</b>, <b>edge functions</b>, or a full backend server.'
+        ]
+      },
+      {
+        type: 'options',
+        title: 'Realistic hosting options for a vibecoded app',
+        items: [
+          { name: 'Next.js on Vercel',
+            text: 'Create an API route at <b>app/api/chat/route.ts</b> (App Router) or <b>pages/api/chat.ts</b> (Pages Router). That file runs on Vercel\'s server, not in the browser. The frontend fetches <b>"/api/chat"</b>; the route reads <b>process.env.OPENAI_API_KEY</b> and calls OpenAI on the server.' },
+          { name: 'Cloudflare Workers',
+            text: 'A Worker is a small server that answers requests at your domain. You write a fetch handler, read the key from <b>env.OPENAI_API_KEY</b> (bound in the dashboard), and forward the request. Fast and cheap; the same shape as Vercel API routes.' },
+          { name: 'Netlify Functions / Vercel Functions (standalone)',
+            text: 'If you are not using Next.js, both hosts still offer plain serverless functions. A single file in <b>netlify/functions/</b> or <b>api/</b> becomes an endpoint you can call from the browser.' },
+          { name: 'A separate backend (Node/Express, Python/Flask, Hono, etc.)',
+            text: 'A full server you deploy on Render, Railway, Fly.io, or a VPS. More setup, more control. Same rule: the key is an env var read on the server; the browser calls <b>your</b> endpoint, never OpenAI directly.' },
+          { name: 'What DOES NOT work',
+            text: 'Static hosting without functions (a plain HTML/JS bundle on GitHub Pages or an S3 bucket) has nowhere to run server code. If your host does not offer functions, workers, or a backend, you cannot hide the key on it — you would need a separate small backend somewhere else that the static site calls.' }
+        ]
+      },
+      {
+        type: 'env',
+        title: 'Environment variables — the actual mechanism',
+        intro: 'An environment variable is a value the hosting platform lets your server code read at runtime, but never bundles into the browser. It is how you pass secrets to running code without writing them into the source.',
+        items: [
+          { name: 'OPENAI_API_KEY',
+            text: 'The name is a convention, not a rule — you could call it anything. On the <b>server</b>, Node reads it as <b>process.env.OPENAI_API_KEY</b>; Cloudflare Workers reads it as <b>env.OPENAI_API_KEY</b> from the handler argument. Both only work in server code.' },
+          { name: 'NEXT_PUBLIC_* (Next.js) — DO NOT USE FOR SECRETS',
+            text: 'That prefix specifically means "OK to ship to the browser." Anything named <b>NEXT_PUBLIC_ANYTHING</b> is inlined into the client bundle at build time. An AI assistant will confidently suggest <b>NEXT_PUBLIC_OPENAI_KEY</b> to fix a "missing env var" error. Never do that — you have just re-exposed the key with extra steps.' },
+          { name: '.env.local (dev only)',
+            text: 'A file in your project root, one <b>KEY=value</b> per line, read automatically by frameworks in dev. <b>Add .env.local to .gitignore before committing anything.</b> The moment it lands in git — even in a private repo — treat that key as compromised and rotate it.' },
+          { name: 'Setting it on the host',
+            text: 'Vercel: Project → Settings → Environment Variables → add name and value → redeploy. Cloudflare: Worker → Settings → Variables → Add variable → Encrypt. Netlify: Site → Site configuration → Environment variables. Every host has this same panel; it is where the value the browser cannot see actually lives.' }
+        ]
+      },
+      {
+        type: 'symptoms',
+        title: 'You got this wrong when...',
+        items: [
+          { bold: 'Your OpenAI (or Anthropic, or Stripe) bill jumps 10x or more overnight.', rest: 'Especially with usage patterns that do not match your traffic — requests at 4am, spikes in a country you have no users in.' },
+          { bold: 'Rate-limit errors nobody was seeing yesterday.', rest: 'Someone else is now hammering the same key.' },
+          { bold: 'You see "sk-..." or "Bearer eyJ..." in the browser\'s Network tab.', rest: 'Open DevTools on your deployed site, click Network, click any request that hits the API, look at Request Headers. If your key is there, everyone\'s browser can see it too.' },
+          { bold: 'GitHub emails you "We found a secret in your repository."', rest: 'Their scanner caught the key in a commit. Rotate the key on the provider immediately; removing the commit does not un-leak it.' },
+          { bold: 'Your API provider emails you about "unusual activity" or auto-rotates your key for you.', rest: 'They noticed before you did. Investigate what pushed the exposed version and where it got pushed to.' },
+          { bold: 'The AI told you to add NEXT_PUBLIC_ or VITE_ or PUBLIC_ in front of your key.', rest: 'Those prefixes specifically mean "ship to browser." If a fix works by adding one of those, the fix is the leak.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'db',
+    number: 2,
+    status: 'coming',
+    title: 'Where does the data live?',
+    blurb: 'localStorage works for a demo of one, but the moment two people use your app, or someone reloads on a different device, the data has to live somewhere they both can reach. Choosing that somewhere — Supabase, Firebase, Postgres, a KV store — is the second wall.'
+  },
+  {
+    id: 'auth',
+    number: 3,
+    status: 'coming',
+    title: 'Who is allowed to do what?',
+    blurb: 'A signup form is easy. Making sure user A cannot read user B\'s data — and cannot delete it, and cannot pretend to be an admin — is the third wall. It is the one where "just make it work" and "actually safe to ship" separate.'
+  },
+  {
+    id: 'deploy',
+    number: 4,
+    status: 'coming',
+    title: 'What happens when you press deploy?',
+    blurb: 'Localhost is a lie in a comforting shape. Production has environment variables, build steps, cold starts, domain routing, HTTPS certificates, and CORS. Understanding the shape of a deploy — instead of pressing buttons and hoping — is the fourth wall.'
+  },
+  {
+    id: 'errors',
+    number: 5,
+    status: 'coming',
+    title: 'Something broke — where do you even look?',
+    blurb: 'Errors in production do not surface in the browser you are staring at. Logs live on the host; user reports are vague; the failure mode you built for probably is not the one that hit. The fifth wall is having a plan before the alarm goes off.'
+  }
+];
+
+function findWall(id) {
+  for (var i = 0; i < WALLS.length; i++) if (WALLS[i].id === id) return WALLS[i];
+  return null;
+}
+
+function renderRoadmap() {
+  var el = document.getElementById('screen-roadmap');
+  var html = '<div class="roadmap">' +
+    '<div class="roadmap-head">' +
+      '<div class="roadmap-tag">Roadmap</div>' +
+      '<h1 class="roadmap-title">The walls, in the order most people hit them</h1>' +
+      '<p class="roadmap-intro">Every vibecoder runs into the same handful of problems ' +
+        'between "works on my laptop" and "someone else can use this." Each wall on ' +
+        'this map is one of them — a mental model, a working example, and the shape ' +
+        'of the mistake so you can spot it in your own code.</p>' +
+      '<p class="roadmap-intro">Wall 1 is fully built. The rest are visible so you know what is coming.</p>' +
+    '</div>';
+
+  html += '<div class="roadmap-list">';
+  for (var i = 0; i < WALLS.length; i++) {
+    var w = WALLS[i];
+    var built = w.status !== 'coming';
+    var cls = 'wall-card ' + (built ? 'available' : 'coming');
+    var status = built ? '[ open ]' : '[ coming soon ]';
+    html += '<button class="' + cls + '" data-wall="' + esc(w.id) + '"' +
+              (built ? '' : ' disabled') + '>' +
+              '<div class="wall-card-head">' +
+                '<span class="wall-num">wall ' + w.number + '</span>' +
+                '<span class="wall-title">' + esc(w.title) + '</span>' +
+                '<span class="wall-status">' + status + '</span>' +
+              '</div>' +
+              '<div class="wall-blurb">' + esc(w.blurb) + '</div>' +
+            '</button>';
+  }
+  html += '</div>';
+
+  html += '<div class="roadmap-foot">' +
+    '<div class="roadmap-foot-row">' +
+      '<span class="foot-tag">also here:</span>' +
+      '<span>Read the ' +
+        '<button class="about-link" id="basicsInline">[ basics ]</button> ' +
+        'primer if the code in the walls looks opaque — four short reads on what code is, ' +
+        'what the symbols mean, how data is shaped, and how functions work.</span>' +
+    '</div>' +
+    '<div class="roadmap-foot-row">' +
+      '<span class="foot-tag">also here:</span>' +
+      '<span>The ' +
+        '<button class="about-link" id="warmupInline">[ warm-up ]</button> ' +
+        'drills — 18 broken AI snippets to sharpen error-reading before you hit the walls for real.</span>' +
+    '</div>' +
+  '</div></div>';
+
+  el.innerHTML = html;
+  var b = document.getElementById('basicsInline');
+  if (b) b.addEventListener('click', enterBasics);
+  var w = document.getElementById('warmupInline');
+  if (w) w.addEventListener('click', enterPractice);
+  show('screen-roadmap');
+}
+
+/* ---------- wall detail ----------
+   Rendered top-to-bottom by section type. Each type has a small dedicated
+   block below rather than a generic dispatch table, because the wall grammar
+   is short and specific (hook → prose → diagram → options → env → symptoms).
+   If a seventh type joins them, add it here. */
+function renderWall(id) {
+  var wall = findWall(id);
+  if (!wall || wall.status === 'coming') { enterRoadmap(); return; }
+
+  var html = '<div class="wall">' +
+    '<button class="back-link wall-back" data-goto-roadmap="1">[ BACK TO ROADMAP ]</button>' +
+    '<div class="wall-header">' +
+      '<div class="wall-tag">Wall ' + wall.number + ' of ' + WALLS.length + '</div>' +
+      '<h1 class="wall-h1">' + esc(wall.title) + '</h1>' +
+      '<p class="wall-sub">' + esc(wall.blurb) + '</p>' +
+    '</div>';
+
+  for (var i = 0; i < wall.sections.length; i++) {
+    var s = wall.sections[i];
+    if (s.type === 'hook') {
+      html += '<div class="hook" style="margin-top:26px"><p>' + codeifyHTML(s.text) + '</p></div>';
+    } else if (s.type === 'prose') {
+      html += '<div class="sec">';
+      if (s.heading) html += '<h3>' + esc(s.heading) + '</h3>';
+      for (var j = 0; j < s.paragraphs.length; j++) {
+        html += '<p>' + codeifyHTML(s.paragraphs[j]) + '</p>';
+      }
+      html += '</div>';
+    } else if (s.type === 'diagram') {
+      var ascii = esc(s.ascii)
+        .replace(/&lt;LEAKED&gt;/g, '<span class="unsafe">&lt;LEAKED&gt;</span>')
+        .replace(/&lt;key lives here&gt;/g, '<span class="safe">&lt;key lives here&gt;</span>');
+      html += '<div class="wall-diagram">' +
+        '<div class="wall-diagram-title">' + esc(s.title) + '</div>' +
+        '<pre>' + ascii + '</pre></div>';
+      if (s.note) {
+        html += '<div class="sec"><p style="margin-top:10px">' + codeifyHTML(s.note) + '</p></div>';
+      }
+    } else if (s.type === 'options') {
+      html += '<div class="sec"><h3>' + esc(s.title) + '</h3><div class="wall-options">';
+      for (var k = 0; k < s.items.length; k++) {
+        html += '<div class="wall-option">' +
+                  '<div class="wo-name">' + esc(s.items[k].name) + '</div>' +
+                  '<div class="wo-text">' + codeifyHTML(s.items[k].text) + '</div>' +
+                '</div>';
+      }
+      html += '</div></div>';
+    } else if (s.type === 'env') {
+      html += '<div class="sec wall-env"><h3>' + esc(s.title) + '</h3>' +
+              '<p>' + codeifyHTML(s.intro) + '</p><div class="wall-env-items">';
+      for (var m = 0; m < s.items.length; m++) {
+        html += '<div class="wall-env-item">' +
+                  '<div class="we-name">' + esc(s.items[m].name) + '</div>' +
+                  '<div class="we-desc">' + codeifyHTML(s.items[m].text) + '</div>' +
+                '</div>';
+      }
+      html += '</div></div>';
+    } else if (s.type === 'symptoms') {
+      html += '<div class="sec wall-symptoms"><h3>' + esc(s.title) + '</h3>' +
+              '<div class="wall-symptoms-items">';
+      for (var n = 0; n < s.items.length; n++) {
+        html += '<div class="wall-symptom"><span class="ws-icon">!</span>' +
+                  '<span class="ws-text"><b>' + esc(s.items[n].bold) + '</b> ' +
+                  codeifyHTML(s.items[n].rest) + '</span></div>';
+      }
+      html += '</div></div>';
+    }
+  }
+
+  html += '<div class="wall-footer">' +
+    '<button class="btn" data-goto-roadmap="1">[ BACK TO ROADMAP ]</button>' +
+    '<button class="btn" id="wallToWarmup">[ TRY THE WARM-UP DRILLS ]</button>' +
+  '</div></div>';
+
+  var el = document.getElementById('screen-wall');
+  el.innerHTML = html;
+  var w = document.getElementById('wallToWarmup');
+  if (w) w.addEventListener('click', enterPractice);
+  state.view = 'roadmap';
+  saveState();
+  syncChrome();
+  show('screen-wall');
+}
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+buildLegend();
+updateProgress();
+syncChrome();
+/* Boot ordering:
+   - no save at all         -> welcome, then setup (via its START button)
+   - save but no setup      -> setup (a returning visitor from before this rewrite)
+   - normal returning       -> land where they left off (roadmap is the default) */
+if (firstVisit) renderWelcome();
+else if (!state.setup || !state.setup.level) renderSetup();
+else if (state.view === 'basics' || state.view === 'learn') enterBasics();
+else if (state.view === 'warmup' || state.view === 'practice') enterPractice();
+else enterRoadmap();
+
+</script>
 </body>
 </html>
