@@ -929,6 +929,11 @@
     color: var(--dimmer); border: 1px solid var(--border); padding: 2px 8px;
   }
   .wall-card.available .wall-status { color: var(--green); border-color: var(--green); }
+  .wall-card.done .wall-status {
+    color: var(--green); border-color: var(--green);
+    background: var(--green-bg);
+  }
+  .wall-card.done .wall-num::before { content: '[x] '; color: var(--green); }
   .wall-blurb {
     font-size: 0.86rem; line-height: 1.65; color: var(--body); max-width: 68ch;
   }
@@ -2356,6 +2361,7 @@ function defaultState() {
     attempted: {},         // id -> true once the lesson card has been dismissed
     view: 'practice',      // which tab is open: 'learn' | 'practice'
     lessonsDone: {},       // lesson id -> true, self-assessed
+    wallsDone: {},         // wall id -> true, self-assessed via [ I GET IT ] on a wall page
     /* setup: null on a genuine first visit — the setup screen shows and Q1 routes
        where the app opens. On existing saves it stays null (they were never asked)
        or holds { level, track, goal } once completed. */
@@ -2387,6 +2393,7 @@ function loadState() {
     // Saved before a later feature existed: keep the progress, add the field.
     if (!parsed.attempted) parsed.attempted = {};
     if (!parsed.lessonsDone) parsed.lessonsDone = {};
+    if (!parsed.wallsDone) parsed.wallsDone = {};
     if (!parsed.fixes) parsed.fixes = {};
     if (!parsed.assisted) parsed.assisted = {};
     if (!parsed.view) parsed.view = 'practice';
@@ -3871,7 +3878,8 @@ function renderWelcome() {
       '<div class="welcome-paths">' +
         '<div class="welcome-path"><span class="wp-tag">[ ROADMAP ]</span>' +
           '<span class="wp-text">Five walls, in the order most people hit them. ' +
-          'Wall 1 (Where does the API key go?) is fully built; the rest are coming.</span></div>' +
+          'Wall 1 (Where does the API key go?) and Wall 4 (Getting it online) are ' +
+          'fully built; the rest are coming.</span></div>' +
         '<div class="welcome-path"><span class="wp-tag">[ BASICS ]</span>' +
           '<span class="wp-text">Optional primer if the code snippets are opaque. ' +
           'Four short reads: what code is, symbols, data shapes, functions.</span></div>' +
@@ -3973,7 +3981,7 @@ function renderSetup() {
   BLOCKER_OPTIONS.forEach(function (o) {
     html += optButton('blocker', o, blocker === o.id, false);
   });
-  html += '</div><p class="setup-note">Every option here is a wall on the roadmap. Only Wall 1 is fully built today.</p></div>';
+  html += '</div><p class="setup-note">Every option here is a wall on the roadmap. Wall 1 (API keys) and Wall 4 (deploy) are fully built today.</p></div>';
 
   // actions
   html += '<div class="setup-actions">' +
@@ -4096,6 +4104,18 @@ document.addEventListener('click', function (e) {
     delete state.lessonsDone[el.getAttribute('data-lesson-undo')];
     saveState();
     renderLessonPage(el.getAttribute('data-lesson-undo'));
+    return;
+  }
+  if ((el = e.target.closest('[data-wall-done]'))) {
+    state.wallsDone[el.getAttribute('data-wall-done')] = true;
+    saveState();
+    renderWall(el.getAttribute('data-wall-done'));
+    return;
+  }
+  if ((el = e.target.closest('[data-wall-undo]'))) {
+    delete state.wallsDone[el.getAttribute('data-wall-undo')];
+    saveState();
+    renderWall(el.getAttribute('data-wall-undo'));
     return;
   }
   if (e.target.closest('[data-goto-practice]')) enterPractice();
@@ -4227,9 +4247,10 @@ document.addEventListener('keydown', function (e) {
 
    A wall's `sections` array is a small, hand-rolled section grammar. It is
    deliberately NOT the same as LESSONS' SECTION_RENDERERS above — a wall is
-   a specific document (framing → mental model → diagram → options → env →
-   symptoms), not a general lesson, and mixing the two would make each less
-   clear. `renderWall` below walks these types.
+   a specific document (hook → prose → diagram → options → env → symptoms →
+   checkpoint), not a general lesson, and mixing the two would make each less
+   clear. `renderWall` below walks these types. The `checkpoint` type is what
+   self-marks the wall as understood; the mark persists in state.wallsDone.
    ===================================================================== */
 var WALLS = [
   {
@@ -4334,6 +4355,19 @@ var WALLS = [
           { bold: 'Your API provider emails you about "unusual activity" or auto-rotates your key for you.', rest: 'They noticed before you did. Investigate what pushed the exposed version and where it got pushed to.' },
           { bold: 'The AI told you to add NEXT_PUBLIC_ or VITE_ or PUBLIC_ in front of your key.', rest: 'Those prefixes specifically mean "ship to browser." If a fix works by adding one of those, the fix is the leak.' }
         ]
+      },
+      {
+        type: 'checkpoint',
+        heading: 'You can now',
+        abilities: [
+          'Say why an API key in a browser fetch is the same as an API key on a billboard.',
+          'Explain out loud where the "server side" of your app is (or admit that your host has none).',
+          'Look at a random project template and answer, for each file, whether it runs on the client or the server.',
+          'Recognise NEXT_PUBLIC_ / VITE_ / PUBLIC_ prefixes on a secret name as a bug, not a fix.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'You get where the key goes',
+        undoLabel: '[ MARK AS NOT YET ]'
       }
     ]
   },
@@ -4354,9 +4388,123 @@ var WALLS = [
   {
     id: 'deploy',
     number: 4,
-    status: 'coming',
-    title: 'What happens when you press deploy?',
-    blurb: 'Localhost is a lie in a comforting shape. Production has environment variables, build steps, cold starts, domain routing, HTTPS certificates, and CORS. Understanding the shape of a deploy — instead of pressing buttons and hoping — is the fourth wall.'
+    status: 'built',
+    title: 'Getting it online — deploy without breaking it',
+    blurb: 'It works when you open index.html on your laptop. You send the link to a friend and they see a blank page, or a broken image, or an error you have never seen. You did not change the code — you changed where the code lives. Every difference between "on your machine" and "on the internet" shows itself the second you deploy.',
+    sections: [
+      {
+        type: 'hook',
+        text: 'The most disorienting error in this whole map is not a stack trace. It is the moment your app worked five minutes ago, you did not touch a single line of code, and now it is broken. You did not break the code. You changed the environment — from your laptop to a Linux server on the other side of the internet — and everything local was politely covering for is suddenly on full display.'
+      },
+      {
+        type: 'prose',
+        heading: '"Works on my machine" is a trap',
+        paragraphs: [
+          'Opening a file with <b>file://</b> in your browser and loading a URL at <b>https://your-site.com</b> are two different games with two different rulebooks. The browser turns on almost every rule it enforces only when the address bar starts with http:// or https://.',
+          'Locally, file paths are usually case-insensitive (macOS and Windows do not care whether it is <b>image.png</b> or <b>Image.PNG</b>). Locally, there is no CORS to enforce because there is no origin, really. Locally, the address bar is not https:// so the "mixed content" rule that blocks http calls from an https page does not fire. Every one of these rules turns on when you deploy.',
+          'The feeling to name and remember: <b>it worked five minutes ago and I changed nothing.</b> You did not change the code. You changed the environment. That is enough.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'What "deploying" actually means',
+        paragraphs: [
+          'Deploying is copying your files onto a computer someone else runs, that is always on, and reachable at a URL. That is the whole thing. Everything after that — build commands, domains, environment variables — is the host trying to make that copy less painful.',
+          'Sane defaults for a vibecoder, in the order you should reach for them:',
+          '<b>GitHub Pages</b> — a static host that serves the files sitting in your repo, at a URL like <b>username.github.io/repo-name</b>. Free, zero config, no server-side code. If your entire app is HTML/CSS/JS files, this is the shortest path from git push to a live URL.',
+          '<b>Vercel</b> — a static host <b>plus</b> serverless functions. Deploys on every git push. Free tier is generous. This is what you want the moment your app needs to hide an API key on a backend, run a database query, or send an email — any of the walls where "on the server" matters.',
+          '<b>Netlify</b> — the same shape as Vercel with different trade-offs. Pick whichever your framework has better docs for; do not overthink it.',
+          'Rule of thumb: pure HTML/CSS/JS with no secrets → GitHub Pages. Anything that needs server code, an API route, or a secret hidden from the browser → Vercel or Netlify (or similar). If a host advertises "static site" and offers no way to run functions, it cannot do the server side — that is a shape mismatch, not a bug.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'The stuff that ONLY breaks after deploy',
+        paragraphs: [
+          'This is the list to internalise. Every item on it is a class of bug that will not show up on your machine, so no amount of local testing catches them. Each one has bitten every vibecoder who ever hit deploy.'
+        ]
+      },
+      {
+        type: 'options',
+        title: 'Five things that hide locally and surface online',
+        items: [
+          { name: 'Hardcoded localhost URLs',
+            text: 'The AI wrote <b>fetch("http://localhost:3000/api/data")</b> during development and never replaced it. It works on your machine because localhost:3000 is your machine. On the deployed site, every visitor\'s browser tries to fetch localhost:3000 — which is <b>their</b> machine, where nothing is running. Fix: use a relative path like <b>fetch("/api/data")</b>, so the request always goes to whatever domain the page is on.' },
+          { name: 'Case sensitivity — the silent killer',
+            text: 'Your HTML says <b>&lt;img src="Image.PNG"&gt;</b>. The file on disk is <b>image.png</b>. On macOS and Windows the filesystem does not care about case, so it loads. On the Linux server that runs your deployed site, <b>Image.PNG</b> and <b>image.png</b> are two different names, and one of them does not exist. Broken image on live, nothing broken on local. Same for CSS files, imports, everything. <b>Match the filename exactly, letter for letter.</b>' },
+          { name: 'Absolute vs. relative paths',
+            text: 'A path starting with <b>/</b> means "from the root of the domain." So <b>&lt;script src="/app.js"&gt;</b> asks for <b>your-site.com/app.js</b>. That is fine when the site lives at the domain root. GitHub Pages usually serves your site at <b>username.github.io/repo-name/</b>, so <b>/app.js</b> looks for <b>username.github.io/app.js</b> — which does not exist. Use <b>./app.js</b> or just <b>app.js</b> (relative to the current page) and the same code works everywhere.' },
+          { name: 'Env vars that never travelled',
+            text: 'You did Wall 1: the API key moved to your backend, out of the browser, into <b>.env.local</b>. Great. <b>.env.local</b> is on your machine. It is in <b>.gitignore</b>. It did not get pushed. The deployed server has no <b>OPENAI_API_KEY</b> to read, so the route returns 500. Fix: open the host\'s dashboard, set the env var there, redeploy. Env vars do not travel with your code — they live on the host, and every host has to be told about each one.' },
+          { name: 'Mixed content — https cannot call http',
+            text: 'Your deployed site is <b>https://your-site.com</b> (Vercel, Netlify, GitHub Pages all default to https). Your code fetches <b>http://some-old-api.com/data</b>. The browser refuses: an https page is not allowed to load anything over plain http. Locally the same call worked because your local page was <b>http://localhost:3000</b>, and http can call http. Fix: use the https version of the API, or proxy the request through your own backend.' }
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'HTTPS and why the browser suddenly cares',
+        paragraphs: [
+          'Modern hosts default your site to <b>https://</b> — a good thing, and unavoidable. A page loaded over https is a <b>secure context</b>, and secure contexts have stricter rules the browser enforces on your behalf.',
+          'What changes: <b>no mixed content</b> (a secure page cannot pull scripts, images, or fetches from insecure http URLs); <b>stricter CORS</b> (many APIs will only accept credentialed requests from https origins); and <b>a handful of APIs</b> — geolocation, service workers, clipboard, camera — will refuse to run at all outside a secure context.',
+          'Same fetch, same code, different result. The fetch that worked from <b>http://localhost:3000</b> can throw <b>Mixed Content: The page at https://your-site.com was loaded over HTTPS, but requested an insecure resource...</b> the moment the exact same code runs at an https URL. The fix is always to move whatever you were reaching for to https, or route the call through your own server.'
+        ]
+      },
+      {
+        type: 'diagram',
+        title: 'Where to actually look when a deployed site breaks',
+        ascii:
+          '  <<UNSAFE BUILD FAILED>>                     <<SAFE BUILD OK, PAGE BROKEN>>\n' +
+          '  ───────────────                     ─────────────────────\n' +
+          '\n' +
+          '  the deploy never finished           the deploy finished\n' +
+          '                                      but the page misbehaves\n' +
+          '\n' +
+          '     ▼                                  ▼\n' +
+          '\n' +
+          '  Host dashboard →                    Open the <<SAFE LIVE>> URL, not localhost\n' +
+          '  Deployments → the failing one       F12 → Console tab, then Network tab\n' +
+          '                                      \n' +
+          '  <<DIM see the exact command that>>    <<DIM red errors here are the same ones>>\n' +
+          '  <<DIM failed, top-down in the log>>   <<DIM you drill on in the warm-up>>\n',
+        note: 'Two failure shapes need two different first places to look. If the site never came up at all, the answer lives in the host\'s build log. If the site came up but the page is wrong, the answer lives in DevTools on the deployed URL.'
+      },
+      {
+        type: 'prose',
+        heading: 'The deploy feedback loop',
+        paragraphs: [
+          'When the deployed site breaks, debug the <b>deployed site</b>. Not your local one. The temptation is to reproduce it locally, "fix" it, redeploy, and hope. That loop is slow, and it hides half the bugs — the ones that only exist in the deployed environment.',
+          'The habit: open the failing page at its real URL, open DevTools there, and read the Console + Network exactly as you would in the warm-up. The error is a message from the environment that is broken; reading it in a different environment loses the message.',
+          'When the whole site fails to come up, that error is not in the browser at all — it is in the <b>host\'s build/deploy log</b>. Vercel: Deployments → click the red one. Netlify: Deploys → click the failing one. GitHub Pages: the Actions tab of the repo. That log tells you what command the host ran and what it printed before it gave up.'
+        ]
+      },
+      {
+        type: 'symptoms',
+        title: 'You got this wrong when...',
+        items: [
+          { bold: 'Blank white page after deploy, works locally.', rest: 'Almost always a path or case problem — a script tag pointing at a file the server cannot find. Open DevTools → Network → look for the 404 that turned everything downstream into "cannot find variable X."' },
+          { bold: '404 on your homepage / on refresh of a subpage.', rest: 'The base path is wrong (GitHub Pages serving from /repo-name/ but the code assumes /), or the host has no routing rule for a single-page-app fallback. Both classic first-deploy problems.' },
+          { bold: 'Fetch that worked locally now throws Mixed Content or CORS.', rest: 'Mixed Content: your https page is calling an http URL — change the URL to https or proxy through your own backend. CORS: the API is not sending an Access-Control-Allow-Origin header for your deployed origin.' },
+          { bold: '"500 Internal Server Error" from a route that worked locally.', rest: 'Nine times out of ten this is a missing env var — .env.local did not travel. Open the host\'s function logs, look for "undefined" or "null" where an env var should be.' },
+          { bold: '"It deployed but my changes are not showing."', rest: 'One of: the deploy actually failed (check the build log); you pushed to the wrong branch; the CDN is caching (hard-refresh with Cmd/Ctrl-Shift-R); or you are looking at the wrong URL (a preview deploy vs. production).' },
+          { bold: 'Broken image or missing script, but only sometimes.', rest: 'Case sensitivity between commits — a file was renamed from Foo.js to foo.js (or vice versa), git tracked the change on macOS but Linux now has both, or neither, or the wrong one. Rename cleanly and force-push.' },
+          { bold: 'Login/session works locally, breaks online.', rest: 'Cookies. Local cookies are lax; deployed cookies need <b>Secure</b> (only sent over https) and often <b>SameSite=None</b> (to survive cross-site redirects for OAuth). The exact fix depends on your auth library, but the shape of the bug is: cookies not travelling.' }
+        ]
+      },
+      {
+        type: 'checkpoint',
+        heading: 'You can now',
+        abilities: [
+          'Say why "works on my machine" is not evidence that it works.',
+          'Name at least three things that only break after deploy — case, paths, env vars, mixed content, hardcoded localhost.',
+          'Pick between GitHub Pages, Vercel, and Netlify for a given app shape without freezing.',
+          'When a deploy breaks, know whether to look in the host\'s build log or in DevTools on the live URL.',
+          'Debug on the deployed site, not on your local copy of it.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'You get how to ship without breaking it',
+        undoLabel: '[ MARK AS NOT YET ]'
+      }
+    ]
   },
   {
     id: 'errors',
@@ -4372,6 +4520,18 @@ function findWall(id) {
   return null;
 }
 
+function wallDone(id) { return !!state.wallsDone[id]; }
+
+function liveWallsSummary() {
+  var live = [];
+  for (var i = 0; i < WALLS.length; i++) {
+    if (WALLS[i].status !== 'coming') live.push(String(WALLS[i].number));
+  }
+  if (live.length <= 1) return 'Wall ' + live.join('') + ' is live.';
+  if (live.length === 2) return 'Walls ' + live[0] + ' and ' + live[1] + ' are live.';
+  return 'Walls ' + live.slice(0, -1).join(', ') + ' and ' + live[live.length - 1] + ' are live.';
+}
+
 function renderRoadmap() {
   var el = document.getElementById('screen-roadmap');
   var html = '<div class="roadmap">' +
@@ -4382,15 +4542,16 @@ function renderRoadmap() {
         'between "works on my laptop" and "someone else can use this." Each wall on ' +
         'this map is one of them — a mental model, a working example, and the shape ' +
         'of the mistake so you can spot it in your own code.</p>' +
-      '<p class="roadmap-intro">Wall 1 is fully built. The rest are visible so you know what is coming.</p>' +
+      '<p class="roadmap-intro">' + liveWallsSummary() + ' The rest are visible so you know what is coming.</p>' +
     '</div>';
 
   html += '<div class="roadmap-list">';
   for (var i = 0; i < WALLS.length; i++) {
     var w = WALLS[i];
     var built = w.status !== 'coming';
-    var cls = 'wall-card ' + (built ? 'available' : 'coming');
-    var status = built ? '[ open ]' : '[ coming soon ]';
+    var done = built && wallDone(w.id);
+    var cls = 'wall-card ' + (built ? 'available' : 'coming') + (done ? ' done' : '');
+    var status = done ? '[ complete ]' : (built ? '[ live ]' : '[ coming soon ]');
     html += '<button class="' + cls + '" data-wall="' + esc(w.id) + '"' +
               (built ? '' : ' disabled') + '>' +
               '<div class="wall-card-head">' +
@@ -4456,9 +4617,16 @@ function renderWall(id) {
       }
       html += '</div>';
     } else if (s.type === 'diagram') {
+      /* Diagram markers use a small ASCII grammar the author fills in when
+         writing a wall: text between << >> is highlighted in one of a handful
+         of colors, plus a few fixed named tokens the api-key wall relies on.
+         Everything else is escaped and rendered as monospace pre. */
       var ascii = esc(s.ascii)
         .replace(/&lt;LEAKED&gt;/g, '<span class="unsafe">&lt;LEAKED&gt;</span>')
-        .replace(/&lt;key lives here&gt;/g, '<span class="safe">&lt;key lives here&gt;</span>');
+        .replace(/&lt;key lives here&gt;/g, '<span class="safe">&lt;key lives here&gt;</span>')
+        .replace(/&lt;&lt;UNSAFE ([^&]+?)&gt;&gt;/g, '<span class="unsafe">$1</span>')
+        .replace(/&lt;&lt;SAFE ([^&]+?)&gt;&gt;/g, '<span class="safe">$1</span>')
+        .replace(/&lt;&lt;DIM ([^&]+?)&gt;&gt;/g, '<span class="dim">$1</span>');
       html += '<div class="wall-diagram">' +
         '<div class="wall-diagram-title">' + esc(s.title) + '</div>' +
         '<pre>' + ascii + '</pre></div>';
@@ -4493,6 +4661,29 @@ function renderWall(id) {
                   codeifyHTML(s.items[n].rest) + '</span></div>';
       }
       html += '</div></div>';
+    } else if (s.type === 'checkpoint') {
+      /* Self-marked completion, same shape as the lesson checkpoint. Persisted
+         in state.wallsDone[wall.id] and lights up the roadmap card. */
+      var done = wallDone(wall.id);
+      html += '<div class="checkpoint" style="margin-top:34px"><h3>' +
+              esc(s.heading || 'Checkpoint') + '</h3><div class="abilities">';
+      for (var q = 0; q < s.abilities.length; q++) {
+        html += '<div class="ability"><span class="ab-tick">-</span><span>' +
+                codeify(s.abilities[q]) + '</span></div>';
+      }
+      html += '</div>';
+      if (done) {
+        html += '<div class="done-state"><span>[ OK ]</span><span>' +
+                  esc(s.doneLabel || 'You get it') + '</span></div>' +
+                '<button class="undo-link" data-wall-undo="' + esc(wall.id) + '">' +
+                  esc(s.undoLabel || '[ MARK AS NOT YET ]') + '</button>' +
+                '<div class="next-step">Ready for the next wall? ' +
+                  '<button data-goto-roadmap="1">[ BACK TO ROADMAP ]</button></div>';
+      } else {
+        html += '<button class="btn btn-green" data-wall-done="' + esc(wall.id) + '">' +
+                esc(s.buttonLabel || '[ I GET IT ]') + '</button>';
+      }
+      html += '</div>';
     }
   }
 
