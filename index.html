@@ -3877,9 +3877,9 @@ function renderWelcome() {
         'the shape of the mistake so you can spot it.</p>' +
       '<div class="welcome-paths">' +
         '<div class="welcome-path"><span class="wp-tag">[ ROADMAP ]</span>' +
-          '<span class="wp-text">Five walls, in the order most people hit them. ' +
-          'Wall 1 (Where does the API key go?) and Wall 4 (Getting it online) are ' +
-          'fully built; the rest are coming.</span></div>' +
+          '<span class="wp-text">Six walls, in the order most people hit them. ' +
+          'Wall 1 (Where does the API key go?), Wall 4 (Getting it online), and ' +
+          'Wall 6 (Taking payments) are fully built; the rest are coming.</span></div>' +
         '<div class="welcome-path"><span class="wp-tag">[ BASICS ]</span>' +
           '<span class="wp-text">Optional primer if the code snippets are opaque. ' +
           'Four short reads: what code is, symbols, data shapes, functions.</span></div>' +
@@ -3926,12 +3926,13 @@ var SHIP_OPTIONS = [
 
 /* Q3 stays: what is currently blocking you. Optional, honest. */
 var BLOCKER_OPTIONS = [
-  { id: 'apikey',  label: 'Where secrets and API keys go safely' },
-  { id: 'db',      label: 'Where user data lives and comes back from' },
-  { id: 'auth',    label: 'Login / who is allowed to do what' },
-  { id: 'deploy',  label: "Getting it deployed somewhere that isn't localhost" },
-  { id: 'errors',  label: 'Reading errors when something breaks' },
-  { id: 'unsure',  label: 'Not sure — everything at once' }
+  { id: 'apikey',   label: 'Where secrets and API keys go safely' },
+  { id: 'db',       label: 'Where user data lives and comes back from' },
+  { id: 'auth',     label: 'Login / who is allowed to do what' },
+  { id: 'deploy',   label: "Getting it deployed somewhere that isn't localhost" },
+  { id: 'errors',   label: 'Reading errors when something breaks' },
+  { id: 'payments', label: 'Taking payments without getting chargebacked' },
+  { id: 'unsure',   label: 'Not sure — everything at once' }
 ];
 
 function renderSetup() {
@@ -3981,7 +3982,7 @@ function renderSetup() {
   BLOCKER_OPTIONS.forEach(function (o) {
     html += optButton('blocker', o, blocker === o.id, false);
   });
-  html += '</div><p class="setup-note">Every option here is a wall on the roadmap. Wall 1 (API keys) and Wall 4 (deploy) are fully built today.</p></div>';
+  html += '</div><p class="setup-note">Every option here is a wall on the roadmap. Wall 1 (API keys), Wall 4 (deploy), and Wall 6 (payments) are fully built today.</p></div>';
 
   // actions
   html += '<div class="setup-actions">' +
@@ -4512,6 +4513,137 @@ var WALLS = [
     status: 'coming',
     title: 'Something broke — where do you even look?',
     blurb: 'Errors in production do not surface in the browser you are staring at. Logs live on the host; user reports are vague; the failure mode you built for probably is not the one that hit. The fifth wall is having a plan before the alarm goes off.'
+  },
+  {
+    id: 'payments',
+    number: 6,
+    status: 'built',
+    title: 'Taking payments',
+    blurb: 'You "integrated Stripe" and money moved in a test. Shipping this to real customers is not a Stripe problem — it is a systems and trust problem. Who owes the tax? What stops a user editing $50 down to $0.50 in their browser? How does your app know the payment succeeded when the customer closed the tab? Every trap here is where "I integrated payments" turns into "I am about to eat a $1,200 chargeback fee."',
+    sections: [
+      {
+        type: 'hook',
+        text: 'Taking payments looks like the easiest wall until it is not. You paste the Stripe test card, watch $10 land in your dashboard, and think it is done. Then a real customer buys, files a chargeback, and you find out the transaction cost you $25 in dispute fees on top of the refund — and you have no records to fight it because you granted access on the redirect page, which the customer never actually reached. Payments is a systems problem wearing an API costume.'
+      },
+      {
+        type: 'prose',
+        heading: 'You are picking a provider, not "adding payments"',
+        paragraphs: [
+          'The AI writes a Stripe integration in twenty lines and it feels like a solved problem. It is not. What you actually just did was <b>pick a payment provider</b> — a company that handles the parts of taking money you must not touch: card numbers, PCI compliance, fraud scoring, chargebacks, tax collection everywhere a customer might buy from you.',
+          'Different providers hand back different amounts of hard work. The choice you make on day one decides which parts of tax law, dispute handling, and refund policy become your problem — and which stay theirs.'
+        ]
+      },
+      {
+        type: 'options',
+        title: 'The four providers a solo vibecoder actually picks between',
+        items: [
+          { name: 'Stripe',
+            text: 'The most powerful and the most demanding. Excellent docs, everything is possible, every third-party integration assumes it. <b>You are the Merchant of Record</b> — you sell to the customer, you owe sales tax / VAT / GST wherever they buy from. Stripe collects the money and hands it to you; Stripe does not deal with the tax authorities on your behalf. Fine for US-only or when you have an accountant. Painful when Norway wants VAT and you are one person.' },
+          { name: 'Lemon Squeezy',
+            text: 'A <b>Merchant of Record</b> built on top of Stripe. Slightly higher fees, dramatically less admin. They sell to your customer on paper, they collect and remit tax globally, they deal with the disputes. You get a monthly payout minus fees. The default choice for a solo person shipping a paid app to the world without wanting to think about tax.' },
+          { name: 'Paddle',
+            text: 'The other MoR option. Longer-established than Lemon Squeezy, similar model, more enterprise focus. Same trade: give up some control and margin, they eat the compliance surface. If you sell to businesses (invoicing, POs, EU B2B) Paddle tends to be smoother.' },
+          { name: 'Polar',
+            text: 'Newer, developer-first, MoR by default, built around the idea that most modern paid products are SaaS or content subscriptions and the checkout flow should reflect that. Smaller ecosystem than the others; if what they offer covers your case, the DX is the best of the bunch. Good bet for indie devs who want MoR without the older platforms\' commerce-plugin lineage in the UI.' }
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'Merchant of Record, plainly',
+        paragraphs: [
+          'When a customer pays $20 for your app, some legal entity sold it to them. That entity is the <b>Merchant of Record</b>. It is who appears on the credit card statement. It is who owes tax to the government where the buyer lives. It is who a chargeback comes back to.',
+          'With Stripe, that entity is <b>you</b> (or your LLC). Sell to a customer in Germany, you now have a German VAT obligation. Sell to someone in California, a California sales tax obligation. There are roughly 180 jurisdictions with rules about this. It is a genuine rabbit hole, not a small-print asterisk.',
+          'With Lemon Squeezy, Paddle, or Polar, that entity is <b>them</b>. Their name goes on the statement, they file the tax returns, they handle disputes. You get a cleaner cheque and less freedom. For a solo person launching to the world on day one, that trade is almost always worth taking. Move to being your own MoR later when the volume — and the finance help — exists.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'Client vs. server, the payments version',
+        paragraphs: [
+          'You met this in Wall 1: secrets belong on the server because the browser cannot keep a secret. In payments the exact same rule applies, at higher stakes, and it catches vibecoders constantly.',
+          '<b>Price cannot come from the frontend.</b> If your React component says <b>createCheckout({ amount: 5000 })</b> and posts that to your backend, a user opens DevTools, edits <b>5000</b> to <b>50</b>, and buys your $50 product for fifty cents. Your backend obediently forwards the fifty cents to the provider, the provider takes it, the webhook fires, your app grants access. Perfectly legal transaction, entirely wrong price.',
+          'The correct shape: the frontend sends a <b>product identifier</b> — a Stripe price ID, or your own product SKU. Your backend looks up the actual price on its own server (or asks the provider) and initiates the checkout with that trusted number. The browser never carries the amount.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'Webhooks — the piece nobody explains',
+        paragraphs: [
+          'Here is the shape of a checkout: the customer enters card details on the provider\'s hosted page, the provider charges the card, the provider redirects the customer back to your <b>/success</b> URL. It looks like the transaction ended when they land on that success page. It did not.',
+          'The success redirect is a UX courtesy. It is not the source of truth. The customer might close the tab before the redirect fires. Their internet might drop between "charge succeeded" and "you land on /success." Your success page might fail to load. In every one of those cases the payment still happened.',
+          'The <b>webhook</b> is the source of truth. When a payment succeeds, the provider sends a POST request from <b>their</b> servers to <b>your</b> server, telling you exactly what happened. Your server verifies the request came from the provider (a signature check, using a webhook secret they issue you), records the payment in your database, and grants the customer whatever they paid for.',
+          '<b>Grant access on the webhook, never on the success page.</b> Redirect the user to a "you are all set" page after, but the truth of the transaction lives in what the webhook wrote.'
+        ]
+      },
+      {
+        type: 'diagram',
+        title: 'Two shapes of the same successful payment',
+        ascii:
+          '  CUSTOMER STAYS ON THE TAB              CUSTOMER CLOSES THE TAB\n' +
+          '  ─────────────────────────              ────────────────────────\n' +
+          '\n' +
+          '  [ browser ]                            [ browser ]\n' +
+          '      │                                      │\n' +
+          '      │  submit card                         │  submit card\n' +
+          '      ▼                                      ▼\n' +
+          '  [ provider ]                           [ provider ]\n' +
+          '      │  charge OK                           │  charge OK\n' +
+          '      │                                      │\n' +
+          '      ├── redirect →  [ /success ]           ├── redirect →  <<UNSAFE ✗ tab closed>>\n' +
+          '      │                                      │\n' +
+          '      └── webhook  →  [ YOUR SERVER ]        └── webhook  →  [ YOUR SERVER ]\n' +
+          '                            │                                      │\n' +
+          '                      <<SAFE grants access>>                 <<SAFE grants access>>\n' +
+          '                      source of truth                        still correct\n',
+        note: 'The webhook fires in both flows. The redirect only fires in one. Read that column by column and it is obvious why an app that grants access "when the user hits /success" locks paid customers out — and why an app that grants access on the webhook works no matter what the browser does.'
+      },
+      {
+        type: 'prose',
+        heading: 'Test mode vs. live mode — two universes',
+        paragraphs: [
+          'Every payment provider gives you two entirely separate sets of API keys: <b>test</b> and <b>live</b>. They are two universes. Test-mode keys create test-mode charges, test-mode customers, test-mode webhooks; live-mode keys move real money. The universes never see each other — a test customer does not exist in live, and vice versa.',
+          'Two failure modes to name out loud. First: you ship with test keys in production. Every "successful" payment is a fake charge, your dashboard shows customers, your bank shows nothing, and you notice a week in. Second: you develop against live keys, buy your own product to "check the flow," and now have a real charge to refund on your own card.',
+          'The fix is the same env-var discipline as Wall 1 and Wall 4. Keep <b>STRIPE_SECRET_KEY_TEST</b> in your dev env; keep the plain <b>STRIPE_SECRET_KEY</b> — pointing at the live key — set only on your host, only in production. Never let a test key touch a live database, and never let a live key touch a dev branch.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'Refunds, disputes, and chargebacks — the part nobody warns you about',
+        paragraphs: [
+          'A <b>refund</b> is polite: the customer asked for their money back, you send it. The transaction fee is usually not returned to you, but nothing else bad happens. Say up front that refunds take 5–10 business days to appear on the customer\'s statement — the delay is the bank, not you, and telling them prevents an angry email.',
+          'A <b>chargeback</b> is hostile: the customer told their bank the charge was wrong (product not delivered, unauthorised, fraud). The bank yanks the money back plus a dispute fee — typically $15–$25 — regardless of who is "right." You then have days to submit evidence. Even if you win, you often do not get the fee back. Rack up too many and the provider drops you.',
+          'What actually helps: <b>keep records</b>. Log the exact price, product, customer, and webhook event id for every payment. Make refund policies visible before checkout. Reply to disputes with evidence quickly. Do not sell things the customer cannot actually get — the fastest way to a chargeback is a customer who paid and then could not find what they bought (see: granting access on the success page instead of the webhook).'
+        ]
+      },
+      {
+        type: 'symptoms',
+        title: 'You got this wrong when...',
+        items: [
+          { bold: 'The customer got charged but your app never gave them what they paid for.', rest: 'Almost always: you granted access on the /success redirect and they closed the tab, or the redirect failed. The webhook fired; you ignored it. Fix the truth model — grant on the webhook.' },
+          { bold: '"Payments are working — I tested it in Stripe."', rest: 'You tested with test-mode keys. No money moved. Real cards produce different bugs than test cards. Test-mode is for building; the first live charge is the real test.' },
+          { bold: 'A customer is furious the refund is taking a week.', rest: 'Refunds are usually instant on your side; the bank takes 5–10 business days to show the money back. Say this on your refund page, out loud, <b>before</b> it happens.' },
+          { bold: '"Someone I have never heard of just paid $500 for my $50 product."', rest: 'Stolen-card testers use small merchants to check which cards work before running big fraud elsewhere. You will get the chargeback. Turn on the provider\'s built-in fraud rules (Stripe Radar, Polar\'s equivalent). This is a real failure mode, not paranoia.' },
+          { bold: 'The Stripe key shows up in the browser Network tab.', rest: 'You put the secret key in the frontend. Two problems for the price of one — it is Wall 1 all over again (see the <b>sk_live_...</b> in a request header), and Stripe will notice and rotate the key on you. Move it to the server.' },
+          { bold: '"My VAT number is..." — an EU customer, in month three.', rest: 'You are the Merchant of Record on Stripe, so you owe VAT collection in the EU. This is the moment most solo devs realise a MoR was the right choice on day one. Migrating is not too late, but it is more painful than deciding before you had customers.' },
+          { bold: '"My webhook fires but nothing happens in the database."', rest: 'The signature check silently failed. Log the raw request body and the signature-check result — most webhook bugs are signature mismatches (wrong secret for the wrong environment) rather than logic bugs downstream.' }
+        ]
+      },
+      {
+        type: 'checkpoint',
+        heading: 'You can now',
+        abilities: [
+          'Say what a payment provider actually does for you, and pick between Stripe, Lemon Squeezy, Paddle, and Polar without freezing.',
+          'Explain out loud what Merchant of Record means and why it matters on day one.',
+          'Recognise "price came from the frontend" as the same shape of bug as an exposed API key.',
+          'Grant paid access on the webhook, not on the success redirect.',
+          'Tell test-mode and live-mode keys apart and keep them from mixing.',
+          'Know that a chargeback costs money even when you win, and design records so you can actually respond.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'You get how payments actually work',
+        undoLabel: '[ MARK AS NOT YET ]'
+      }
+    ]
   }
 ];
 
