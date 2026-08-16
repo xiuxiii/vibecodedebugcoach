@@ -3878,7 +3878,7 @@ function renderWelcome() {
       '<div class="welcome-paths">' +
         '<div class="welcome-path"><span class="wp-tag">[ ROADMAP ]</span>' +
           '<span class="wp-text">Six walls, in the order most people hit them. ' +
-          'Wall 1 (Where does the API key go?), Wall 4 (Getting it online), and ' +
+          'Wall 1 (API keys), Wall 3 (Logins), Wall 4 (Getting it online), and ' +
           'Wall 6 (Taking payments) are fully built; the rest are coming.</span></div>' +
         '<div class="welcome-path"><span class="wp-tag">[ BASICS ]</span>' +
           '<span class="wp-text">Optional primer if the code snippets are opaque. ' +
@@ -3982,7 +3982,7 @@ function renderSetup() {
   BLOCKER_OPTIONS.forEach(function (o) {
     html += optButton('blocker', o, blocker === o.id, false);
   });
-  html += '</div><p class="setup-note">Every option here is a wall on the roadmap. Wall 1 (API keys), Wall 4 (deploy), and Wall 6 (payments) are fully built today.</p></div>';
+  html += '</div><p class="setup-note">Every option here is a wall on the roadmap. Wall 1 (API keys), Wall 3 (logins), Wall 4 (deploy), and Wall 6 (payments) are fully built today.</p></div>';
 
   // actions
   html += '<div class="setup-actions">' +
@@ -4382,9 +4382,123 @@ var WALLS = [
   {
     id: 'auth',
     number: 3,
-    status: 'coming',
-    title: 'Who is allowed to do what?',
-    blurb: 'A signup form is easy. Making sure user A cannot read user B\'s data — and cannot delete it, and cannot pretend to be an admin — is the third wall. It is the one where "just make it work" and "actually safe to ship" separate.'
+    status: 'built',
+    title: 'Logins & user accounts',
+    blurb: 'A signup form is easy. A signup form that hashes passwords correctly, issues tokens that expire, survives password resets, and never lets user A read user B\'s data is not — and every one of those pieces has a specific, well-known way to get owned. This is the wall where "it works" and "it is safe to ship" stop being the same thing.',
+    sections: [
+      {
+        type: 'hook',
+        text: 'The tempting version of auth is a form with an email and a password, a users table, and a check that the password matches. That version is a breach waiting for a date. Password hashing, session tokens, expiry, resets, OAuth, rate limiting — each is a small system with a specific way to get owned, and getting all of them right is a full-time job people do for a living. The move that keeps you out of the headlines is the same one from the API-key wall: do not hold the dangerous thing yourself.'
+      },
+      {
+        type: 'prose',
+        heading: 'Do not build auth yourself',
+        paragraphs: [
+          'Every part of authentication has a known failure mode. Store a password wrong and a database leak hands out plaintext logins. Issue a token that never expires and a logged-out user keeps access for hours. Skip rate limiting and someone brute-forces the login. Build the password-reset flow slightly wrong and it becomes an account-takeover tool. These are not exotic bugs — they are the default outcome of writing it yourself.',
+          'The answer is a <b>provider</b>: a service that owns the hashing, the tokens, the reset emails, the OAuth dance, and the rate limiting, and hands you a "this is who is logged in" answer you can trust. You wire it in; you do not implement it.'
+        ]
+      },
+      {
+        type: 'options',
+        title: 'The four auth providers a solo vibecoder picks between',
+        items: [
+          { name: 'Clerk',
+            text: 'The easiest drop-in. Prebuilt sign-in / sign-up / user-profile UI components you paste into a React (or similar) app, and it works in an afternoon. Handles sessions, OAuth, multi-factor out of the box. Generous free tier. If your goal is "logged-in users, today, with the least fighting," this is the default reach.' },
+          { name: 'Supabase Auth',
+            text: 'Auth <b>and</b> a Postgres database in one free-tier product. The winning move when you need somewhere to store app data anyway (Wall 2) — the users live right next to your tables, and row-level security (below) ties the two together. Slightly more wiring than Clerk, far less than rolling your own.' },
+          { name: 'Auth0',
+            text: 'The enterprise-grade option, now part of Okta. Enormously configurable — SSO, SAML, compliance knobs, every OAuth provider. That power is overkill for a weekend project and the free tier is tighter. Reach for it when a customer\'s security team is asking questions, not before.' },
+          { name: 'Firebase Auth',
+            text: 'Google\'s option, usually paired with Firebase\'s realtime database. Rock-solid, huge community, easy Google/social sign-in. A good pick if you are already in the Firebase ecosystem; a slightly odd one if you are not, since it pulls you toward the rest of Firebase.' }
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'What "logged in" actually means',
+        paragraphs: [
+          'There is no such thing as the server "remembering" that you are logged in by magic. HTTP requests are independent — the backend has no memory of the last one. So after you log in, the server hands your browser a <b>token</b>: a signed string that says "the bearer of this is user 4821, verified at 3:05pm, expires at 4:05pm."',
+          'Your browser stores that token and attaches it to <b>every</b> future request. On each request the backend checks the token — is the signature valid, has it expired, who does it say you are — and only then decides what to do. That check happens every single time. The token is the entire proof of who is asking.',
+          'This is also why an expiring token matters: it is the only thing that ends a session. If the token never expires, "log out" on the client is theatre — the token still works if someone copied it.'
+        ]
+      },
+      {
+        type: 'diagram',
+        title: 'The login handshake, and every request after it',
+        ascii:
+          '  ONE-TIME LOGIN                          EVERY REQUEST AFTER\n' +
+          '  ──────────────                          ───────────────────\n' +
+          '\n' +
+          '  [ browser ]                             [ browser ]\n' +
+          '      │  email + password                     │  GET /api/my-stuff\n' +
+          '      ▼                                        │  <<SAFE Authorization: token>>\n' +
+          '  [ auth provider ]                            ▼\n' +
+          '      │  verify, then issue              [ YOUR BACKEND ]\n' +
+          '      │                                       │  check token: valid? expired?\n' +
+          '      ▼                                       │  who is this? what may they do?\n' +
+          '  <<SAFE token >> → [ browser stores it ]           ▼\n' +
+          '                                          <<SAFE grant, and ONLY their data>>\n',
+        note: 'The left column happens once. The right column happens on every request for the life of the token. The backend re-checks the token each time — there is no "still logged in from before" it can trust without looking.'
+      },
+      {
+        type: 'prose',
+        heading: 'Authentication vs. authorization',
+        paragraphs: [
+          'Two words that sound alike and get confused constantly, and the confusion is exactly how data leaks. <b>Authentication</b> is "who are you" — proving identity, the token check above. <b>Authorization</b> is "what are you allowed to do" — whether <b>this</b> verified user may touch <b>this</b> specific thing.',
+          'A logged-in user is authenticated. That does not mean they may read every row in your database. If your delete-post endpoint checks the token (authentication) but not whether the post belongs to that user (authorization), any logged-in user can delete anyone\'s posts. Authenticated, unauthorized — and shipped.',
+          'Both checks live on the backend, and authorization has to be specific: not "is someone logged in," but "does user 4821 own document 991." Skip that second question and user A reads user B\'s data.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'The frontend cannot be trusted — third time',
+        paragraphs: [
+          'You saw this on the API-key wall (the key in the browser is public) and the payments wall (the price from the browser is a lie). Auth is the third time, and the most dangerous: <b>hiding a button does not secure the action behind it.</b>',
+          'If your admin panel hides the "delete user" button for non-admins but the underlying <b>DELETE /api/users/5</b> endpoint only checks that someone is logged in, any user can open DevTools, or run one <b>curl</b> command, and call it directly. The button was never the security — it was decoration. The endpoint is the security.',
+          'The rule, stated the same way for the third wall: <b>every protected action checks permissions on the backend</b>, and "is this person logged in" is not the same check as "is this person allowed to do this specific thing." Both, on the server, every time.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'The database question',
+        paragraphs: [
+          'Users have to be stored somewhere. The good news: your auth provider gives you that for free — a managed users table with hashed passwords, verified emails, and IDs you never have to hand-build. What it does <b>not</b> give you is a home for your own app data: profiles, saved items, posts, whatever your app is actually about. That still needs a database (Wall 2).',
+          'The modern pattern that connects the two is <b>row-level security</b> (Supabase\'s headline feature, borrowed from Postgres). Instead of remembering to add "WHERE user_id = me" to every query in your code — and getting owned the one time you forget — you write the rule once, at the database: "a user can only read rows where user_id equals their own id." The database itself enforces authorization on every query, so a missed check in your app code cannot leak another user\'s rows. It is authorization moved to the one place that cannot be bypassed by a forgotten <b>if</b>.'
+        ]
+      },
+      {
+        type: 'prose',
+        heading: 'OAuth — "sign in with Google" in one paragraph',
+        paragraphs: [
+          'Users hate making new accounts. <b>OAuth</b> lets them sign in with one they already have — Google, GitHub, Apple. The provider runs the whole handshake (the redirect, the consent screen, the token exchange), and hands your app back a <b>verified email and a user ID</b> without you ever touching the user\'s password. In Clerk, Supabase, Auth0, and Firebase this is usually a single toggle in a dashboard. Turn it on. It removes the highest-friction step in your entire signup flow and you get a pre-verified email for free.'
+        ]
+      },
+      {
+        type: 'symptoms',
+        title: 'You got this wrong when...',
+        items: [
+          { bold: 'User A can see user B\'s data.', rest: 'A missing authorization check. The endpoint confirmed someone is logged in but never confirmed the data belongs to <b>them</b>. Add the ownership check on the backend — or push it into row-level security so it cannot be forgotten.' },
+          { bold: 'A protected API call works when you hit it directly, logged out.', rest: 'The token is not being verified on that endpoint. The frontend hides the action, but the backend accepts the raw request from curl or DevTools. Every protected route must reject a missing or invalid token before doing anything.' },
+          { bold: 'Your database leaks and the passwords are readable.', rest: 'You stored passwords as plaintext (or reversible), which means you built auth yourself and skipped hashing. A provider would have hashed them with bcrypt/argon2 so a leak exposes useless scrambles, not logins.' },
+          { bold: 'A user logs out but still has access for hours.', rest: 'The token does not expire, or "log out" only clears the client and never invalidates the token. Tokens need a short expiry (and ideally server-side revocation) so ending a session actually ends it.' },
+          { bold: 'A breach exposes every user\'s email and password at once.', rest: 'No hashing, plus everything in one unprotected table. This is the worst-case version of building it yourself. The whole reason to use a provider is that this specific headline never has your name in it.' },
+          { bold: 'Anyone who is logged in can perform admin actions.', rest: 'You checked authentication ("logged in?") where you needed authorization ("is this user an admin?"). Being a valid user is not the same as being allowed. Check the specific permission, on the backend.' }
+        ]
+      },
+      {
+        type: 'checkpoint',
+        heading: 'You can now',
+        abilities: [
+          'Say why building auth yourself — hashing, tokens, resets, OAuth, rate limiting — is a breach waiting to happen, and name a provider to reach for instead.',
+          'Explain what "logged in" actually is: a token the browser sends on every request and the backend re-checks every time.',
+          'Tell authentication ("who are you") apart from authorization ("what may you do") and know both are backend checks.',
+          'Recognise "the button is hidden so the action is safe" as the same client-side lie as an exposed API key or a frontend price.',
+          'Know that every protected action must check permissions on the backend, and that ownership (does THIS user own THIS row) is its own check.'
+        ],
+        buttonLabel: '[ I GET IT ]',
+        doneLabel: 'You get how logins actually work',
+        undoLabel: '[ MARK AS NOT YET ]'
+      }
+    ]
   },
   {
     id: 'deploy',
